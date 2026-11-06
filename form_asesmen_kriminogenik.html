@@ -59,13 +59,13 @@
             animation: pulse-border 2s infinite;
         }
 
-        /* ==================== CSS KHUSUS CETAK PDF KRIMINOGENIK (SESUAI STANDAR VER.2) ==================== */
+        /* ==================== CSS KHUSUS CETAK PDF KRIMINOGENIK (4 HALAMAN PADAT & PROPORSIONAL) ==================== */
         #dokumenPdfKrim {
             font-family: Arial, Helvetica, sans-serif;
             color: #000000;
             background: #ffffff;
-            font-size: 9.5pt;
-            line-height: 1.3;
+            font-size: 8.5pt;
+            line-height: 1.22;
             width: 100%;
             box-sizing: border-box;
         }
@@ -73,31 +73,35 @@
             width: 100%;
             background: #ffffff;
             box-sizing: border-box;
-            padding: 2mm 4mm;
+            padding: 0;
+            margin: 0;
         }
-        .krim-pdf-page-break {
-            page-break-after: always;
-            break-after: page;
+        .html2pdf__page-break {
+            height: 0;
+            page-break-before: always;
+            margin: 0;
+            padding: 0;
+            border: none;
         }
         .krim-banner-dark {
             background-color: #434343;
             color: #ffffff;
             text-align: center;
             font-weight: bold;
-            font-size: 11pt;
-            padding: 6px 10px;
-            margin-bottom: 12px;
+            font-size: 10.5pt;
+            padding: 5px 10px;
+            margin-bottom: 8px;
             letter-spacing: 0.3px;
         }
         .krim-section-title {
             text-align: center;
             font-weight: bold;
-            font-size: 10pt;
-            margin: 0 0 10px 0;
+            font-size: 9.5pt;
+            margin: 0 0 6px 0;
             color: #000000;
         }
         .krim-instruksi {
-            font-size: 8.5pt;
+            font-size: 8pt;
             margin: 0 0 4px 0;
             color: #000000;
         }
@@ -105,7 +109,7 @@
             width: 100%;
             border-collapse: collapse;
             border: 1px solid #000000;
-            font-size: 9pt;
+            font-size: 8.5pt;
             table-layout: fixed;
         }
         .krim-table th {
@@ -114,62 +118,62 @@
             color: #000000;
             font-weight: bold;
             text-align: center;
-            padding: 5px 4px;
-            font-size: 9pt;
+            padding: 4px 4px;
+            font-size: 8.5pt;
         }
         .krim-table td {
             border: 1px solid #000000;
             color: #000000;
             vertical-align: middle;
-            padding: 4px 6px;
+            padding: 3px 6px;
         }
         .krim-faktor-row td {
             background-color: #fff2cc !important;
             font-weight: bold;
             text-align: left;
-            padding: 5px 7px !important;
-            font-size: 9pt;
+            padding: 4px 7px !important;
+            font-size: 8.5pt;
         }
         .krim-td-no {
             text-align: center;
             vertical-align: middle;
-            font-size: 9pt;
+            font-size: 8.5pt;
         }
         .krim-td-pertanyaan {
             padding: 0 !important;
             vertical-align: top !important;
         }
         .krim-tanya-box {
-            padding: 5px 7px 6px 7px;
-            min-height: 30px;
-            font-size: 9pt;
-            line-height: 1.28;
+            padding: 4px 6px 4px 6px;
+            min-height: 24px;
+            font-size: 8.5pt;
+            line-height: 1.22;
         }
         .krim-bukti-box {
             border-top: 1px solid #000000;
-            padding: 3px 7px 6px 7px;
-            min-height: 22px;
-            font-size: 7.5pt;
+            padding: 2px 6px 4px 6px;
+            min-height: 17px;
+            font-size: 7pt;
             color: #000000;
-            line-height: 1.25;
+            line-height: 1.2;
         }
         .krim-td-jawaban {
             text-align: center;
             vertical-align: middle;
-            font-size: 9pt;
+            font-size: 8.5pt;
         }
         .krim-td-nilai {
             text-align: center;
             vertical-align: middle;
-            font-size: 9pt;
+            font-size: 8.5pt;
         }
-        /* Tabel Rekap Total Nilai Tiap Faktor (Halaman 4) */
+        /* Tabel Rekap Total Nilai Tiap Faktor (Halaman 3) */
         .krim-rekap-table {
             width: 100%;
             border-collapse: collapse;
             border: 1px solid #000000;
-            font-size: 9pt;
-            margin-top: 22px;
+            font-size: 8.5pt;
+            margin-top: 16px;
             table-layout: fixed;
         }
         .krim-rekap-table th {
@@ -178,13 +182,13 @@
             color: #ffffff;
             font-weight: bold;
             text-align: center;
-            padding: 6px 8px;
-            font-size: 9pt;
+            padding: 5px 8px;
+            font-size: 8.5pt;
         }
         .krim-rekap-table td {
             border: 1px solid #000000;
-            padding: 6px 8px;
-            font-size: 9pt;
+            padding: 5px 8px;
+            font-size: 8.5pt;
             vertical-align: middle;
         }
     </style>
@@ -635,11 +639,11 @@
         </button>
     </nav>
 
-    <!-- ==================== TEMPLATE CETAK PDF KRIMINOGENIK (5 HALAMAN SESUAI STANDAR & B.2 SESUAI PEDOMAN) ==================== -->
+    <!-- ==================== TEMPLATE CETAK PDF KRIMINOGENIK (4 HALAMAN PROPORSIONAL & RAPI) ==================== -->
     <div style="display: none;">
         <div id="dokumenPdfKrim">
-            <!-- HALAMAN 1: Banner + Bagian A (Item 1 s.d. 7) -->
-            <div class="krim-pdf-page krim-pdf-page-break">
+            <!-- HALAMAN 1: Banner + Bagian A (Nomor 1 s.d. 10: Keluarga & Pernikahan + Pendidikan & Pekerjaan) -->
+            <div class="krim-pdf-page">
                 <div class="krim-banner-dark">INSTRUMEN ASESMEN KEBUTUHAN KRIMINOGENIK</div>
                 <div class="krim-section-title">KEBUTUHAN KRIMINOGENIK - BAGIAN A</div>
                 <p class="krim-instruksi">Berikan nilai sesuai dengan kriteria jawaban pada tiap pertanyaan dibawah ini!</p>
@@ -662,8 +666,10 @@
                 </table>
             </div>
 
-            <!-- HALAMAN 2: Lanjutan Bagian A (Item 8 s.d. 16) -->
-            <div class="krim-pdf-page krim-pdf-page-break">
+            <div class="html2pdf__page-break"></div>
+
+            <!-- HALAMAN 2: Lanjutan Bagian A (Nomor 11 s.d. 22: Penggunaan Narkotika + Hubungan Sosial + Waktu Luang/Rekreasi) -->
+            <div class="krim-pdf-page">
                 <table class="krim-table">
                     <colgroup>
                         <col style="width: 6%;">
@@ -675,8 +681,10 @@
                 </table>
             </div>
 
-            <!-- HALAMAN 3: Lanjutan Bagian A (Item 17 s.d. 25) -->
-            <div class="krim-pdf-page krim-pdf-page-break">
+            <div class="html2pdf__page-break"></div>
+
+            <!-- HALAMAN 3: Lanjutan Bagian A (Nomor 23 s.d. 29: Manajemen Keuangan + Sikap Anti Sosial) + Tabel TOTAL NILAI TIAP FAKTOR -->
+            <div class="krim-pdf-page">
                 <table class="krim-table">
                     <colgroup>
                         <col style="width: 6%;">
@@ -685,19 +693,6 @@
                         <col style="width: 14%;">
                     </colgroup>
                     <tbody id="pdf-tbodyA-page3"></tbody>
-                </table>
-            </div>
-
-            <!-- HALAMAN 4: Lanjutan Bagian A (Item 26 s.d. 29) + Tabel TOTAL NILAI TIAP FAKTOR -->
-            <div class="krim-pdf-page krim-pdf-page-break">
-                <table class="krim-table">
-                    <colgroup>
-                        <col style="width: 6%;">
-                        <col style="width: 62%;">
-                        <col style="width: 18%;">
-                        <col style="width: 14%;">
-                    </colgroup>
-                    <tbody id="pdf-tbodyA-page4"></tbody>
                 </table>
 
                 <table class="krim-rekap-table">
@@ -717,7 +712,9 @@
                 </table>
             </div>
 
-            <!-- HALAMAN 5: Bagian B.1 & Bagian B.2 (Disesuaikan dengan Tabel Form & Pedoman) -->
+            <div class="html2pdf__page-break"></div>
+
+            <!-- HALAMAN 4: Bagian B.1 & Bagian B.2 (Disesuaikan dengan Tabel Form & Pedoman) -->
             <div class="krim-pdf-page">
                 <div class="krim-section-title" style="margin-bottom: 8px; line-height: 1.35;">
                     <div>KEBUTUHAN KRIMINOGENIK - BAGIAN B.1</div>
@@ -789,6 +786,11 @@
         let klienTerpilih = null;
 
         // ==================== DEFINISI DATA INSTRUMEN BAGIAN A (30 ITEM DALAM 7 FAKTOR) ====================
+        // Pembagian Halaman PDF:
+        // - Halaman 1: Nomor 1 s.d. 10 (Keluarga & Pernikahan + Pendidikan & Pekerjaan)
+        // - Halaman 2: Nomor 11 s.d. 22 (Penggunaan Narkotika + Hubungan Sosial + Waktu Luang/Rekreasi)
+        // - Halaman 3: Nomor 23 s.d. 29 (Manajemen Keuangan + Sikap Anti Sosial) + Tabel Rekap TOTAL NILAI TIAP FAKTOR
+        // - Halaman 4: Bagian B.1 & Bagian B.2
         const strukturBagianA = [
             {
                 idFaktor: 'f1',
@@ -818,9 +820,9 @@
                     { no: '6A', kode: 'a6a', page: 1, teks: 'Apakah narapidana menganggur sebelum menjalani pidana sekarang?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
                     { no: '6B', kode: 'a6b', page: 1, teks: 'Apakah narapidana/klien pemasyarakatan mengikuti program pembinaan kemandirian di dalam Lapas/Bapas selama 12 bulan terakhir?', opsi: [{ label: 'Tidak', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
                     { no: '7', kode: 'a7', page: 1, teks: 'Apakah narapidana/klien pemasyarakatan menghabiskan kurang-lebih setengah waktunya dalam keadaan menganggur/tidak bekerja ketika berada di masyarakat?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
-                    { no: '8', kode: 'a8', page: 2, teks: 'Apakah narapidana/klien pemasyarakatan merasa kegiatannya di tempat kerja/sekolah/universitas bermakna?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Perlu Dikembangkan', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
-                    { no: '9', kode: 'a9', page: 2, teks: 'Apakah narapidana/klien pemasyarakatan dapat berhubungan baik dengan rekan kerja/teman sekolah/kuliah?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Perlu Dikembangkan', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
-                    { no: '10', kode: 'a10', page: 2, teks: 'Apakah narapidana/klien pemasyarakatan berhubungan baik dengan atasan di tempat kerja ata dengan pengajar di institusi pendidikan tempat ia belajar?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Perlu Dikembangkan', nilai: 1 }, { label: 'Ya', nilai: 0 }] }
+                    { no: '8', kode: 'a8', page: 1, teks: 'Apakah narapidana/klien pemasyarakatan merasa kegiatannya di tempat kerja/sekolah/universitas bermakna?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Perlu Dikembangkan', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
+                    { no: '9', kode: 'a9', page: 1, teks: 'Apakah narapidana/klien pemasyarakatan dapat berhubungan baik dengan rekan kerja/teman sekolah/kuliah?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Perlu Dikembangkan', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
+                    { no: '10', kode: 'a10', page: 1, teks: 'Apakah narapidana/klien pemasyarakatan berhubungan baik dengan atasan di tempat kerja ata dengan pengajar di institusi pendidikan tempat ia belajar?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Perlu Dikembangkan', nilai: 1 }, { label: 'Ya', nilai: 0 }] }
                 ]
             },
             {
@@ -849,10 +851,10 @@
                 warnaHeader: 'bg-emerald-50/90 text-emerald-800 border-emerald-200',
                 batasKategori: { rendah: [0, 1], sedang: [2, 3], tinggi: [4, 4], sangatTinggi: [5, 99] },
                 items: [
-                    { no: '17', kode: 'a17', page: 3, showFaktorHeader: true, teks: 'Apakah narapidana/klien pemasyarakatan melakukan tindak kriminal yang sekarang dengan teman/rekannya?', opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }] },
-                    { no: '18', kode: 'a18', page: 3, teks: 'Apakah narapidana/klien pemasyarakatan anggota dari suatu kelompok/organisasi/grup yang melakukan aktivitas kriminal?', opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }] },
-                    { no: '19', kode: 'a19', page: 3, teks: 'Apakah narapidana mempunyai teman selama di dalam Lapas/Rutan?', opsi: [{ label: 'Tidak', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
-                    { no: '20', kode: 'a20', page: 3, teks: 'Apakah narapidana/klien pemasyarakatan mempunyai teman dan rekan yang pro-sosial?', opsi: [{ label: 'Ya', nilai: 0 }, { label: 'Terbatas', nilai: 1 }, { label: 'Tidak', nilai: 2 }] }
+                    { no: '17', kode: 'a17', page: 2, showFaktorHeader: true, teks: 'Apakah narapidana/klien pemasyarakatan melakukan tindak kriminal yang sekarang dengan teman/rekannya?', opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }] },
+                    { no: '18', kode: 'a18', page: 2, teks: 'Apakah narapidana/klien pemasyarakatan anggota dari suatu kelompok/organisasi/grup yang melakukan aktivitas kriminal?', opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }] },
+                    { no: '19', kode: 'a19', page: 2, teks: 'Apakah narapidana mempunyai teman selama di dalam Lapas/Rutan?', opsi: [{ label: 'Tidak', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
+                    { no: '20', kode: 'a20', page: 2, teks: 'Apakah narapidana/klien pemasyarakatan mempunyai teman dan rekan yang pro-sosial?', opsi: [{ label: 'Ya', nilai: 0 }, { label: 'Terbatas', nilai: 1 }, { label: 'Tidak', nilai: 2 }] }
                 ]
             },
             {
@@ -864,8 +866,8 @@
                 warnaHeader: 'bg-teal-50/90 text-teal-800 border-teal-200',
                 batasKategori: { rendah: [0, 0], sedang: [1, 1], tinggi: [2, 99], sangatTinggi: [99, 100] },
                 items: [
-                    { no: '21', kode: 'a21', page: 3, showFaktorHeader: true, teks: 'Apakah narapidana/klien pemasyarakatan melibatkan diri dalam kegiatan yang konstruktif dan bermanfaat?', opsi: [{ label: 'Ya', nilai: 0 }, { label: 'Tidak', nilai: 1 }] },
-                    { no: '22', kode: 'a22', page: 3, teks: 'Apakah narapidana/klien pemasyarakatan memiliki terlalu banyak waktu luang?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] }
+                    { no: '21', kode: 'a21', page: 2, showFaktorHeader: true, teks: 'Apakah narapidana/klien pemasyarakatan melibatkan diri dalam kegiatan yang konstruktif dan bermanfaat?', opsi: [{ label: 'Ya', nilai: 0 }, { label: 'Tidak', nilai: 1 }] },
+                    { no: '22', kode: 'a22', page: 2, teks: 'Apakah narapidana/klien pemasyarakatan memiliki terlalu banyak waktu luang?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] }
                 ]
             },
             {
@@ -891,10 +893,10 @@
                 batasKategori: { rendah: [0, 1], sedang: [2, 4], tinggi: [5, 6], sangatTinggi: [7, 99] },
                 items: [
                     { no: '25', kode: 'a25', page: 3, showFaktorHeader: true, teks: 'Apakah narapidana/klien pemasyarakatan memiliki sikap/penilaian negatif terhadap sistem peradilan pidana?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
-                    { no: '26', kode: 'a26', page: 4, teks: 'Apakah narapidana/klien pemasyarakatan menunjukkan rasa empati terhadap korban dari kejahatannya?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Sedikit', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
-                    { no: '27', kode: 'a27', page: 4, teks: 'Apakah narapidana/klien pemasyarakatan memiliki riwayat kejahatan menggunakan kekerasan dan/atau kekerasan seksual yang berulang?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Perhatian', nilai: 1 }, { label: 'Ya', nilai: 2 }] },
-                    { no: '28', kode: 'a28', page: 4, teks: 'Apakah narapidana/klien pemasyarakatan memiliki sikap negatif terhadap rehabilitasi/program layanan lainnya?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
-                    { no: '29', kode: 'a29', page: 4, teks: 'Apakah narapidana/klien pemasyarakatan meyakini kejahatan adalah cara yang sah untuk memenuhi kebutuhan mereka?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] }
+                    { no: '26', kode: 'a26', page: 3, teks: 'Apakah narapidana/klien pemasyarakatan menunjukkan rasa empati terhadap korban dari kejahatannya?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Sedikit', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
+                    { no: '27', kode: 'a27', page: 3, teks: 'Apakah narapidana/klien pemasyarakatan memiliki riwayat kejahatan menggunakan kekerasan dan/atau kekerasan seksual yang berulang?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Perhatian', nilai: 1 }, { label: 'Ya', nilai: 2 }] },
+                    { no: '28', kode: 'a28', page: 3, teks: 'Apakah narapidana/klien pemasyarakatan memiliki sikap negatif terhadap rehabilitasi/program layanan lainnya?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
+                    { no: '29', kode: 'a29', page: 3, teks: 'Apakah narapidana/klien pemasyarakatan meyakini kejahatan adalah cara yang sah untuk memenuhi kebutuhan mereka?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] }
                 ]
             }
         ];
@@ -1350,7 +1352,7 @@
             cekSesiLogin();
         });
 
-        // ==================== SIMPAN & CETAK PDF KRIMINOGENIK (5 HALAMAN SESUAI STANDAR & B.2 SESUAI PEDOMAN) ====================
+        // ==================== SIMPAN & CETAK PDF KRIMINOGENIK (4 HALAMAN PROPORSIONAL & RAPI) ====================
         async function submitDataKriminogenik() {
             if (!klienTerpilih) {
                 Swal.fire({
@@ -1379,9 +1381,9 @@
 
             const { totalKeseluruhan, kategoriAkhir } = hitungSkorKriminogenik();
 
-            // Kumpulkan jawaban Bagian A per halaman (Halaman 1 s.d. 4) dan susun Tabel Rekap Faktor
+            // Kumpulkan jawaban Bagian A per halaman (Halaman 1 s.d. 3) dan susun Tabel Rekap Faktor
             let jawabanBagianA = {};
-            let pageRows = { 1: '', 2: '', 3: '', 4: '' };
+            let pageRows = { 1: '', 2: '', 3: '' };
             let rekapRowsHtml = '';
 
             strukturBagianA.forEach((faktor, idxFaktor) => {
@@ -1444,7 +1446,6 @@
             document.getElementById('pdf-tbodyA-page1').innerHTML = pageRows[1];
             document.getElementById('pdf-tbodyA-page2').innerHTML = pageRows[2];
             document.getElementById('pdf-tbodyA-page3').innerHTML = pageRows[3];
-            document.getElementById('pdf-tbodyA-page4').innerHTML = pageRows[4];
             document.getElementById('pdf-tbodyRekapFaktor').innerHTML = rekapRowsHtml;
 
             // Bagian B.1 (A s.d. I)
@@ -1457,8 +1458,8 @@
                 pdfRowsB1 += `
                     <tr>
                         <td style="text-align: center; vertical-align: middle;">${item.no}</td>
-                        <td style="vertical-align: middle; padding: 5px 7px;">${item.teks}</td>
-                        <td style="text-align: center; vertical-align: middle; font-size: 10pt; font-weight: bold;">${isChecked ? '√' : ''}</td>
+                        <td style="vertical-align: middle; padding: 4px 7px;">${item.teks}</td>
+                        <td style="text-align: center; vertical-align: middle; font-size: 9.5pt; font-weight: bold;">${isChecked ? '√' : ''}</td>
                     </tr>
                 `;
             });
@@ -1474,8 +1475,8 @@
                 pdfRowsB2 += `
                     <tr>
                         <td style="text-align: center; vertical-align: middle;">${item.no}</td>
-                        <td style="vertical-align: middle; padding: 5px 7px;">${item.teks}</td>
-                        <td style="text-align: center; vertical-align: middle; font-size: 10pt; font-weight: bold;">${isChecked ? '√' : ''}</td>
+                        <td style="vertical-align: middle; padding: 4px 7px;">${item.teks}</td>
+                        <td style="text-align: center; vertical-align: middle; font-size: 9.5pt; font-weight: bold;">${isChecked ? '√' : ''}</td>
                     </tr>
                 `;
             });
@@ -1515,7 +1516,7 @@
                 const element = document.getElementById('dokumenPdfKrim');
                 const namaFileKlien = (klienTerpilih.nama_klien || 'Klien').trim();
                 const opt = {
-                    margin:       [10, 12, 10, 12],
+                    margin:       [8, 12, 8, 12],
                     filename:     `Asesmen Kriminogenik ver.2 a.n. ${namaFileKlien}.pdf`,
                     image:        { type: 'jpeg', quality: 0.98 },
                     html2canvas:  { scale: 2, useCORS: true },
