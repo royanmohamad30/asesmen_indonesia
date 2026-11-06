@@ -59,161 +59,15 @@
             animation: pulse-border 2s infinite;
         }
 
-        /* ==================== CSS KHUSUS CETAK PDF KRIMINOGENIK (3 HALAMAN PADAT & PROPORSIONAL) ==================== */
-        /* Override container internal html2pdf agar tidak terpotong oleh tinggi layar (100vh) atau terdorong turun */
-        .html2pdf__overlay {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: auto !important;
-            bottom: auto !important;
-            width: 703px !important;
-            height: auto !important;
-            overflow: visible !important;
-        }
-        .html2pdf__container {
-            position: relative !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 703px !important;
-            height: auto !important;
-            overflow: visible !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            background: #ffffff !important;
-        }
+        /* ==================== CSS KHUSUS CETAK PDF KRIMINOGENIK (DISAMAKAN DENGAN ASESMEN.HTML) ==================== */
         #dokumenPdfKrim {
-            font-family: Arial, Helvetica, sans-serif;
-            color: #000000;
-            background: #ffffff;
-            font-size: 8pt;
-            line-height: 1.15;
-            width: 703px;
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            font-family: Arial, sans-serif; color: black; background: white; 
+            font-size: 10.5pt; line-height: 1.4; width: 100%; padding: 15px;
         }
-        .krim-pdf-page {
-            font-family: Arial, Helvetica, sans-serif;
-            color: #000000;
-            width: 703px;
-            background: #ffffff;
-            box-sizing: border-box;
-            padding: 0;
-            margin: 0;
-            font-size: 8pt;
-            line-height: 1.15;
-        }
-        .krim-banner-dark {
-            background-color: #434343;
-            color: #ffffff;
-            text-align: center;
-            font-weight: bold;
-            font-size: 10pt;
-            padding: 4px 8px;
-            margin: 0 0 4px 0;
-            letter-spacing: 0.3px;
-        }
-        .krim-section-title {
-            text-align: center;
-            font-weight: bold;
-            font-size: 9pt;
-            margin: 0 0 4px 0;
-            color: #000000;
-        }
-        .krim-instruksi {
-            font-size: 7.5pt;
-            margin: 0 0 3px 0;
-            color: #000000;
-        }
-        .krim-table {
-            width: 100%;
-            border-collapse: collapse;
-            border: 1px solid #000000;
-            font-size: 7.8pt;
-            table-layout: fixed;
-            margin: 0;
-        }
-        .krim-table th {
-            border: 1px solid #000000;
-            background-color: #93c47d;
-            color: #000000;
-            font-weight: bold;
-            text-align: center;
-            padding: 3px 4px;
-            font-size: 7.8pt;
-        }
-        .krim-table td {
-            border: 1px solid #000000;
-            color: #000000;
-            vertical-align: middle;
-            padding: 2px 5px;
-        }
-        .krim-faktor-row td {
-            background-color: #fff2cc !important;
-            font-weight: bold;
-            text-align: left;
-            padding: 2.5px 6px !important;
-            font-size: 7.8pt;
-        }
-        .krim-td-no {
-            text-align: center;
-            vertical-align: middle;
-            font-size: 7.8pt;
-        }
-        .krim-td-pertanyaan {
-            padding: 0 !important;
-            vertical-align: top !important;
-        }
-        .krim-tanya-box {
-            padding: 2px 5px;
-            min-height: 15px;
-            font-size: 7.8pt;
-            line-height: 1.14;
-        }
-        .krim-bukti-box {
-            border-top: 1px solid #000000;
-            padding: 1.5px 5px 2px 5px;
-            min-height: 12px;
-            font-size: 6.5pt;
-            color: #000000;
-            line-height: 1.1;
-        }
-        .krim-td-jawaban {
-            text-align: center;
-            vertical-align: middle;
-            font-size: 7.8pt;
-        }
-        .krim-td-nilai {
-            text-align: center;
-            vertical-align: middle;
-            font-size: 7.8pt;
-        }
-        /* Tabel Rekap Total Nilai Tiap Faktor (Naik ke Halaman 2 di bawah No. 29, warna Hijau & Biru Muda cerah) */
-        .krim-rekap-table {
-            width: 100%;
-            border-collapse: collapse;
-            border: 1px solid #000000;
-            font-size: 8pt;
-            margin: 8px 0 0 0;
-            table-layout: fixed;
-        }
-        .krim-rekap-table th {
-            border: 1px solid #000000;
-            background-color: #93c47d;
-            color: #000000;
-            font-weight: bold;
-            text-align: center;
-            padding: 4px 8px;
-            font-size: 8pt;
-        }
-        .krim-rekap-table td {
-            border: 1px solid #000000;
-            padding: 3.5px 8px;
-            font-size: 8pt;
-            color: #000000;
-            vertical-align: middle;
-        }
+        .html2pdf__page-break { height: 0; page-break-before: always; margin: 0; padding: 0; border: none; }
+        .pdf-table-krim { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 10pt; border: 1px solid black; }
+        .pdf-table-krim th { border: 1px solid black; padding: 6px; text-align: center; font-weight: bold; background-color: #d9ead3; }
+        .pdf-table-krim td { border: 1px solid black; vertical-align: top; padding: 6px; }
     </style>
 </head>
 <body class="text-slate-800 h-screen overflow-hidden relative antialiased selection:bg-blue-600 selection:text-white flex"
@@ -662,113 +516,98 @@
         </button>
     </nav>
 
-    <!-- ==================== TEMPLATE CETAK PDF KRIMINOGENIK (3 HALAMAN PROPORSIONAL & RAPI) ==================== -->
+    <!-- ==================== TEMPLATE CETAK PDF KRIMINOGENIK (DISAMAKAN DENGAN ASESMEN.HTML) ==================== -->
     <div style="display: none;">
         <div id="dokumenPdfKrim">
-            <!-- HALAMAN 1: Banner + Bagian A (Nomor 1 s.d. 16: Keluarga & Pernikahan + Pendidikan & Pekerjaan + Penggunaan Narkotika) -->
-            <div class="krim-pdf-page">
-                <div class="krim-banner-dark">INSTRUMEN ASESMEN KEBUTUHAN KRIMINOGENIK</div>
-                <div class="krim-section-title">KEBUTUHAN KRIMINOGENIK - BAGIAN A</div>
-                <p class="krim-instruksi">Berikan nilai sesuai dengan kriteria jawaban pada tiap pertanyaan dibawah ini!</p>
-                <table class="krim-table">
-                    <colgroup>
-                        <col style="width: 6%;">
-                        <col style="width: 62%;">
-                        <col style="width: 18%;">
-                        <col style="width: 14%;">
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th>NO</th>
-                            <th>PERTANYAAN</th>
-                            <th>JAWABAN</th>
-                            <th>NILAI</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pdf-tbodyA-page1"></tbody>
-                </table>
+            <div style="text-align: center; margin-bottom: 18px;">
+                <h2 style="font-size: 13pt; font-weight: bold; margin: 0; text-decoration: underline;">INSTRUMEN ASESMEN KEBUTUHAN KRIMINOGENIK</h2>
+                <p style="font-size: 10pt; margin: 4px 0 0 0;">Versi 02 Tahun 2021 - Direktorat Jenderal Pemasyarakatan</p>
             </div>
 
-            <!-- HALAMAN 2: Lanjutan Bagian A (Nomor 17 s.d. 29) + Tabel TOTAL NILAI TIAP FAKTOR -->
-            <div class="krim-pdf-page">
-                <table class="krim-table">
-                    <colgroup>
-                        <col style="width: 6%;">
-                        <col style="width: 62%;">
-                        <col style="width: 18%;">
-                        <col style="width: 14%;">
-                    </colgroup>
-                    <tbody id="pdf-tbodyA-page2"></tbody>
-                </table>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 10pt; border: 1px solid black;">
+                <tr>
+                    <td style="width: 22%; padding: 5px; border: 1px solid black; font-weight: bold;">Nama Klien</td>
+                    <td style="width: 28%; padding: 5px; border: 1px solid black;" id="pdfKrim-namaKlien"></td>
+                    <td style="width: 22%; padding: 5px; border: 1px solid black; font-weight: bold;">Tanggal Asesmen</td>
+                    <td style="width: 28%; padding: 5px; border: 1px solid black;" id="pdfKrim-tglAsesmen"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 5px; border: 1px solid black; font-weight: bold;">No. Register</td>
+                    <td style="padding: 5px; border: 1px solid black;" id="pdfKrim-noReg"></td>
+                    <td style="padding: 5px; border: 1px solid black; font-weight: bold;">Alasan Asesmen</td>
+                    <td style="padding: 5px; border: 1px solid black;" id="pdfKrim-alasan"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 5px; border: 1px solid black; font-weight: bold;">Tgl Lahir / JK</td>
+                    <td style="padding: 5px; border: 1px solid black;" id="pdfKrim-tglLahirJk"></td>
+                    <td style="padding: 5px; border: 1px solid black; font-weight: bold;">Nama Petugas PK</td>
+                    <td style="padding: 5px; border: 1px solid black;" id="pdfKrim-namaPK"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 5px; border: 1px solid black; font-weight: bold;">Lokasi Pidana</td>
+                    <td style="padding: 5px; border: 1px solid black;" id="pdfKrim-lokasi"></td>
+                    <td style="padding: 5px; border: 1px solid black; font-weight: bold;">Keterangan</td>
+                    <td style="padding: 5px; border: 1px solid black;" id="pdfKrim-keterangan"></td>
+                </tr>
+            </table>
 
-                <table class="krim-rekap-table">
-                    <colgroup>
-                        <col style="width: 62%;">
-                        <col style="width: 18%;">
-                        <col style="width: 20%;">
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th>TOTAL NILAI TIAP FAKTOR</th>
-                            <th>NILAI</th>
-                            <th>KATEGORI</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pdf-tbodyRekapFaktor"></tbody>
-                </table>
-            </div>
+            <h3 style="font-size: 11pt; font-weight: bold; margin-bottom: 6px;">BAGIAN A. FAKTOR KEBUTUHAN KRIMINOGENIK UTAMA</h3>
+            <table class="pdf-table-krim">
+                <thead>
+                    <tr>
+                        <th style="width: 7%;">NO</th>
+                        <th style="width: 58%;">PERTANYAAN & BUKTI PENDUKUNG</th>
+                        <th style="width: 20%;">JAWABAN</th>
+                        <th style="width: 15%;">NILAI</th>
+                    </tr>
+                </thead>
+                <tbody id="pdfKrim-tbodyA"></tbody>
+            </table>
 
-            <!-- HALAMAN 3: Bagian B.1 + Bagian B.2 -->
-            <div class="krim-pdf-page">
+            <div class="html2pdf__page-break"></div>
 
-                <div class="krim-section-title" style="margin-bottom: 5px; line-height: 1.3;">
-                    <div>KEBUTUHAN KRIMINOGENIK - BAGIAN B.1</div>
-                    <div>PERTIMBANGAN LAIN – JENIS TINDAK KRIMINAL TERTENTU</div>
-                </div>
-                <p class="krim-instruksi">Apakah ada dari fitur berikut di profil Narapidana/Klien Pemasyarakatan? Berikan tanda centang (√) jika ada!</p>
-                <table class="krim-table" style="margin-bottom: 5px;">
-                    <colgroup>
-                        <col style="width: 7%;">
-                        <col style="width: 75%;">
-                        <col style="width: 18%;">
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Deskripsi</th>
-                            <th>Centang Jika Ada</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pdf-tbodyB1"></tbody>
-                </table>
-                <p style="font-size: 7.5pt; margin: 0 0 14px 0; color: #000000;">
-                    Kehadiran pertimbangan lain di atas, menunjukkan kebutuhan atau Penilaian Bagian 5 (Asesmen Khusus/Pertimbangan untuk Intervensi Khusus)
-                </p>
+            <h3 style="font-size: 11pt; font-weight: bold; margin-bottom: 6px;">BAGIAN B.1 – PERTIMBANGAN LAIN – JENIS TINDAK KRIMINAL TERTENTU</h3>
+            <table class="pdf-table-krim">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;">NO</th>
+                        <th style="width: 77%;">DESKRIPSI</th>
+                        <th style="width: 15%;">CENTANG</th>
+                    </tr>
+                </thead>
+                <tbody id="pdfKrim-tbodyB1"></tbody>
+            </table>
 
-                <div class="krim-section-title" style="margin-bottom: 5px; line-height: 1.3;">
-                    <div>KEBUTUHAN KRIMINOGENIK - BAGIAN B.2</div>
-                    <div>PERTIMBANGAN LAIN – FAKTOR KEBUTUHAN TAMBAHAN</div>
-                </div>
-                <p class="krim-instruksi">Berikan tanda centang (√) pada tiap pertanyaan yang memenuhi syarat!</p>
-                <table class="krim-table" style="margin-bottom: 5px;">
-                    <colgroup>
-                        <col style="width: 7%;">
-                        <col style="width: 75%;">
-                        <col style="width: 18%;">
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Deskripsi</th>
-                            <th>Centang Jika Ada</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pdf-tbodyB2"></tbody>
-                </table>
-                <p style="font-size: 7.5pt; margin: 0; color: #000000;">
-                    Kehadiran B2 Pertimbangan Lainnya, menunjukkan masalah responsif atau manajemen risiko
-                </p>
-            </div>
+            <h3 style="font-size: 11pt; font-weight: bold; margin-bottom: 6px;">BAGIAN B.2 – PERTIMBANGAN LAIN – FAKTOR KEBUTUHAN TAMBAHAN</h3>
+            <table class="pdf-table-krim">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;">NO</th>
+                        <th style="width: 77%;">DESKRIPSI</th>
+                        <th style="width: 15%;">CENTANG</th>
+                    </tr>
+                </thead>
+                <tbody id="pdfKrim-tbodyB2"></tbody>
+            </table>
+
+            <table style="width: 100%; text-align: center; margin-top: 25px; font-size: 10pt;">
+                <tr>
+                    <td style="width: 50%; vertical-align: bottom;">
+                        <p>Petugas Asesmen / PK,</p>
+                        <div style="height: 80px; display: flex; align-items: center; justify-content: center; margin: 5px 0;">
+                            <img id="pdfKrim-ttdPetugas" src="" style="max-height: 75px; max-width: 180px; display: none; margin: 0 auto;" />
+                        </div>
+                        <p style="font-weight: bold; text-decoration: underline;" id="pdfKrim-ttdNamaPK"></p>
+                    </td>
+                    <td style="width: 50%; vertical-align: bottom;">
+                        <p>Narapidana / Klien Pemasyarakatan,</p>
+                        <div style="height: 80px; display: flex; align-items: center; justify-content: center; margin: 5px 0;">
+                            <img id="pdfKrim-ttdKlien" src="" style="max-height: 75px; max-width: 180px; display: none; margin: 0 auto;" />
+                        </div>
+                        <p style="font-weight: bold; text-decoration: underline;" id="pdfKrim-ttdNamaKlien"></p>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 
@@ -791,10 +630,6 @@
         let klienTerpilih = null;
 
         // ==================== DEFINISI DATA INSTRUMEN BAGIAN A (30 ITEM DALAM 7 FAKTOR) ====================
-        // Pembagian Halaman PDF (3 Halaman):
-        // - Halaman 1: Nomor 1 s.d. 16 (Keluarga & Pernikahan + Pendidikan & Pekerjaan + Penggunaan Narkotika)
-        // - Halaman 2: Nomor 17 s.d. 29 (Hubungan Sosial + Waktu Luang/Rekreasi + Manajemen Keuangan + Sikap Anti Sosial)
-        // - Halaman 3: Tabel Acuan (TOTAL NILAI TIAP FAKTOR) + Bagian B.1 & Bagian B.2
         const strukturBagianA = [
             {
                 idFaktor: 'f1',
@@ -1356,7 +1191,7 @@
             cekSesiLogin();
         });
 
-        // ==================== SIMPAN & CETAK PDF KRIMINOGENIK (3 HALAMAN PROPORSIONAL & RAPI) ====================
+        // ==================== SIMPAN & CETAK PDF KRIMINOGENIK (MODEL ASESMEN.HTML) ====================
         async function submitDataKriminogenik() {
             if (!klienTerpilih) {
                 Swal.fire({
@@ -1373,8 +1208,8 @@
 
             Swal.fire({
                 ...swalLightTheme,
-                title: 'Menyimpan & Membuat PDF Asesmen',
-                html: '<span class="text-slate-500">Sedang memproses dokumen Asesmen Kriminogenik.</span>',
+                title: 'Menyiapkan PDF Kriminogenik...',
+                html: `<span class="text-slate-500">Menyimpan & mencetak hasil Asesmen Kriminogenik atas nama <b>${klienTerpilih.nama_klien || 'Klien'}</b>...</span>`,
                 allowOutsideClick: false,
                 didOpen: () => Swal.showLoading()
             });
@@ -1385,115 +1220,141 @@
 
             const { totalKeseluruhan, kategoriAkhir } = hitungSkorKriminogenik();
 
-            // Kumpulkan jawaban Bagian A per halaman (Halaman 1: 1-16, Halaman 2: 17-29) dan susun Tabel Rekap Faktor (Halaman 3)
-            let jawabanBagianA = {};
-            let pageRows = { 1: '', 2: '' };
-            let rekapRowsHtml = '';
-
-            strukturBagianA.forEach((faktor, idxFaktor) => {
-                let subSkor = 0;
-
-                faktor.items.forEach(item => {
-                    const radio = document.querySelector(`input[name="${item.kode}"]:checked`);
-                    const nilai = radio ? parseInt(radio.value) : 0;
-                    const labelJawaban = radio ? radio.getAttribute('data-label') : '';
-                    const buktiRaw = (document.getElementById(`bukti_${item.kode}`)?.value || '').trim();
-                    subSkor += nilai;
-
-                    jawabanBagianA[item.kode] = { nilai, jawaban: labelJawaban || '-', bukti: buktiRaw || '-' };
-
-                    if (item.showFaktorHeader) {
-                        pageRows[item.page] += `
-                            <tr class="krim-faktor-row">
-                                <td colspan="4">${faktor.labelPdf}</td>
-                            </tr>
-                        `;
-                    }
-
-                    const teksBukti = buktiRaw
-                        ? `Bukti/informasi pendukung<div style="margin-top: 1.5px; font-weight: normal; color: #000;">${buktiRaw}</div>`
-                        : `Bukti/informasi pendukung`;
-
-                    pageRows[item.page] += `
-                        <tr>
-                            <td class="krim-td-no">${item.no}</td>
-                            <td class="krim-td-pertanyaan">
-                                <div class="krim-tanya-box">${item.teks}</div>
-                                <div class="krim-bukti-box">${teksBukti}</div>
-                            </td>
-                            <td class="krim-td-jawaban">${labelJawaban}</td>
-                            <td class="krim-td-nilai">${nilai}</td>
-                        </tr>
-                    `;
-                });
-
-                const katFaktor = tentukanKategoriFaktor(subSkor, faktor.batasKategori);
-                const bgBaris = (idxFaktor % 2 === 1) ? '#d9ead3' : '#ffffff';
-
-                rekapRowsHtml += `
-                    <tr style="background-color: ${bgBaris};">
-                        <td style="text-align: left; color: #000000;">${faktor.labelRekapPdf}</td>
-                        <td style="text-align: center; color: #000000;">${subSkor}</td>
-                        <td style="text-align: center; color: #000000;">${katFaktor}</td>
-                    </tr>
-                `;
-            });
-
-            rekapRowsHtml += `
-                <tr style="background-color: #cfe2f3;">
-                    <td style="text-align: left; font-weight: bold; color: #000000;">Total Nilai Keseluruhan</td>
-                    <td style="text-align: center; font-weight: bold; color: #000000;">${totalKeseluruhan}</td>
-                    <td style="text-align: center; font-weight: bold; color: #000000;">${kategoriAkhir}</td>
-                </tr>
-            `;
-
-            document.getElementById('pdf-tbodyA-page1').innerHTML = pageRows[1];
-            document.getElementById('pdf-tbodyA-page2').innerHTML = pageRows[2];
-            document.getElementById('pdf-tbodyRekapFaktor').innerHTML = rekapRowsHtml;
-
-            // Bagian B.1 (A s.d. I)
-            let jawabanB1 = {};
-            let pdfRowsB1 = '';
-            daftarB1.forEach(item => {
-                const isChecked = document.querySelector(`input[name="b1_${item.no}"]`)?.checked || false;
-                jawabanB1[item.no] = isChecked ? 1 : 0;
-                if (item.kodeAngka) jawabanB1[item.kodeAngka] = isChecked ? 1 : 0;
-                pdfRowsB1 += `
-                    <tr>
-                        <td style="text-align: center; vertical-align: middle;">${item.no}</td>
-                        <td style="vertical-align: middle; padding: 3.5px 6px;">${item.teks}</td>
-                        <td style="text-align: center; vertical-align: middle; font-size: 9pt; font-weight: bold;">${isChecked ? '√' : ''}</td>
-                    </tr>
-                `;
-            });
-            document.getElementById('pdf-tbodyB1').innerHTML = pdfRowsB1;
-
-            // Bagian B.2 (A s.d. I sesuai Buku Pedoman Instrumen)
-            let jawabanB2 = {};
-            let pdfRowsB2 = '';
-            daftarB2.forEach(item => {
-                const isChecked = document.querySelector(`input[name="b2_${item.no}"]`)?.checked || false;
-                jawabanB2[item.no] = isChecked ? 1 : 0;
-                if (item.kodeAngka) jawabanB2[item.kodeAngka] = isChecked ? 1 : 0;
-                pdfRowsB2 += `
-                    <tr>
-                        <td style="text-align: center; vertical-align: middle;">${item.no}</td>
-                        <td style="vertical-align: middle; padding: 3.5px 6px;">${item.teks}</td>
-                        <td style="text-align: center; vertical-align: middle; font-size: 9pt; font-weight: bold;">${isChecked ? '√' : ''}</td>
-                    </tr>
-                `;
-            });
-            document.getElementById('pdf-tbodyB2').innerHTML = pdfRowsB2;
-
             let detailLama = {};
             if (klienTerpilih.detail_jawaban) {
                 detailLama = typeof klienTerpilih.detail_jawaban === 'string' ? JSON.parse(klienTerpilih.detail_jawaban) : klienTerpilih.detail_jawaban;
             }
 
+            const namaKlien = klienTerpilih.nama_klien || '-';
+            const lokasiPidana = klienTerpilih.lokasi_pidana || detailLama.lokasi_pidana || '-';
+            const namaPK = globalNamaPetugas || klienTerpilih.nama_petugas || detailLama.nama_petugas || '-';
+
+            // Isi data identitas di template PDF (sama seperti di asesmen.html)
+            document.getElementById('pdfKrim-namaKlien').innerText = namaKlien;
+            document.getElementById('pdfKrim-noReg').innerText = klienTerpilih.no_register || '-';
+            document.getElementById('pdfKrim-tglLahirJk').innerText = `${formatTanggal(klienTerpilih.tanggal_lahir)} / ${klienTerpilih.jenis_kelamin || '-'}`;
+            document.getElementById('pdfKrim-lokasi').innerText = lokasiPidana;
+            document.getElementById('pdfKrim-tglAsesmen').innerText = formatTanggal(tglAsesmen);
+            document.getElementById('pdfKrim-alasan').innerText = alasan;
+            document.getElementById('pdfKrim-namaPK').innerText = namaPK;
+            document.getElementById('pdfKrim-keterangan').innerText = keterangan;
+            document.getElementById('pdfKrim-ttdNamaPK').innerText = namaPK;
+            document.getElementById('pdfKrim-ttdNamaKlien').innerText = namaKlien;
+
+            // Tanda tangan petugas & klien (ambil dari signature pad jika diisi, atau dari data RRI sebelumnya)
+            const ttdPetugasData = (padPetugas && !padPetugas.isEmpty()) ? padPetugas.toDataURL('image/png') : (detailLama.ttd_petugas || '');
+            const ttdKlienData = (padKlien && !padKlien.isEmpty()) ? padKlien.toDataURL('image/png') : (detailLama.ttd_klien || '');
+
+            const imgPetugas = document.getElementById('pdfKrim-ttdPetugas');
+            if (ttdPetugasData) {
+                imgPetugas.src = ttdPetugasData;
+                imgPetugas.style.display = 'block';
+            } else {
+                imgPetugas.src = '';
+                imgPetugas.style.display = 'none';
+            }
+
+            const imgKlien = document.getElementById('pdfKrim-ttdKlien');
+            if (ttdKlienData) {
+                imgKlien.src = ttdKlienData;
+                imgKlien.style.display = 'block';
+            } else {
+                imgKlien.src = '';
+                imgKlien.style.display = 'none';
+            }
+
+            // Susun tabel Bagian A (sama seperti cetakAsesmenKrim di asesmen.html)
+            let jawabanBagianA = {};
+            let pdfRowsA = '';
+
+            strukturBagianA.forEach(faktor => {
+                let subSkor = 0;
+                pdfRowsA += `
+                    <tr>
+                        <td colspan="4" style="background-color: #f1f5f9; font-weight: bold; font-size: 9.5pt;">${faktor.namaFaktor}</td>
+                    </tr>
+                `;
+
+                faktor.items.forEach(item => {
+                    const radio = document.querySelector(`input[name="${item.kode}"]:checked`);
+                    const nilai = radio ? parseInt(radio.value) : 0;
+                    const labelJawaban = radio ? radio.getAttribute('data-label') : '-';
+                    const buktiRaw = (document.getElementById(`bukti_${item.kode}`)?.value || '').trim();
+                    const bukti = buktiRaw || '-';
+                    subSkor += nilai;
+
+                    jawabanBagianA[item.kode] = { nilai, jawaban: labelJawaban, bukti };
+
+                    pdfRowsA += `
+                        <tr>
+                            <td style="text-align: center;">${item.no}</td>
+                            <td>
+                                <div>${item.teks}</div>
+                                <div style="font-size: 8pt; color: #555; margin-top: 3px; border-top: 1px dashed #ccc; padding-top: 2px;">Bukti/Info: ${bukti}</div>
+                            </td>
+                            <td style="text-align: center; vertical-align: middle;">${labelJawaban}</td>
+                            <td style="text-align: center; vertical-align: middle; font-weight: bold;">${nilai}</td>
+                        </tr>
+                    `;
+                });
+
+                const katFaktor = tentukanKategoriFaktor(subSkor, faktor.batasKategori);
+                pdfRowsA += `
+                    <tr>
+                        <td colspan="3" style="text-align: right; font-weight: bold; background-color: #fafafa;">Sub-Total ${faktor.namaFaktor} (${katFaktor})</td>
+                        <td style="text-align: center; font-weight: bold; background-color: #fafafa;">${subSkor}</td>
+                    </tr>
+                `;
+            });
+
+            pdfRowsA += `
+                <tr>
+                    <td colspan="3" style="font-weight: bold; background-color: #d9ead3;">NILAI TOTAL KESELURUHAN BAGIAN A</td>
+                    <td style="text-align: center; font-weight: bold; background-color: #d9ead3;">${totalKeseluruhan}</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="font-weight: bold; background-color: #d9ead3;">KATEGORI TINGKAT KEBUTUHAN KRIMINOGENIK</td>
+                    <td style="text-align: center; font-weight: bold; background-color: #d9ead3;">${kategoriAkhir}</td>
+                </tr>
+            `;
+            document.getElementById('pdfKrim-tbodyA').innerHTML = pdfRowsA;
+
+            // Bagian B.1 (A s.d. I)
+            let jawabanB1 = {};
+            document.getElementById('pdfKrim-tbodyB1').innerHTML = daftarB1.map(item => {
+                const isChecked = document.querySelector(`input[name="b1_${item.no}"]`)?.checked || false;
+                jawabanB1[item.no] = isChecked ? 1 : 0;
+                if (item.kodeAngka) jawabanB1[item.kodeAngka] = isChecked ? 1 : 0;
+                return `
+                    <tr>
+                        <td style="text-align: center;">${item.no}</td>
+                        <td>${item.teks}</td>
+                        <td style="text-align: center; font-weight: bold; font-size: 12pt;">${isChecked ? '√' : ''}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Bagian B.2 (A s.d. I)
+            let jawabanB2 = {};
+            document.getElementById('pdfKrim-tbodyB2').innerHTML = daftarB2.map(item => {
+                const isChecked = document.querySelector(`input[name="b2_${item.no}"]`)?.checked || false;
+                jawabanB2[item.no] = isChecked ? 1 : 0;
+                if (item.kodeAngka) jawabanB2[item.kodeAngka] = isChecked ? 1 : 0;
+                return `
+                    <tr>
+                        <td style="text-align: center;">${item.no}</td>
+                        <td>${item.teks}</td>
+                        <td style="text-align: center; font-weight: bold; font-size: 12pt;">${isChecked ? '√' : ''}</td>
+                    </tr>
+                `;
+            }).join('');
+
             try {
                 // Simpan data kriminogenik ke dalam detail_jawaban pada baris asesmen_risiko terkait
                 const detailBaru = {
                     ...detailLama,
+                    ttd_petugas: ttdPetugasData || detailLama.ttd_petugas || null,
+                    ttd_klien: ttdKlienData || detailLama.ttd_klien || null,
                     kriminogenik: {
                         sudah_diisi: true,
                         tanggal_asesmen_krim: tglAsesmen,
@@ -1517,90 +1378,27 @@
                 }
 
                 const element = document.getElementById('dokumenPdfKrim');
-                const namaFileKlien = (klienTerpilih.nama_klien || 'Klien').trim();
-                const namaFilePdf = `Asesmen Kriminogenik ver.2 a.n. ${namaFileKlien}.pdf`;
-
                 const opt = {
-                    margin:       [8, 12, 8, 12],
-                    filename:     namaFilePdf,
+                    margin:       12,
+                    filename:     `Asesmen_Kriminogenik_${namaKlien.replace(/\s+/g, '_')}.pdf`,
                     image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  {
-                        scale: 2,
-                        useCORS: true,
-                        logging: false,
-                        scrollX: 0,
-                        scrollY: 0,
-                        backgroundColor: '#ffffff',
-                        onclone: (clonedDoc) => {
-                            clonedDoc.documentElement.style.cssText = 'height: auto !important; overflow: visible !important;';
-                            clonedDoc.body.style.cssText = 'height: auto !important; overflow: visible !important;';
-                            const ov = clonedDoc.querySelector('.html2pdf__overlay');
-                            if (ov) {
-                                ov.style.cssText = 'position: fixed !important; top: 0 !important; left: 0 !important; right: auto !important; bottom: auto !important; width: 703px !important; height: auto !important; overflow: visible !important; opacity: 1 !important; background: #ffffff !important;';
-                            }
-                            const ct = clonedDoc.querySelector('.html2pdf__container');
-                            if (ct) {
-                                ct.style.cssText = 'position: relative !important; top: 0 !important; left: 0 !important; width: 703px !important; height: auto !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important;';
-                            }
-                        }
-                    },
-                    pagebreak:    { mode: [] },
+                    html2canvas:  { scale: 2, useCORS: true },
+                    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] },
                     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 };
 
-                // Render setiap halaman (.krim-pdf-page) secara mandiri ke masing-masing halaman PDF A4 (3 Halaman)
-                // Halaman 1: Nomor 1 s.d. 16 | Halaman 2: Nomor 17 s.d. 29 | Halaman 3: Tabel Acuan + Tabel B.1 + Tabel B.2
-                const pdfPages = Array.from(element.querySelectorAll('.krim-pdf-page'));
-                const pdfWidth = 210;
-                const pdfHeight = 297;
-                const marginX = 12;
-                const marginY = 8;
-                const availWidth = pdfWidth - (marginX * 2);   // 186 mm
-                const availHeight = pdfHeight - (marginY * 2); // 281 mm
-
-                const dummyDiv = document.createElement('div');
-                dummyDiv.style.cssText = 'width: 703px; height: 2px; background: #ffffff;';
-                const pdf = await html2pdf().set(opt).from(dummyDiv).toPdf().get('pdf');
-
-                for (let i = 0; i < pdfPages.length; i++) {
-                    const pageClone = pdfPages[i].cloneNode(true);
-                    pageClone.style.width = '703px';
-                    pageClone.style.margin = '0';
-                    pageClone.style.padding = '0';
-                    pageClone.style.background = '#ffffff';
-
-                    const canvas = await html2pdf().set(opt).from(pageClone).toContainer().toCanvas().get('canvas');
-                    const imgData = canvas.toDataURL('image/jpeg', 0.98);
-
-                    if (i > 0) {
-                        pdf.addPage();
-                    }
-
-                    let imgW = availWidth;
-                    let imgH = (canvas.height * imgW) / canvas.width;
-
-                    // Jika tinggi konten dalam 1 halaman melebihi batas area cetak A4 (281mm), perkecil proporsional agar tetap utuh 1 halaman
-                    if (imgH > availHeight) {
-                        imgH = availHeight;
-                        imgW = (canvas.width * imgH) / canvas.height;
-                    }
-
-                    const posX = marginX + ((availWidth - imgW) / 2);
-                    pdf.addImage(imgData, 'JPEG', posX, marginY, imgW, imgH);
-                }
-
-                pdf.save(namaFilePdf);
-
-                Swal.fire({
-                    ...swalLightTheme,
-                    icon: 'success',
-                    title: 'Asesmen Kriminogenik Tersimpan!',
-                    text: 'Data berhasil disimpan dan file PDF telah diunduh.',
-                    confirmButtonText: 'Kembali ke Dashboard',
-                    confirmButtonColor: '#9333ea',
-                    allowOutsideClick: false
-                }).then(() => {
-                    window.location.href = 'asesmen.html';
+                html2pdf().set(opt).from(element).save().then(() => {
+                    Swal.fire({
+                        ...swalLightTheme,
+                        icon: 'success',
+                        title: 'Asesmen Kriminogenik Tersimpan!',
+                        text: `Data berhasil disimpan dan dokumen Asesmen Kriminogenik ${namaKlien} telah diunduh.`,
+                        confirmButtonText: 'Kembali ke Dashboard',
+                        confirmButtonColor: '#9333ea',
+                        allowOutsideClick: false
+                    }).then(() => {
+                        window.location.href = 'asesmen.html';
+                    });
                 });
 
             } catch (error) {
