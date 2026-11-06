@@ -520,19 +520,19 @@
                                 </div>
                             </div>
 
-                            <!-- ==================== 4. BAGIAN B.1 – PERTIMBANGAN TINDAK PIDANA TERTENTU ==================== -->
+                            <!-- ==================== 4. BAGIAN B.1 – JENIS TINDAK KRIMINAL TERTENTU ==================== -->
                             <div class="glass-panel border border-slate-200/80 rounded-2xl mb-8 overflow-hidden shadow-md w-full">
                                 <div class="bg-amber-100/90 px-6 py-4 border-b border-amber-200">
-                                    <h2 class="text-lg font-bold text-amber-900 tracking-wide">BAGIAN B.1 – PERTIMBANGAN TINDAK PIDANA TERTENTU</h2>
-                                    <p class="text-xs text-amber-800 mt-0.5">Berikan tanda centang (√) pada tiap pertanyaan yang memenuhi syarat!</p>
+                                    <h2 class="text-lg font-bold text-amber-900 tracking-wide">BAGIAN B.1 – PERTIMBANGAN LAIN – JENIS TINDAK KRIMINAL TERTENTU</h2>
+                                    <p class="text-xs text-amber-800 mt-0.5">Apakah ada dari fitur berikut di profil Narapidana/Klien Pemasyarakatan?</p>
                                 </div>
                                 <div class="p-6 overflow-x-auto">
                                     <table class="w-full text-left border-collapse border border-slate-300 rounded-xl overflow-hidden text-sm">
                                         <thead class="bg-slate-100 text-slate-700 border-b border-slate-300">
                                             <tr>
                                                 <th class="p-3.5 w-16 text-center font-bold border-r border-slate-300">No.</th>
-                                                <th class="p-3.5 font-bold border-r border-slate-300">Pertanyaan</th>
-                                                <th class="p-3.5 w-44 text-center font-bold">Jawaban (Centang)</th>
+                                                <th class="p-3.5 font-bold border-r border-slate-300">Deskripsi</th>
+                                                <th class="p-3.5 w-44 text-center font-bold">Centang Jika Ada</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tbodyB1" class="divide-y divide-slate-200 bg-white/80">
@@ -546,19 +546,18 @@
                                 </div>
                             </div>
 
-                            <!-- ==================== 5. BAGIAN B.2 – PERTIMBANGAN LAIN / FAKTOR KEBUTUHAN TAMBAHAN ==================== -->
+                            <!-- ==================== 5. BAGIAN B.2 – FAKTOR KEBUTUHAN TAMBAHAN (SESUAI PEDOMAN BUKU INSTRUMEN) ==================== -->
                             <div class="glass-panel border border-slate-200/80 rounded-2xl mb-8 overflow-hidden shadow-md w-full">
                                 <div class="bg-sky-100/90 px-6 py-4 border-b border-sky-200">
-                                    <h2 class="text-lg font-bold text-sky-900 tracking-wide">BAGIAN B.2 – PERTIMBANGAN LAIN/FAKTOR KEBUTUHAN TAMBAHAN</h2>
-                                    <p class="text-xs text-sky-800 mt-0.5">Berikan tanda centang (√) pada tiap pertanyaan yang memenuhi syarat!</p>
+                                    <h2 class="text-lg font-bold text-sky-900 tracking-wide">BAGIAN B.2 – PERTIMBANGAN LAIN – FAKTOR KEBUTUHAN TAMBAHAN</h2>
                                 </div>
                                 <div class="p-6 overflow-x-auto">
                                     <table class="w-full text-left border-collapse border border-slate-300 rounded-xl overflow-hidden text-sm">
                                         <thead class="bg-slate-100 text-slate-700 border-b border-slate-300">
                                             <tr>
                                                 <th class="p-3.5 w-16 text-center font-bold border-r border-slate-300">No.</th>
-                                                <th class="p-3.5 font-bold border-r border-slate-300">Pertanyaan</th>
-                                                <th class="p-3.5 w-44 text-center font-bold">Jawaban (Centang)</th>
+                                                <th class="p-3.5 font-bold border-r border-slate-300">Deskripsi</th>
+                                                <th class="p-3.5 w-44 text-center font-bold">Centang Jika Ada</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tbodyB2" class="divide-y divide-slate-200 bg-white/80">
@@ -636,7 +635,7 @@
         </button>
     </nav>
 
-    <!-- ==================== TEMPLATE CETAK PDF KRIMINOGENIK (5 HALAMAN IDENTIK DENGAN CONTOH GAMBAR) ==================== -->
+    <!-- ==================== TEMPLATE CETAK PDF KRIMINOGENIK (5 HALAMAN SESUAI STANDAR & B.2 SESUAI PEDOMAN) ==================== -->
     <div style="display: none;">
         <div id="dokumenPdfKrim">
             <!-- HALAMAN 1: Banner + Bagian A (Item 1 s.d. 7) -->
@@ -718,49 +717,55 @@
                 </table>
             </div>
 
-            <!-- HALAMAN 5: Bagian B.1 & Bagian B.2 -->
+            <!-- HALAMAN 5: Bagian B.1 & Bagian B.2 (Disesuaikan dengan Tabel Form & Pedoman) -->
             <div class="krim-pdf-page">
-                <div class="krim-section-title" style="margin-bottom: 10px; line-height: 1.35;">
+                <div class="krim-section-title" style="margin-bottom: 8px; line-height: 1.35;">
                     <div>KEBUTUHAN KRIMINOGENIK - BAGIAN B.1</div>
-                    <div>PERTIMBANGAN TINDAK PIDANA TERTENTU</div>
+                    <div>PERTIMBANGAN LAIN – JENIS TINDAK KRIMINAL TERTENTU</div>
                 </div>
-                <p class="krim-instruksi">Berikan tanda centang (√) pada tiap pertanyaan yang memenuhi syarat!</p>
-                <table class="krim-table" style="margin-bottom: 24px;">
+                <p class="krim-instruksi">Apakah ada dari fitur berikut di profil Narapidana/Klien Pemasyarakatan? Berikan tanda centang (√) jika ada!</p>
+                <table class="krim-table" style="margin-bottom: 6px;">
                     <colgroup>
-                        <col style="width: 6%;">
-                        <col style="width: 74%;">
-                        <col style="width: 20%;">
+                        <col style="width: 7%;">
+                        <col style="width: 75%;">
+                        <col style="width: 18%;">
                     </colgroup>
                     <thead>
                         <tr>
-                            <th>NO</th>
-                            <th>PERTANYAAN</th>
-                            <th>JAWABAN</th>
+                            <th>No</th>
+                            <th>Deskripsi</th>
+                            <th>Centang Jika Ada</th>
                         </tr>
                     </thead>
                     <tbody id="pdf-tbodyB1"></tbody>
                 </table>
+                <p style="font-size: 8pt; margin: 0 0 20px 0; color: #000000;">
+                    Kehadiran pertimbangan lain di atas, menunjukkan kebutuhan atau Penilaian Bagian 5 (Asesmen Khusus/Pertimbangan untuk Intervensi Khusus)
+                </p>
 
-                <div class="krim-section-title" style="margin-bottom: 10px; line-height: 1.35;">
+                <div class="krim-section-title" style="margin-bottom: 8px; line-height: 1.35;">
                     <div>KEBUTUHAN KRIMINOGENIK - BAGIAN B.2</div>
-                    <div>PERTIMBANGAN LAIN/FAKTOR KEBUTUHAN TAMBAHAN</div>
+                    <div>PERTIMBANGAN LAIN – FAKTOR KEBUTUHAN TAMBAHAN</div>
                 </div>
                 <p class="krim-instruksi">Berikan tanda centang (√) pada tiap pertanyaan yang memenuhi syarat!</p>
-                <table class="krim-table">
+                <table class="krim-table" style="margin-bottom: 6px;">
                     <colgroup>
-                        <col style="width: 6%;">
-                        <col style="width: 74%;">
-                        <col style="width: 20%;">
+                        <col style="width: 7%;">
+                        <col style="width: 75%;">
+                        <col style="width: 18%;">
                     </colgroup>
                     <thead>
                         <tr>
-                            <th>NO</th>
-                            <th>PERTANYAAN</th>
-                            <th>JAWABAN</th>
+                            <th>No</th>
+                            <th>Deskripsi</th>
+                            <th>Centang Jika Ada</th>
                         </tr>
                     </thead>
                     <tbody id="pdf-tbodyB2"></tbody>
                 </table>
+                <p style="font-size: 8pt; margin: 0; color: #000000;">
+                    Kehadiran B2 Pertimbangan Lainnya, menunjukkan masalah responsif atau manajemen risiko
+                </p>
             </div>
         </div>
     </div>
@@ -894,29 +899,29 @@
             }
         ];
 
-        // ==================== DEFINISI DATA BAGIAN B.1 & B.2 (NOMOR 1-9 SESUAI CONTOH PDF) ====================
+        // ==================== DEFINISI DATA BAGIAN B.1 & B.2 (SESUAI BUKU PEDOMAN INSTRUMEN) ====================
         const daftarB1 = [
-            { no: '1', kodeLama: 'A', teks: 'Apakah narapidana/klien pemasyarakatan memiliki sejarah melakukan kekerasan?' },
-            { no: '2', kodeLama: 'B', teks: 'Apakah narapidana/klien pemasyarakatan memiliki kejahatan karena tindakan tidak bermoral?' },
-            { no: '3', kodeLama: 'C', teks: 'Apakah narapidana/klien pemasyarakatan memiliki kejahatan karena kekerasan ekstremis atau terorisme?' },
-            { no: '4', kodeLama: 'D', teks: 'Apakah narapidana/klien pemasyarakatan pernah menjadi korban kekerasan (termasuk kekerasan dalam rumah tangga)?' },
-            { no: '5', kodeLama: 'E', teks: 'Apakah narapidana/klien pemasyarakatan terlibat dalam kejahatan luar biasa yang seharusnya diproses Peradilan?' },
-            { no: '6', kodeLama: 'F', teks: 'Apakah narapidana/klien pemasyarakatan memiliki kejahatan karena tindakan seperti korupsi atau penipuan?' },
-            { no: '7', kodeLama: 'G', teks: 'Apakah narapidana/klien pemasyarakatan kesulitan mengelola emosi mereka?' },
-            { no: '8', kodeLama: 'H', teks: 'Apakah narapidana/klien pemasyarakatan terlibat dalam kejahatan rasial (contoh: kejahatan berdasarkan ras atau agama)?' },
-            { no: '9', kodeLama: 'I', teks: 'Apakah narapidana/klien pemasyarakatan terlibat dalam kejahatan terkait dengan narkotika, seperti menyimpan, memanen, atau mengimpor?' }
+            { no: 'A', kodeAngka: '1', teks: 'Apakah Narapidana/Klien Pemasyarakatan memiliki sejarah kekerasan?' },
+            { no: 'B', kodeAngka: '2', teks: 'Apakah Narapidana/Klien Pemasyarakatan memiliki kejahatan karena tindakan tidak bermoral?' },
+            { no: 'C', kodeAngka: '3', teks: 'Apakah Narapidana/Klien Pemasyarakatan memiliki kejahatan karena kekerasan ekstremis atau terorisme?' },
+            { no: 'D', kodeAngka: '4', teks: 'Apakah Narapidana/Klien Pemasyarakatan menjadi korban kekerasan (termasuk kekerasan dalam rumah tangga)?' },
+            { no: 'E', kodeAngka: '5', teks: 'Apakah ada kejahatan luar biasa yang harus dibawa ke Pengadilan?' },
+            { no: 'F', kodeAngka: '6', teks: 'Apakah Narapidana/Klien Pemasyarakatan memiliki kejahatan karena tindakan seperti korupsi atau penipuan?' },
+            { no: 'G', kodeAngka: '7', teks: 'Apakah Narapidana/Klien Pemasyarakatan kesulitan mengelola emosi mereka?' },
+            { no: 'H', kodeAngka: '8', teks: 'Apakah ada kejahatan rasial (mis. Kejahatan berdasarkan ras atau agama)?' },
+            { no: 'I', kodeAngka: '9', teks: 'Apakah kejahatan terkait dengan narkoba, seperti berurusan, memanen atau mengimpor?' }
         ];
 
         const daftarB2 = [
-            { no: '1', kodeLama: 'A', teks: 'Apakah narapidana/klien pemasyarakatan terlibat dalam kejahatan terkait dengan narkotika, seperti menyimpan, memanen, atau mengimpor?' },
-            { no: '2', kodeLama: 'B', teks: 'Apakah narapidana/klien pemasyarakatan berkemungkinan menjadi tunawisma setelah dibebaskan?' },
-            { no: '3', kodeLama: 'C', teks: 'Apakah narapidana/klien pemasyarakatan memiliki masalah akomodasi/tempat tinggal (selain tunawisma)?' },
-            { no: '4', kodeLama: 'D', teks: 'Apakah narapidana/klien pemasyarakatan pernah dan/atau sedang menjadi target operasi oleh aparat penegak hukum?' },
-            { no: '5', kodeLama: 'E', teks: 'Apakah narapidana/klien pemasyarakatan memiliki masalah kepatuhan terhadap pihak otoritas?' },
-            { no: '6', kodeLama: 'F', teks: 'Apakah narapidana/klien pemasyarakatan memiliki kemampuan bersosialisasi yang kurang baik/buruk?' },
-            { no: '7', kodeLama: 'G', teks: 'Apakah narapidana/klien pemasyarakatan mengalami kesulitan belajar?' },
-            { no: '8', kodeLama: 'H', teks: 'Apakah narapidana/klien pemasyarakatan penyandang disabilitas?' },
-            { no: '9', kodeLama: 'I', teks: 'Apakah narapidana/klien pemasyarakatan penyandang disabilitas?' }
+            { no: 'A', kodeAngka: '1', teks: 'Apakah ada ancaman terhadap Narapidana/Klien Pemasyarakatan/Klien dari pihak ketiga?' },
+            { no: 'B', kodeAngka: '2', teks: 'Apakah Narapidana/Klien Pemasyarakatan/Klien akan menjadi tunawisma setelah dibebaskan?' },
+            { no: 'C', kodeAngka: '3', teks: 'Apakah ada masalah akomodasi/rumah (bukan tunawisma)?' },
+            { no: 'D', kodeAngka: '4', teks: 'Apakah Narapidana/Klien Pemasyarakatan/Klien menjadi target dari institusi penegak hukum untuk jangka waktu yang lama dalam hidup mereka?' },
+            { no: 'E', kodeAngka: '5', teks: 'Apakah ada masalah kepatuhan saat ini (mis. RRI item 4; Kejahatan ... Item 28)?' },
+            { no: 'F', kodeAngka: '6', teks: 'Apakah Narapidana/Klien Pemasyarakatan/Klien memiliki keterampilan sosial yang buruk/kurang?' },
+            { no: 'G', kodeAngka: '7', teks: 'Apakah Narapidana/Klien Pemasyarakatan/Klien mengalami kesulitan belajar?' },
+            { no: 'H', kodeAngka: '8', teks: 'Apakah Narapidana/Klien Pemasyarakatan/Klien memiliki cacat fisik?' },
+            { no: 'I', kodeAngka: '9', teks: 'Apakah ada masalah imigrasi?' }
         ];
 
         // ==================== FUNGSI ENABLE / DISABLE BAGIAN A & BAGIAN B ====================
@@ -1345,7 +1350,7 @@
             cekSesiLogin();
         });
 
-        // ==================== SIMPAN & CETAK PDF KRIMINOGENIK (5 HALAMAN PERSIS CONTOH GAMBAR) ====================
+        // ==================== SIMPAN & CETAK PDF KRIMINOGENIK (5 HALAMAN SESUAI STANDAR & B.2 SESUAI PEDOMAN) ====================
         async function submitDataKriminogenik() {
             if (!klienTerpilih) {
                 Swal.fire({
@@ -1442,35 +1447,35 @@
             document.getElementById('pdf-tbodyA-page4').innerHTML = pageRows[4];
             document.getElementById('pdf-tbodyRekapFaktor').innerHTML = rekapRowsHtml;
 
-            // Bagian B.1 (Nomor 1 s.d. 9)
+            // Bagian B.1 (A s.d. I)
             let jawabanB1 = {};
             let pdfRowsB1 = '';
             daftarB1.forEach(item => {
                 const isChecked = document.querySelector(`input[name="b1_${item.no}"]`)?.checked || false;
                 jawabanB1[item.no] = isChecked ? 1 : 0;
-                if (item.kodeLama) jawabanB1[item.kodeLama] = isChecked ? 1 : 0;
+                if (item.kodeAngka) jawabanB1[item.kodeAngka] = isChecked ? 1 : 0;
                 pdfRowsB1 += `
                     <tr>
                         <td style="text-align: center; vertical-align: middle;">${item.no}</td>
                         <td style="vertical-align: middle; padding: 5px 7px;">${item.teks}</td>
-                        <td style="text-align: center; vertical-align: middle; font-size: 10pt;">${isChecked ? '√' : ''}</td>
+                        <td style="text-align: center; vertical-align: middle; font-size: 10pt; font-weight: bold;">${isChecked ? '√' : ''}</td>
                     </tr>
                 `;
             });
             document.getElementById('pdf-tbodyB1').innerHTML = pdfRowsB1;
 
-            // Bagian B.2 (Nomor 1 s.d. 9)
+            // Bagian B.2 (A s.d. I sesuai Buku Pedoman Instrumen)
             let jawabanB2 = {};
             let pdfRowsB2 = '';
             daftarB2.forEach(item => {
                 const isChecked = document.querySelector(`input[name="b2_${item.no}"]`)?.checked || false;
                 jawabanB2[item.no] = isChecked ? 1 : 0;
-                if (item.kodeLama) jawabanB2[item.kodeLama] = isChecked ? 1 : 0;
+                if (item.kodeAngka) jawabanB2[item.kodeAngka] = isChecked ? 1 : 0;
                 pdfRowsB2 += `
                     <tr>
                         <td style="text-align: center; vertical-align: middle;">${item.no}</td>
                         <td style="vertical-align: middle; padding: 5px 7px;">${item.teks}</td>
-                        <td style="text-align: center; vertical-align: middle; font-size: 10pt;">${isChecked ? '√' : ''}</td>
+                        <td style="text-align: center; vertical-align: middle; font-size: 10pt; font-weight: bold;">${isChecked ? '√' : ''}</td>
                     </tr>
                 `;
             });
