@@ -65,7 +65,7 @@
             color: #000000;
             background: #ffffff;
             font-size: 8.5pt;
-            line-height: 1.22;
+            line-height: 1.2;
             width: 100%;
             box-sizing: border-box;
         }
@@ -73,15 +73,11 @@
             width: 100%;
             background: #ffffff;
             box-sizing: border-box;
-            padding: 0;
-            margin: 0;
+            padding: 1mm 2mm;
         }
-        .html2pdf__page-break {
-            height: 0;
-            page-break-before: always;
-            margin: 0;
-            padding: 0;
-            border: none;
+        .krim-pdf-page-break {
+            page-break-after: always;
+            break-after: page;
         }
         .krim-banner-dark {
             background-color: #434343;
@@ -90,7 +86,7 @@
             font-weight: bold;
             font-size: 10.5pt;
             padding: 5px 10px;
-            margin-bottom: 8px;
+            margin-bottom: 7px;
             letter-spacing: 0.3px;
         }
         .krim-section-title {
@@ -144,18 +140,18 @@
             vertical-align: top !important;
         }
         .krim-tanya-box {
-            padding: 4px 6px 4px 6px;
-            min-height: 24px;
+            padding: 3px 6px 3px 6px;
+            min-height: 20px;
             font-size: 8.5pt;
-            line-height: 1.22;
+            line-height: 1.2;
         }
         .krim-bukti-box {
             border-top: 1px solid #000000;
-            padding: 2px 6px 4px 6px;
-            min-height: 17px;
+            padding: 2px 6px 3px 6px;
+            min-height: 15px;
             font-size: 7pt;
             color: #000000;
-            line-height: 1.2;
+            line-height: 1.15;
         }
         .krim-td-jawaban {
             text-align: center;
@@ -610,7 +606,7 @@
                     <div class="flex flex-col-reverse md:flex-row justify-end gap-4 mb-4 md:mb-10 pt-2">
                         <a href="asesmen.html" class="w-full md:w-auto px-8 py-3.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 transition text-center shadow-sm border border-slate-300 text-sm">Batal</a>
                         <button type="submit" id="btnSubmitKrim" disabled class="w-full md:w-auto px-10 py-3.5 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none disabled:cursor-not-allowed shadow-[0_4px_15px_rgba(147,51,234,0.35)] transition active:scale-95 flex justify-center items-center gap-2 text-sm">
-                            <i class="fa-solid fa-print"></i> Simpan & Cetak PDF Kriminogenik
+                            <i class="fa-solid fa-print"></i> Simpan & Cetak PDF Kriminogenik (4 Hal)
                         </button>
                     </div>
 
@@ -643,7 +639,7 @@
     <div style="display: none;">
         <div id="dokumenPdfKrim">
             <!-- HALAMAN 1: Banner + Bagian A (Nomor 1 s.d. 10: Keluarga & Pernikahan + Pendidikan & Pekerjaan) -->
-            <div class="krim-pdf-page">
+            <div class="krim-pdf-page krim-pdf-page-break">
                 <div class="krim-banner-dark">INSTRUMEN ASESMEN KEBUTUHAN KRIMINOGENIK</div>
                 <div class="krim-section-title">KEBUTUHAN KRIMINOGENIK - BAGIAN A</div>
                 <p class="krim-instruksi">Berikan nilai sesuai dengan kriteria jawaban pada tiap pertanyaan dibawah ini!</p>
@@ -666,10 +662,8 @@
                 </table>
             </div>
 
-            <div class="html2pdf__page-break"></div>
-
             <!-- HALAMAN 2: Lanjutan Bagian A (Nomor 11 s.d. 22: Penggunaan Narkotika + Hubungan Sosial + Waktu Luang/Rekreasi) -->
-            <div class="krim-pdf-page">
+            <div class="krim-pdf-page krim-pdf-page-break">
                 <table class="krim-table">
                     <colgroup>
                         <col style="width: 6%;">
@@ -681,10 +675,8 @@
                 </table>
             </div>
 
-            <div class="html2pdf__page-break"></div>
-
             <!-- HALAMAN 3: Lanjutan Bagian A (Nomor 23 s.d. 29: Manajemen Keuangan + Sikap Anti Sosial) + Tabel TOTAL NILAI TIAP FAKTOR -->
-            <div class="krim-pdf-page">
+            <div class="krim-pdf-page krim-pdf-page-break">
                 <table class="krim-table">
                     <colgroup>
                         <col style="width: 6%;">
@@ -711,8 +703,6 @@
                     <tbody id="pdf-tbodyRekapFaktor"></tbody>
                 </table>
             </div>
-
-            <div class="html2pdf__page-break"></div>
 
             <!-- HALAMAN 4: Bagian B.1 & Bagian B.2 (Disesuaikan dengan Tabel Form & Pedoman) -->
             <div class="krim-pdf-page">
@@ -786,7 +776,7 @@
         let klienTerpilih = null;
 
         // ==================== DEFINISI DATA INSTRUMEN BAGIAN A (30 ITEM DALAM 7 FAKTOR) ====================
-        // Pembagian Halaman PDF:
+        // Pembagian Halaman PDF (4 Halaman):
         // - Halaman 1: Nomor 1 s.d. 10 (Keluarga & Pernikahan + Pendidikan & Pekerjaan)
         // - Halaman 2: Nomor 11 s.d. 22 (Penggunaan Narkotika + Hubungan Sosial + Waktu Luang/Rekreasi)
         // - Halaman 3: Nomor 23 s.d. 29 (Manajemen Keuangan + Sikap Anti Sosial) + Tabel Rekap TOTAL NILAI TIAP FAKTOR
@@ -1369,8 +1359,8 @@
 
             Swal.fire({
                 ...swalLightTheme,
-                title: 'Menyimpan & Membuat PDF...',
-                html: '<span class="text-slate-500">Sedang memproses dokumen Asesmen Kriminogenik.</span>',
+                title: 'Menyimpan & Membuat PDF (4 Halaman)...',
+                html: '<span class="text-slate-500">Sedang memproses dokumen Asesmen Kriminogenik (Format 4 Halaman).</span>',
                 allowOutsideClick: false,
                 didOpen: () => Swal.showLoading()
             });
@@ -1529,7 +1519,7 @@
                         ...swalLightTheme,
                         icon: 'success',
                         title: 'Asesmen Kriminogenik Tersimpan!',
-                        text: 'Data berhasil disimpan dan file PDF telah diunduh.',
+                        text: 'Data berhasil disimpan dan file PDF (4 Halaman) telah diunduh.',
                         confirmButtonText: 'Kembali ke Dashboard',
                         confirmButtonColor: '#9333ea',
                         allowOutsideClick: false
