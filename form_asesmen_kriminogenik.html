@@ -62,12 +62,15 @@
         /* ==================== CSS KHUSUS CETAK PDF KRIMINOGENIK (DISAMAKAN DENGAN ASESMEN.HTML) ==================== */
         #dokumenPdfKrim {
             font-family: Arial, sans-serif; color: black; background: white; 
-            font-size: 10.5pt; line-height: 1.4; width: 100%; padding: 15px;
+            font-size: 10.5pt; line-height: 1.38; width: 100%; padding: 10px 15px; box-sizing: border-box;
         }
-        .html2pdf__page-break { height: 0; page-break-before: always; margin: 0; padding: 0; border: none; }
-        .pdf-table-krim { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 10pt; border: 1px solid black; }
-        .pdf-table-krim th { border: 1px solid black; padding: 6px; text-align: center; font-weight: bold; background-color: #d9ead3; }
-        .pdf-table-krim td { border: 1px solid black; vertical-align: top; padding: 6px; }
+        .pdf-page-break-before { page-break-before: always; break-before: page; margin-top: 0; padding-top: 0; }
+        .pdf-table-krim { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 10pt; border: 1px solid black; page-break-inside: auto; }
+        .pdf-table-krim tr { page-break-inside: avoid; break-inside: avoid; }
+        .pdf-table-krim th { border: 1px solid black; padding: 5px 6px; text-align: center; font-weight: bold; background-color: #d9ead3; }
+        .pdf-table-krim td { border: 1px solid black; vertical-align: top; padding: 5px 6px; }
+        .pdf-ttd-table { width: 100%; text-align: center; margin-top: 18px; font-size: 10pt; page-break-inside: avoid; break-inside: avoid; }
+        .html2pdf__overlay, .html2pdf__container { overflow: visible !important; height: auto !important; }
     </style>
 </head>
 <body class="text-slate-800 h-screen overflow-hidden relative antialiased selection:bg-blue-600 selection:text-white flex"
@@ -564,33 +567,32 @@
                 <tbody id="pdfKrim-tbodyA"></tbody>
             </table>
 
-            <div class="html2pdf__page-break"></div>
+            <div class="pdf-page-break-before">
+                <h3 style="font-size: 11pt; font-weight: bold; margin: 0 0 6px 0;">BAGIAN B.1 – PERTIMBANGAN LAIN – JENIS TINDAK KRIMINAL TERTENTU</h3>
+                <table class="pdf-table-krim">
+                    <thead>
+                        <tr>
+                            <th style="width: 8%;">NO</th>
+                            <th style="width: 77%;">DESKRIPSI</th>
+                            <th style="width: 15%;">CENTANG</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pdfKrim-tbodyB1"></tbody>
+                </table>
 
-            <h3 style="font-size: 11pt; font-weight: bold; margin-bottom: 6px;">BAGIAN B.1 – PERTIMBANGAN LAIN – JENIS TINDAK KRIMINAL TERTENTU</h3>
-            <table class="pdf-table-krim">
-                <thead>
-                    <tr>
-                        <th style="width: 8%;">NO</th>
-                        <th style="width: 77%;">DESKRIPSI</th>
-                        <th style="width: 15%;">CENTANG</th>
-                    </tr>
-                </thead>
-                <tbody id="pdfKrim-tbodyB1"></tbody>
-            </table>
+                <h3 style="font-size: 11pt; font-weight: bold; margin: 10px 0 6px 0;">BAGIAN B.2 – PERTIMBANGAN LAIN – FAKTOR KEBUTUHAN TAMBAHAN</h3>
+                <table class="pdf-table-krim">
+                    <thead>
+                        <tr>
+                            <th style="width: 8%;">NO</th>
+                            <th style="width: 77%;">DESKRIPSI</th>
+                            <th style="width: 15%;">CENTANG</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pdfKrim-tbodyB2"></tbody>
+                </table>
 
-            <h3 style="font-size: 11pt; font-weight: bold; margin-bottom: 6px;">BAGIAN B.2 – PERTIMBANGAN LAIN – FAKTOR KEBUTUHAN TAMBAHAN</h3>
-            <table class="pdf-table-krim">
-                <thead>
-                    <tr>
-                        <th style="width: 8%;">NO</th>
-                        <th style="width: 77%;">DESKRIPSI</th>
-                        <th style="width: 15%;">CENTANG</th>
-                    </tr>
-                </thead>
-                <tbody id="pdfKrim-tbodyB2"></tbody>
-            </table>
-
-            <table style="width: 100%; text-align: center; margin-top: 25px; font-size: 10pt;">
+                <table class="pdf-ttd-table">
                 <tr>
                     <td style="width: 50%; vertical-align: bottom;">
                         <p>Petugas Asesmen / PK,</p>
@@ -607,7 +609,8 @@
                         <p style="font-weight: bold; text-decoration: underline;" id="pdfKrim-ttdNamaKlien"></p>
                     </td>
                 </tr>
-            </table>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -1379,11 +1382,11 @@
 
                 const element = document.getElementById('dokumenPdfKrim');
                 const opt = {
-                    margin:       12,
+                    margin:       [10, 12, 10, 12],
                     filename:     `Asesmen_Kriminogenik_${namaKlien.replace(/\s+/g, '_')}.pdf`,
                     image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2, useCORS: true },
-                    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] },
+                    html2canvas:  { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
+                    pagebreak:    { mode: ['css'], avoid: ['tr', '.pdf-ttd-table'] },
                     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 };
 
