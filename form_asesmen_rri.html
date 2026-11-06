@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Asesmen RRI - Bapas Kelas I Jakarta Timur/Utara</title>
+    
+    <link rel="icon" type="image/png" href="logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass-panel { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .glass-sidebar { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body.swal2-shown, body.swal2-height-auto { padding-right: 0 !important; height: 100vh !important; overflow: hidden !important; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.35); }
+
+        .canvas-container {
+            position: relative; width: 100%; height: 160px;
+            background-color: #f8fafc;
+            border: 2px dashed #cbd5e1; border-radius: 1rem;
+            touch-action: none; overflow: hidden;
+        }
+        canvas { width: 100%; height: 100%; border-radius: 1rem; }
+
+        /* Efek aktif badge nilai di dalam opsi radio ketika dipilih */
+        input.peer:checked + div .badge-nilai {
+            background-color: rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+        }
+
+        /* CSS KHUSUS CETAK PDF - SOLUSI GARIS NYANGKUT */
+        #dokumenPdf {
+            font-family: Arial, sans-serif; color: black; background: white; 
+            font-size: 11pt; line-height: 1.4; width: 100%; padding: 20px;
+        }
+        .html2pdf__page-break { height: 0; page-break-before: always; margin: 0; padding: 0; border: none; }
+        
+        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11pt; border: 1px solid black; }
+        .pdf-table th { border: 1px solid black; padding: 6px; text-align: center; font-weight: bold; background-color: #b2d8b2; }
+        .pdf-table td { border: 1px solid black; vertical-align: top; padding: 6px; }
+        
+        .col-no { width: 5%; text-align: center; }
+        .col-pertanyaan { width: 65%; text-align: left; }
+        .col-jawaban { width: 15%; text-align: center; vertical-align: middle; }
+        .col-nilai { width: 15%; text-align: center; vertical-align: middle; }
+        
+        .td-pertanyaan { padding: 0 !important; display: flex; flex-direction: column; height: 100%; min-height: 70px; }
+        .tanya-text { padding: 6px; flex-grow: 1; }
+        .bukti-text { font-size: 8pt; color: #555; padding: 4px 6px; border-top: 1px solid black; margin-top: auto; }
+        
+        .pdf-table-kategori { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 10pt; text-align: center;}
+        .pdf-table-kategori th, .pdf-table-kategori td { border: 1px solid black; padding: 8px; }
+        .th-rendah { background-color: #00ff00; }
+        .th-sedang { background-color: #4da6ff; }
+        .th-tinggi { background-color: #ffbf00; }
+        .th-sangat-tinggi { background-color: #ff3333; }
+        
+        .autocomplete-wrapper { position: relative; width: 100%; }
+        .autocomplete-dropdown {
+            position: absolute; top: calc(100% + 4px); left: 0; width: 100%; z-index: 50;
+            background-color: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);
+            border: 1px solid rgba(203, 213, 225, 0.8); border-radius: 0.75rem;
+            max-height: 250px; overflow-y: auto;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15); display: none;
+        }
+        .autocomplete-dropdown li {
+            padding: 12px 16px; font-size: 0.875rem; color: #334155; cursor: pointer;
+            transition: background-color 0.15s, color 0.15s; border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .autocomplete-dropdown li:last-child { border-bottom: none; }
+        .autocomplete-dropdown li:hover { background-color: rgba(37, 99, 235, 0.1); color: #2563eb; font-weight: 600; }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.75;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+            transform: scale(1.15);
+        }
+    </style>
+</head>
+<body class="text-slate-800 h-screen overflow-hidden relative antialiased selection:bg-blue-600 selection:text-white flex"
+      style="background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+
+    <!-- Overlay Cerah Background Gedung -->
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-100/85 via-white/80 to-blue-50/85 pointer-events-none z-0"></div>
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30 hidden md:hidden transition-opacity"></div>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed md:relative inset-y-0 left-0 transform -translate-x-full md:translate-x-0 w-72 min-w-[18rem] max-w-[18rem] flex-shrink-0 glass-sidebar border-r border-slate-200/80 text-slate-800 flex flex-col h-full shadow-[5px_0_25px_rgba(0,0,0,0.06)] z-40 transition-transform duration-300 ease-in-out">
+        <div class="p-6 flex items-center justify-between border-b border-slate-200/80 shrink-0">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 md:w-12 md:h-12 shrink-0">
+                    <img src="logo.png" alt="Logo Kemenimipas" class="w-full h-full object-contain filter drop-shadow-sm" onerror="this.src='https://placehold.co/100x100/2563eb/ffffff?text=LOGO'">
+                </div>
+                <div class="flex flex-col justify-center">
+                    <span class="text-red-600 text-sm md:text-[15px] font-black tracking-widest leading-none">ASESMEN</span>
+                    <span class="text-slate-800 text-sm md:text-[15px] font-black tracking-widest leading-none mt-1">INDONESIA</span>
+                </div>
+            </div>
+            <button onclick="toggleSidebar()" class="md:hidden text-slate-600 hover:text-slate-900 focus:outline-none">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto no-scrollbar py-6">
+            <ul class="space-y-2 px-4">
+                <li>
+                    <a href="asesmen.html" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left transition-all text-slate-600 hover:bg-blue-50 hover:text-blue-600 font-medium">
+                        <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                        <span>Dashboard Utama</span>
+                    </a>
+                </li>
+                <li class="pt-6 pb-2 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Menu Asesmen</li>
+                <li>
+                    <a href="#" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left transition-all bg-blue-600 text-white font-bold shadow-[0_4px_15px_rgba(37,99,235,0.3)]">
+                        <i class="fa-solid fa-file-signature w-5 text-center"></i>
+                        <span>Asesmen RRI</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="form_asesmen_kriminogenik.html" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left transition-all text-slate-600 hover:bg-blue-50 hover:text-blue-600 font-medium">
+                        <i class="fa-solid fa-brain w-5 text-center"></i>
+                        <span>Asesmen Kriminogenik</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="p-5 border-t border-slate-200/80 bg-slate-50/70 shrink-0 relative group">
+            <div class="flex items-center gap-3 mb-4 cursor-pointer hover:bg-white p-2 -mx-2 rounded-xl transition shadow-none hover:shadow-sm" onclick="window.location.href='asesmen.html'">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0 border border-blue-200 overflow-hidden shadow-inner" id="userInitialContainer">
+                    <span id="userInitial">P</span>
+                </div>
+                <div class="overflow-hidden flex-1">
+                    <p class="text-sm font-bold text-slate-800 truncate" id="userName">Petugas Bapas</p>
+                    <p class="text-[10px] text-slate-500 truncate uppercase tracking-wide" id="userRole">Memuat...</p>
+                </div>
+            </div>
+            <button onclick="prosesLogout()" class="w-full py-2.5 bg-red-50 border border-red-200 hover:bg-red-600 text-red-600 hover:text-white rounded-xl text-sm font-bold transition flex justify-center items-center gap-2">
+                <i class="fa-solid fa-right-from-bracket"></i> Keluar
+            </button>
+        </div>
+    </aside>
+
+    <!-- KONTEN UTAMA -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden relative z-10 w-full">
+        <header class="glass-panel shadow-sm border-b border-slate-200/80 px-5 md:px-8 py-4 flex items-center justify-between z-20 shrink-0">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="md:hidden text-slate-600 hover:text-slate-900 focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <a href="asesmen.html" class="hidden md:flex w-10 h-10 bg-white hover:bg-blue-50 border border-slate-200 text-slate-700 rounded-full items-center justify-center transition shrink-0 shadow-sm">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h2 class="text-lg md:text-2xl font-bold text-slate-800 tracking-tight" id="headerTitle">Form Asesmen Risiko Residivisme (RRI)</h2>
+                    <p class="text-[11px] text-blue-600 font-semibold hidden sm:block">Instrumen Penilaian Risiko Residivisme Indonesia Narapidana / Klien Pemasyarakatan</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-2 bg-blue-50 border border-blue-200 px-3.5 py-1.5 rounded-xl">
+                    <span class="text-xs font-bold text-blue-700">Total Skor A:</span>
+                    <span id="liveHeaderSkor" class="text-base font-black text-blue-900">0</span>
+                    <span id="liveHeaderKategori" class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-green-100 text-green-700 border border-green-300">RENDAH</span>
+                </div>
+                <div class="md:hidden flex items-center cursor-pointer" onclick="window.location.href='asesmen.html'">
+                    <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm border border-blue-200 overflow-hidden shadow-sm" id="mobileUserInitialContainer">
+                        <span id="mobileUserInitial">P</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8 relative scroll-smooth" onclick="closeAllDropdowns()">
+            <div class="w-full max-w-6xl mx-auto">
+                
+                <div class="md:hidden mb-5">
+                    <a href="asesmen.html" class="inline-flex items-center text-sm font-bold text-blue-600 hover:text-blue-700 transition bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Dashboard
+                    </a>
+                </div>
+
+                <!-- ==================== 1. PANEL DESKRIPSI SINGKAT & PROSES PENILAIAN ==================== -->
+                <div class="glass-panel border border-slate-200/80 rounded-2xl mb-8 overflow-hidden shadow-md">
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 flex items-center justify-between text-white cursor-pointer" onclick="toggleDeskripsi()">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-book-open-reader text-lg"></i>
+                            <h2 class="text-base md:text-lg font-bold tracking-wide">PEDOMAN: DESKRIPSI SINGKAT & PROSES PENILAIAN RRI</h2>
+                        </div>
+                        <button type="button" class="text-xs font-bold bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                            <span id="labelToggleDeskripsi">Sembunyikan</span>
+                            <i id="iconToggleDeskripsi" class="fa-solid fa-chevron-up"></i>
+                        </button>
+                    </div>
+
+                    <div id="kontenDeskripsi" class="p-6 md:p-8 space-y-6 text-sm text-slate-700 leading-relaxed bg-white/70">
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-900 mb-2 flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-black">A</span>
+                                Deskripsi Singkat Instrumen RRI
+                            </h3>
+                            <p class="mb-3">Instrumen Asesmen Risiko Residivisme Indonesia (RRI) Versi 02 Tahun 2021 terdiri atas empat bagian penilaian:</p>
+                            <ol class="list-decimal pl-5 space-y-2">
+                                <li><strong class="text-slate-900">Bagian A (Faktor Risiko Utama)</strong>, terdiri atas 10 item pertanyaan utama yang menentukan skor total dan kategori tingkat risiko residivisme (Rendah, Sedang, Tinggi, atau Sangat Tinggi).</li>
+                                <li><strong class="text-slate-900">Bagian B (Faktor Risiko Tambahan)</strong>, terdiri atas 4 item pertanyaan terkait eskalasi tindak pidana, riwayat kekerasan, KDRT, dan kejahatan seksual/terorisme.</li>
+                                <li><strong class="text-slate-900">Bagian C (Khusus Perempuan)</strong>, terdiri atas 3 item pertanyaan khusus yang muncul otomatis apabila klien berjenis kelamin Perempuan.</li>
+                                <li><strong class="text-slate-900">Bagian D (Khusus Narkotika)</strong>, terdiri atas 3 item pertanyaan khusus yang muncul otomatis apabila tindak pidana klien adalah Narkoba.</li>
+                            </ol>
+                        </div>
+
+                        <hr class="border-slate-200">
+
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-900 mb-2 flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-black">B</span>
+                                Acuan Kategori & Rekomendasi Kriminogenik
+                            </h3>
+                            <ul class="list-disc pl-5 space-y-1.5">
+                                <li><strong>Kategori Tingkat Risiko (Bagian A):</strong> Rendah (<span class="font-mono font-bold">0–6</span>) &bull; Sedang (<span class="font-mono font-bold">7–11</span>) &bull; Tinggi (<span class="font-mono font-bold">12–15</span>) &bull; Sangat Tinggi (<span class="font-mono font-bold">16–17</span>).</li>
+                                <li>Apabila terdapat jawaban <strong>"Ya" (=1)</strong> pada Bagian B, C, atau D, ataupun kategori risiko minimal <strong>SEDANG</strong>, maka klien direkomendasikan untuk melanjutkan ke <strong>Asesmen Kebutuhan Kriminogenik</strong>.</li>
+                                <li>Klik tombol ikon tanda tanya (<i class="fa-solid fa-question text-blue-600 text-xs"></i>) di sebelah kanan tiap pertanyaan Bagian A untuk membaca pedoman detail penilaian item tersebut.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="formAsesmen" onsubmit="event.preventDefault(); submitDataRRI();">
+                    
+                    <!-- ==================== 2. IDENTITAS KLIEN ==================== -->
+                    <div class="glass-panel border border-slate-200/80 rounded-2xl mb-8 shadow-md relative z-40">
+                        <div class="bg-blue-50/90 px-6 py-4 border-b border-blue-200/80 rounded-t-2xl flex items-center justify-between">
+                            <h2 class="text-base font-bold text-blue-800 tracking-wide flex items-center gap-2">
+                                <i class="fa-solid fa-id-card text-blue-600"></i> IDENTITAS KLIEN & PELAKSANAAN ASESMEN
+                            </h2>
+                            <span class="text-xs font-bold text-blue-600 hidden sm:inline">Wajib Diisi Lengkap</span>
+                        </div>
+                        <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Nama Lengkap Klien/WBP</label>
+                                <input type="text" id="namaKlien" class="w-full px-4 py-3.5 bg-white border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-800 placeholder-slate-400 transition shadow-sm" required placeholder="Masukkan Nama Klien">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Nomor Register Lapas/Rutan</label>
+                                <input type="text" id="noRegister" class="w-full px-4 py-3.5 bg-white border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-800 placeholder-slate-400 transition shadow-sm" required placeholder="Masukkan No. Register">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Tanggal Lahir</label>
+                                <input type="date" id="tanggalLahir" style="color-scheme: light;" onclick="try { if(this.showPicker) this.showPicker(); } catch(e) {}" class="w-full px-4 py-3.5 bg-white border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-700 transition cursor-pointer shadow-sm" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Jenis Kelamin</label>
+                                <select id="jenisKelamin" class="w-full px-4 py-3.5 bg-white border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-700 transition appearance-none shadow-sm" required onchange="toggleSections()">
+                                    <option value="" class="bg-white text-slate-800">-- Pilih Jenis Kelamin --</option>
+                                    <option value="Laki-Laki" class="bg-white text-slate-800">Laki-Laki</option>
+                                    <option value="Perempuan" class="bg-white text-slate-800">Perempuan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Status WBP</label>
+                                <select id="statusWbp" class="w-full px-4 py-3.5 bg-white border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-700 transition appearance-none shadow-sm" required>
+                                    <option value="" class="bg-white text-slate-800">-- Pilih Status --</option>
+                                    <option value="Klien Pemasyarakatan" class="bg-white text-slate-800">Klien Pemasyarakatan</option>
+                                    <option value="Narapidana" class="bg-white text-slate-800">Narapidana</option>
+                                </select>
+                            </div>
+                            
+                            <div class="relative z-50">
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Tindak Pidana</label>
+                                <div class="autocomplete-wrapper">
+                                    <input type="text" id="tindakPidana" autocomplete="off" class="w-full pl-4 pr-10 py-3.5 bg-white border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-800 placeholder-slate-400 transition relative z-20 shadow-sm" required placeholder="Ketik untuk mencari Tindak Pidana..." onclick="event.stopPropagation(); filterPidana()" onkeyup="filterPidana()" oninput="toggleSections()">
+                                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400 z-20">
+                                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                                    </div>
+                                    <ul id="listPidana" class="autocomplete-dropdown no-scrollbar"></ul>
+                                </div>
+                            </div>
+                            
+                            <div class="md:col-span-2 relative z-40">
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Lokasi Menjalani Pidana Terakhir</label>
+                                <div class="autocomplete-wrapper">
+                                    <input type="text" id="lokasiPidana" autocomplete="off" class="w-full pl-4 pr-10 py-3.5 bg-white border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-800 placeholder-slate-400 transition relative z-20 shadow-sm" required placeholder="Ketik untuk mencari Lapas / Rutan / LPKA..." onclick="event.stopPropagation(); filterLapas()" onkeyup="filterLapas()">
+                                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400 z-20">
+                                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                                    </div>
+                                    <ul id="listLapas" class="autocomplete-dropdown no-scrollbar"></ul>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Tanggal Asesmen</label>
+                                <input type="date" id="tanggalAsesmen" style="color-scheme: light;" onclick="try { if(this.showPicker) this.showPicker(); } catch(e) {}" class="w-full px-4 py-3.5 bg-white border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-700 transition cursor-pointer shadow-sm" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Tujuan Asesmen</label>
+                                <select id="tujuanAsesmen" class="w-full px-4 py-3.5 bg-white border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-700 transition appearance-none shadow-sm" required>
+                                    <option value="" class="bg-white text-slate-800">-- Pilih Tujuan --</option>
+                                    <option value="Menilai risiko pengulangan tindak pidana narapidana dan klien pemasyarakatan" class="bg-white text-slate-800">Menilai risiko pengulangan tindak pidana narapidana dan klien pemasyarakatan</option>
+                                    <option value="Melakukan penilaian mendalam mengenai faktor kebutuhan (kriminogenik)" class="bg-white text-slate-800">Melakukan penilaian mendalam mengenai faktor kebutuhan (kriminogenik)</option>
+                                    <option value="Sebagai pedoman dalam penyusunan program pembinaan/pembimbingan (Case plan)" class="bg-white text-slate-800">Sebagai pedoman dalam penyusunan program pembinaan/pembimbingan (Case plan)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== 3. HEADER BAGIAN INSTRUMEN RRI ==================== -->
+                    <div class="mb-4 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-black text-slate-800 tracking-tight">INSTRUMEN PENILAIAN RISIKO RESIDIVISME (RRI)</h2>
+                            <p class="text-xs text-slate-500">Pilih jawaban pada setiap nomor, lengkapi bukti/informasi pendukung bila diperlukan, atau klik ikon tanda tanya untuk melihat pedoman.</p>
+                        </div>
+                    </div>
+
+                    <!-- ==================== BAGIAN A ==================== -->
+                    <div class="glass-panel border border-slate-200/80 rounded-2xl mb-8 overflow-hidden shadow-md relative z-10">
+                        <div class="bg-blue-50/90 text-blue-800 border-blue-200 px-6 py-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <h3 class="text-base font-extrabold tracking-wide flex items-center gap-2.5">
+                                <span class="w-7 h-7 rounded-lg bg-white/80 flex items-center justify-center text-xs font-black shadow-sm">A</span>
+                                BAGIAN A — FAKTOR RISIKO UTAMA (10 ITEM)
+                            </h3>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs text-blue-700 font-semibold hidden md:inline"><i class="fa-solid fa-circle-question mr-1"></i> Klik ikon ? untuk pedoman</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-bold opacity-75">Sub-Skor:</span>
+                                    <span id="subSkor_A" class="px-2.5 py-0.5 rounded-lg bg-white font-black text-sm shadow-sm">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="containerBagianA" class="p-6 md:p-8 space-y-6"></div>
+                    </div>
+
+                    <!-- ==================== BAGIAN B ==================== -->
+                    <div class="glass-panel border border-slate-200/80 rounded-2xl mb-8 overflow-hidden shadow-md relative z-10">
+                        <div class="bg-indigo-50/90 text-indigo-800 border-indigo-200 px-6 py-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <h3 class="text-base font-extrabold tracking-wide flex items-center gap-2.5">
+                                <span class="w-7 h-7 rounded-lg bg-white/80 flex items-center justify-center text-xs font-black shadow-sm">B</span>
+                                BAGIAN B — FAKTOR RISIKO TAMBAHAN (4 ITEM)
+                            </h3>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold opacity-75">Terpenuhi (Ya):</span>
+                                <span id="subSkor_B" class="px-2.5 py-0.5 rounded-lg bg-white font-black text-sm shadow-sm">0</span>
+                            </div>
+                        </div>
+                        <div id="containerBagianB" class="p-6 md:p-8 space-y-6"></div>
+                    </div>
+
+                    <!-- ==================== BAGIAN C (KONDISIONAL: PEREMPUAN) ==================== -->
+                    <div id="bagianC" class="hidden glass-panel border border-pink-300 rounded-2xl mb-8 overflow-hidden shadow-md shadow-pink-500/5 relative z-10">
+                        <div class="bg-pink-50/90 text-pink-800 border-pink-200 px-6 py-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <h3 class="text-base font-extrabold tracking-wide flex items-center gap-2.5">
+                                <span class="w-7 h-7 rounded-lg bg-white/80 flex items-center justify-center text-xs font-black shadow-sm text-pink-700">C</span>
+                                <span><i class="fa-solid fa-venus mr-1.5"></i>BAGIAN C — FAKTOR RISIKO KHUSUS PEREMPUAN (3 ITEM)</span>
+                            </h3>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold opacity-75">Terpenuhi (Ya):</span>
+                                <span id="subSkor_C" class="px-2.5 py-0.5 rounded-lg bg-white font-black text-sm shadow-sm">0</span>
+                            </div>
+                        </div>
+                        <div id="containerBagianC" class="p-6 md:p-8 space-y-6"></div>
+                    </div>
+
+                    <!-- ==================== BAGIAN D (KONDISIONAL: NARKOBA) ==================== -->
+                    <div id="bagianD" class="hidden glass-panel border border-rose-300 rounded-2xl mb-8 overflow-hidden shadow-md shadow-rose-500/5 relative z-10">
+                        <div class="bg-rose-50/90 text-rose-800 border-rose-200 px-6 py-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <h3 class="text-base font-extrabold tracking-wide flex items-center gap-2.5">
+                                <span class="w-7 h-7 rounded-lg bg-white/80 flex items-center justify-center text-xs font-black shadow-sm text-rose-700">D</span>
+                                <span><i class="fa-solid fa-pills mr-1.5"></i>BAGIAN D — FAKTOR RISIKO KHUSUS NARKOTIKA (3 ITEM)</span>
+                            </h3>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold opacity-75">Terpenuhi (Ya):</span>
+                                <span id="subSkor_D" class="px-2.5 py-0.5 rounded-lg bg-white font-black text-sm shadow-sm">0</span>
+                            </div>
+                        </div>
+                        <div id="containerBagianD" class="p-6 md:p-8 space-y-6"></div>
+                    </div>
+
+                    <!-- ==================== RINGKASAN SKOR RRI ==================== -->
+                    <div class="glass-panel border-2 border-blue-300 rounded-2xl mb-8 overflow-hidden shadow-lg relative z-10">
+                        <div class="bg-blue-100/90 px-6 py-4 border-b border-blue-200 flex items-center justify-between">
+                            <h2 class="text-lg font-bold text-blue-900 tracking-wide"><i class="fa-solid fa-calculator mr-2"></i>REKAPITULASI SKOR & REKOMENDASI RRI</h2>
+                            <span class="text-xs font-bold text-blue-700">Otomatis Terhitung</span>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="rekapBagianGrid">
+                            <!-- Diisi otomatis via JS -->
+                        </div>
+                        <div class="px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div>
+                                <p class="text-xs uppercase tracking-widest text-blue-200 font-bold">Total Nilai Keseluruhan Bagian A</p>
+                                <p class="text-sm text-blue-100">Acuan: Rendah (0-6) &bull; Sedang (7-11) &bull; Tinggi (12-15) &bull; Sangat Tinggi (16-17)</p>
+                                <p class="text-xs text-amber-200 font-bold mt-1"><i class="fa-solid fa-clipboard-check mr-1"></i>Rekomendasi: <span id="rekapRekomendasiKrim" class="underline">Tidak Memerlukan Asesmen Kriminogenik</span></p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="text-right">
+                                    <span class="text-xs text-blue-200 block">Skor Total</span>
+                                    <span id="rekapTotalSkor" class="text-3xl font-black">0</span>
+                                </div>
+                                <div class="h-10 w-px bg-white/20"></div>
+                                <div>
+                                    <span class="text-xs text-blue-200 block">Kategori Tingkat Risiko</span>
+                                    <span id="rekapTotalKategori" class="inline-block mt-0.5 px-3 py-1 rounded-lg bg-white text-blue-900 font-black text-sm tracking-wider uppercase">RENDAH</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== TANDA TANGAN DIGITAL ==================== -->
+                    <div class="glass-panel border border-slate-200/80 rounded-2xl mb-8 overflow-hidden shadow-md relative z-10">
+                        <div class="bg-slate-100/90 px-6 py-4 border-b border-slate-200">
+                            <h2 class="text-lg font-bold text-slate-800 tracking-wide"><i class="fa-solid fa-pen-nib mr-2"></i>Pengesahan (Tanda Tangan)</h2>
+                        </div>
+                        <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            
+                            <div class="flex flex-col items-center">
+                                <label class="block text-sm font-bold text-slate-700 uppercase tracking-widest mb-3">TTD Petugas Asesmen</label>
+                                <div class="canvas-container shadow-inner">
+                                    <canvas id="canvasPetugas" class="cursor-crosshair"></canvas>
+                                </div>
+                                <button type="button" id="btnClearPetugas" class="mt-3 text-xs text-red-600 font-bold hover:text-red-700 transition px-4 py-2 bg-red-50 border border-red-200 hover:bg-red-100 rounded-lg">
+                                    <i class="fa-solid fa-eraser mr-1"></i> Hapus / Ulangi
+                                </button>
+                            </div>
+
+                            <div class="flex flex-col items-center">
+                                <label class="block text-sm font-bold text-slate-700 uppercase tracking-widest mb-3">TTD Narapidana/Klien</label>
+                                <div class="canvas-container shadow-inner">
+                                    <canvas id="canvasKlien" class="cursor-crosshair"></canvas>
+                                </div>
+                                <button type="button" id="btnClearKlien" class="mt-3 text-xs text-red-600 font-bold hover:text-red-700 transition px-4 py-2 bg-red-50 border border-red-200 hover:bg-red-100 rounded-lg">
+                                    <i class="fa-solid fa-eraser mr-1"></i> Hapus / Ulangi
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col-reverse md:flex-row justify-end gap-4 mb-4 md:mb-10 pt-2 relative z-10">
+                        <a href="asesmen.html" class="w-full md:w-auto px-8 py-3.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 transition text-center shadow-sm border border-slate-300 text-sm">Batal</a>
+                        <button type="submit" id="btnSubmit" class="w-full md:w-auto px-10 py-3.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-[0_4px_15px_rgba(37,99,235,0.3)] transition active:scale-95 flex justify-center items-center gap-2 text-sm">
+                            <i class="fa-solid fa-print"></i> Simpan & Cetak PDF RRI
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- BOTTOM NAV MOBILE -->
+    <nav id="bottom-nav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-200 z-50 flex justify-around items-center px-2 pb-2 pt-3 shadow-[0_-8px_20px_rgba(0,0,0,0.06)]">
+        <a href="asesmen.html" class="flex-1 flex flex-col items-center gap-1.5 text-slate-500 hover:text-blue-600 transition">
+            <i class="fa-solid fa-chart-pie text-xl"></i>
+            <span class="text-[10px] font-bold tracking-wide">Utama</span>
+        </a>
+        <a href="#" class="flex-1 flex flex-col items-center gap-1.5 text-blue-600 transition">
+            <i class="fa-solid fa-file-signature text-xl"></i>
+            <span class="text-[10px] font-bold tracking-wide">RRI</span>
+        </a>
+        <a href="form_asesmen_kriminogenik.html" class="flex-1 flex flex-col items-center gap-1.5 text-slate-500 hover:text-blue-600 transition">
+            <i class="fa-solid fa-brain text-xl"></i>
+            <span class="text-[10px] font-bold tracking-wide">Krim</span>
+        </a>
+        <button onclick="prosesLogout()" class="flex-1 flex flex-col items-center gap-1.5 text-slate-500 hover:text-red-600 transition focus:outline-none">
+            <i class="fa-solid fa-right-from-bracket text-xl"></i>
+            <span class="text-[10px] font-bold tracking-wide">Keluar</span>
+        </button>
+    </nav>
+
+    <!-- ==================== TEMPLATE CETAK PDF ==================== -->
+    <div style="display: none;">
+        <div id="dokumenPdf">
+            
+            <div style="page-break-after: always; break-after: page; min-height: 250mm; padding-top: 10mm;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="font-size: 12pt; font-weight: bold; margin-bottom: 5px; text-decoration: underline;">LEMBAR PERSETUJUAN</h2>
+                    <h3 style="font-size: 11pt; font-weight: normal; margin-top: 0;">(INFORMED CONSENT)</h3>
+                </div>
+                
+                <p>Saya yang bertanda tangan dibawah ini:</p>
+                <table style="width: 100%; margin-bottom: 20px; line-height: 1.5;">
+                    <tr><td style="width: 35%; vertical-align: top;">Nama Klien</td><td style="width: 5%; vertical-align: top;">:</td><td id="pdf-namaKlien1" style="font-weight: bold; vertical-align: top;"></td></tr>
+                    <tr><td style="vertical-align: top;">Tanggal Lahir</td><td style="vertical-align: top;">:</td><td id="pdf-tglLahir1" style="vertical-align: top;"></td></tr>
+                    <tr><td style="vertical-align: top;">Jenis Kelamin</td><td style="vertical-align: top;">:</td><td id="pdf-jk1" style="vertical-align: top;"></td></tr>
+                    <tr><td style="vertical-align: top;">Nomor Register Lapas/Rutan</td><td style="vertical-align: top;">:</td><td id="pdf-noReg1" style="vertical-align: top;"></td></tr>
+                    <tr><td style="vertical-align: top;">Status Pidana</td><td style="vertical-align: top;">:</td><td id="pdf-status1" style="vertical-align: top;"></td></tr>
+                    <tr><td style="vertical-align: top;">Lokasi Menjalani Pidana</td><td style="vertical-align: top;">:</td><td id="pdf-lokasi1" style="vertical-align: top;"></td></tr>
+                </table>
+
+                <p style="text-align: justify; margin-bottom: 10px;">Setelah mendapatkan informasi dari <b><span id="pdf-namaPetugas1"></span></b> terkait tujuan pelaksanaan asesmen risiko residivisme dan kebutuhan kriminogenik, dengan ini saya menyatakan bersedia untuk:</p>
+                <ol style="text-align: justify; padding-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 5px;">Diwawancarai sebagai subjek asesmen risiko residivisme dan kebutuhan kriminogenik;</li>
+                    <li style="margin-bottom: 5px;">Memberikan informasi yang sebenar-benarnya, baik selama proses wawancara ataupun saat dibutuhkan wawancara ulang/tambahan setelahnya;</li>
+                    <li style="margin-bottom: 5px;">Bersikap kooperatif selama proses wawancara hingga selesai;</li>
+                    <li style="margin-bottom: 5px;">Menjalankan program pembinaan dan/atau program pembimbingan yang direkomendasikan kepada saya berdasarkan hasil asesmen.</li>
+                </ol>
+                <p style="text-align: justify; margin-bottom: 40px;">Pernyataan ini saya tandatangani dalam keadaan sadar dan tidak ada paksaan dari pihak manapun.</p>
+
+                <table style="width: 100%; text-align: center; margin-top: 30px;">
+                    <tr>
+                        <td style="width: 50%; vertical-align: bottom;">
+                            <p>Mengetahui,</p>
+                            <p>Nama Petugas Asesmen</p>
+                            <div style="height: 100px; display: flex; align-items: center; justify-content: center; margin: 5px 0;">
+                                <img id="pdf-ttdPetugas" src="" style="max-height: 80px; max-width: 200px; display: none; margin: 0 auto;" />
+                            </div>
+                            <p style="font-weight: bold; text-decoration: underline;" id="pdf-namaPetugas1b"></p>
+                        </td>
+                        <td style="width: 50%; vertical-align: bottom;">
+                            <p>Jakarta, <span id="pdf-tglCetak1"></span></p>
+                            <p id="pdf-status1b"></p>
+                            <div style="height: 100px; display: flex; align-items: center; justify-content: center; margin: 5px 0;">
+                                <img id="pdf-ttdKlien" src="" style="max-height: 80px; max-width: 200px; display: none; margin: 0 auto;" />
+                            </div>
+                            <p style="font-weight: bold; text-decoration: underline;" id="pdf-namaKlien1b"></p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div style="page-break-after: always; break-after: page; min-height: 250mm; padding-top: 10mm;">
+                <h2 style="font-size: 11pt; font-weight: bold; text-decoration: underline;">RAHASIA</h2>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="font-size: 12pt; font-weight: bold; margin-bottom: 5px;">IDENTITAS</h2>
+                    <h3 style="font-size: 11pt; font-weight: normal; margin-top: 0;">NARAPIDANA/KLIEN PEMASYARAKATAN</h3>
+                </div>
+
+                <table style="width: 100%; margin-bottom: 40px; line-height: 1.5;">
+                    <tr><td style="width: 35%; vertical-align: top;">Nama Klien Narapidana</td><td style="width: 5%; vertical-align: top;">:</td><td id="pdf-namaKlien2" style="font-weight: bold; vertical-align: top;"></td></tr>
+                    <tr><td style="vertical-align: top;">Nomor Register</td><td style="vertical-align: top;">:</td><td id="pdf-noReg2" style="vertical-align: top;"></td></tr>
+                    <tr><td style="vertical-align: top;">Tanggal Lahir</td><td style="vertical-align: top;">:</td><td id="pdf-tglLahir2" style="vertical-align: top;"></td></tr>
+                    <tr><td style="vertical-align: top;">Jenis Kelamin</td><td style="vertical-align: top;">:</td><td id="pdf-jk2" style="vertical-align: top;"></td></tr>
+                    <tr><td style="vertical-align: top;">Tindak Pidana</td><td style="vertical-align: top;">:</td><td id="pdf-tp2" style="vertical-align: top;"></td></tr>
+                    <tr><td style="vertical-align: top;">Lokasi</td><td style="vertical-align: top;">:</td><td id="pdf-lokasi2" style="font-weight: bold; vertical-align: top;"></td></tr>
+                    <tr><td style="vertical-align: top;">Tujuan Asesmen</td><td style="vertical-align: top;">:</td><td id="pdf-tujuan2" style="vertical-align: top;"></td></tr>
+                    <tr><td style="vertical-align: top;">Tanggal Pelaksanaan Asesmen</td><td style="vertical-align: top;">:</td><td id="pdf-tglCetak2" style="vertical-align: top;"></td></tr>
+                    <tr><td style="vertical-align: top;">Nama Petugas Asesmen</td><td style="vertical-align: top;">:</td><td id="pdf-namaPetugas2" style="vertical-align: top;"></td></tr>
+                </table>
+
+                <div style="border: 2px solid black; padding: 15px; text-align: center; margin-bottom: 40px;">
+                    <h3 style="font-weight: bold; margin-top: 0;">PENTING</h3>
+                    <p style="font-size: 11pt; margin-bottom: 0;">Pelaksanaan asesmen risiko residivisme dan kebutuhan kriminogenik terhadap narapidana/klien pemasyarakatan WAJIB dilakukan berdasarkan Pedoman Penggunaan dan Penilaian Instrumen Asesmen Risiko Residivisme Indonesia versi 02 Tahun 2021.</p>
+                </div>
+            </div>
+
+            <div style="page-break-after: always; break-after: page; min-height: 250mm; padding-top: 10mm;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="font-size: 12pt; font-weight: bold; margin-bottom: 5px;">INSTRUMEN ASESMEN RISIKO RESIDIVISME INDONESIA</h2>
+                    <h3 style="font-size: 11pt; font-weight: bold; text-decoration: underline;">RISIKO RESIDIVISME INDONESIA - BAGIAN A</h3>
+                    <h4 style="font-size: 11pt; font-weight: normal; margin-bottom: 10px;">FAKTOR RISIKO UTAMA</h4>
+                </div>
+                
+                <p style="font-size: 10pt; margin-bottom: 5px;">Berikan nilai sesuai kriteria jawaban pada tiap pertanyaan dibawah ini!</p>
+                
+                <table class="pdf-table" style="margin-bottom: 0;">
+                    <colgroup>
+                        <col style="width: 5%;">
+                        <col style="width: 65%;">
+                        <col style="width: 15%;">
+                        <col style="width: 15%;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th class="col-no">NO</th>
+                            <th class="col-pertanyaan">PERTANYAAN</th>
+                            <th class="col-jawaban">JAWABAN</th>
+                            <th class="col-nilai">NILAI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-no">1</td>
+                            <td class="td-pertanyaan">
+                                <div class="tanya-text">Apakah pada saat narapidana/klien pemasyarakatan pertama kali ditahan masih berusia 16 tahun atau dibawah 16 tahun?</div>
+                                <div class="bukti-text" id="pdf-buktiA1">Bukti/Informasi Pendukung</div>
+                            </td>
+                            <td class="col-jawaban" id="pdf-jawabanA1"></td>
+                            <td class="col-nilai" id="pdf-nilaiA1"></td>
+                        </tr>
+                        <tr>
+                            <td class="col-no">2</td>
+                            <td class="td-pertanyaan">
+                                <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah dihukum oleh pengadilan dan divonis hukuman penjara?</div>
+                                <div class="bukti-text" id="pdf-buktiA2">Bukti/Informasi Pendukung</div>
+                            </td>
+                            <td class="col-jawaban" id="pdf-jawabanA2"></td>
+                            <td class="col-nilai" id="pdf-nilaiA2"></td>
+                        </tr>
+                        <tr>
+                            <td class="col-no">3</td>
+                            <td class="td-pertanyaan">
+                                <div class="tanya-text">Berapa jumlah pasal yang dipidanakan kepada narapidana/klien pemasyarakatan untuk kejahatan saat ini?</div>
+                                <div class="bukti-text" id="pdf-buktiA3">Bukti/Informasi Pendukung</div>
+                            </td>
+                            <td class="col-jawaban" id="pdf-jawabanA3"></td>
+                            <td class="col-nilai" id="pdf-nilaiA3"></td>
+                        </tr>
+                        <tr>
+                            <td class="col-no">4</td>
+                            <td class="td-pertanyaan">
+                                <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah melakukan pelanggaran ketika sedang menjalani program reintegrasi?<br><span style="font-size: 9pt;">(Contoh : pelanggaran ketentuan reintegrasi dan/atau pelanggaran hukum/hukum adat/norma masyarakat)</span></div>
+                                <div class="bukti-text" id="pdf-buktiA4">Bukti/Informasi Pendukung</div>
+                            </td>
+                            <td class="col-jawaban" id="pdf-jawabanA4"></td>
+                            <td class="col-nilai" id="pdf-nilaiA4"></td>
+                        </tr>
+                        <tr>
+                            <td class="col-no">5</td>
+                            <td class="td-pertanyaan">
+                                <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah mendapatkan vonis sebelumnya? (Tidak termasuk vonis untuk kejahatan yang sekarang dan tidak mempertimbangkan jumlah pasal yang dipidanakan)</div>
+                                <div class="bukti-text" id="pdf-buktiA5">Bukti/Informasi Pendukung</div>
+                            </td>
+                            <td class="col-jawaban" id="pdf-jawabanA5"></td>
+                            <td class="col-nilai" id="pdf-nilaiA5"></td>
+                        </tr>
+                        <tr>
+                            <td class="col-no">6</td>
+                            <td class="td-pertanyaan">
+                                <div class="tanya-text">Apakah ada catatan perilaku buruk/menyimpang yang dilakukan oleh narapidana/klien pemasyarakatan berada di dalam Rutan/Lapas/Bapas?</div>
+                                <div class="bukti-text" id="pdf-buktiA6">Bukti/Informasi Pendukung</div>
+                            </td>
+                            <td class="col-jawaban" id="pdf-jawabanA6"></td>
+                            <td class="col-nilai" id="pdf-nilaiA6"></td>
+                        </tr>
+                        <tr>
+                            <td class="col-no">7</td>
+                            <td class="td-pertanyaan">
+                                <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah diskors atau dikeluarkan dari sekolah?</div>
+                                <div class="bukti-text" id="pdf-buktiA7">Bukti/Informasi Pendukung</div>
+                            </td>
+                            <td class="col-jawaban" id="pdf-jawabanA7"></td>
+                            <td class="col-nilai" id="pdf-nilaiA7"></td>
+                        </tr>
+                        <tr>
+                            <td class="col-no" style="border-bottom: 1px solid black;">8</td>
+                            <td class="td-pertanyaan" style="border-bottom: 1px solid black;">
+                                <div class="tanya-text">Apakah ada anggota keluarga dan/atau pasangan narapidana/klien pemasyarakatan yang pernah diproses secara hukum/mendapatkan vonis dari hakim? (apapun bentuk vonisnya)</div>
+                                <div class="bukti-text" id="pdf-buktiA8">Bukti/Informasi Pendukung</div>
+                            </td>
+                            <td class="col-jawaban" style="border-bottom: 1px solid black;" id="pdf-jawabanA8"></td>
+                            <td class="col-nilai" style="border-bottom: 1px solid black;" id="pdf-nilaiA8"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="page-break-after: always; break-after: page; min-height: 250mm; padding-top: 10mm;">
+                <table class="pdf-table" style="border-top: none;">
+                    <colgroup>
+                        <col style="width: 5%;">
+                        <col style="width: 65%;">
+                        <col style="width: 15%;">
+                        <col style="width: 15%;">
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <td class="col-no">9</td>
+                            <td class="td-pertanyaan">
+                                <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah menggunakan narkotika/obat-obatan terlarang dan/atau mengonsumsi minuman beralkohol secara berlebihan?</div>
+                                <div class="bukti-text" id="pdf-buktiA9">Bukti/Informasi Pendukung</div>
+                            </td>
+                            <td class="col-jawaban" id="pdf-jawabanA9"></td>
+                            <td class="col-nilai" id="pdf-nilaiA9"></td>
+                        </tr>
+                        <tr>
+                            <td class="col-no">10</td>
+                            <td class="td-pertanyaan">
+                                <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah menganggur secara terus-menerus/berturut-turut selama 12 bulan atau lebih?</div>
+                                <div class="bukti-text" id="pdf-buktiA10">Bukti/Informasi Pendukung</div>
+                            </td>
+                            <td class="col-jawaban" id="pdf-jawabanA10"></td>
+                            <td class="col-nilai" id="pdf-nilaiA10"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: left; font-weight: bold; padding: 8px;">NILAI TOTAL</td>
+                            <td class="col-nilai" style="font-weight: bold;" id="pdf-skorAkhir"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: left; font-weight: bold; padding: 8px;">KATEGORI</td>
+                            <td class="col-nilai" style="font-weight: bold;" id="pdf-kategoriAkhir"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p style="text-align: center; font-weight: bold; font-size: 10pt; margin-top: 30px; margin-bottom: 10px;">TABEL ACUAN NILAI KATEGORI TINGKAT RISIKO RESIDIVISME INDONESIA</p>
+                <table class="pdf-table-kategori">
+                    <thead>
+                        <tr>
+                            <th class="th-rendah">RENDAH</th>
+                            <th class="th-sedang">SEDANG</th>
+                            <th class="th-tinggi">TINGGI</th>
+                            <th class="th-sangat-tinggi">SANGAT TINGGI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0 - 6</td>
+                            <td>7 - 11</td>
+                            <td>12 - 15</td>
+                            <td>16 - 17</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="min-height: 250mm; padding-top: 10mm;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 11pt; font-weight: bold; text-decoration: underline;">RISIKO RESIDIVISME INDONESIA - BAGIAN B</h3>
+                    <h4 style="font-size: 11pt; font-weight: bold;">FAKTOR RISIKO TAMBAHAN</h4>
+                </div>
+                
+                <p style="font-size: 10pt; margin-bottom: 5px;">Berikan tanda centang (√) pada tiap pertanyaan yang memenuhi syarat!</p>
+                
+                <table class="pdf-table">
+                    <colgroup>
+                        <col style="width: 5%;">
+                        <col style="width: 75%;">
+                        <col style="width: 20%;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th class="col-no">NO</th>
+                            <th class="col-pertanyaan">PERTANYAAN</th>
+                            <th class="col-jawaban">JAWABAN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-no">1</td>
+                            <td class="td-pertanyaan">
+                                <div class="tanya-text">Apakah tindak pidana yang dilakukan narapidana/klien pemasyarakatan pada saat ini merupakan peningkatan dari tindak pidana yang pernah dilakukan sebelumnya?</div>
+                                <div class="bukti-text" id="pdf-buktiB1">Bukti/Informasi Pendukung</div>
+                            </td>
+                            <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekB1"></td>
+                        </tr>
+                        <tr>
+                            <td class="col-no">2</td>
+                            <td class="td-pertanyaan">
+                                <div class="tanya-text">Apakah ada sejarah tindak kekerasan yang dilakukan oleh narapidana/klien pemasyarakatan sebelum berusia 15 tahun?</div>
+                                <div class="bukti-text" id="pdf-buktiB2">Bukti/Informasi Pendukung</div>
+                            </td>
+                            <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekB2"></td>
+                        </tr>
+                        <tr>
+                            <td class="col-no">3</td>
+                            <td class="td-pertanyaan">
+                                <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah menjadi pelaku atau korban kekerasan dalam rumah tangga?</div>
+                                <div class="bukti-text" id="pdf-buktiB3">Bukti/Informasi Pendukung</div>
+                            </td>
+                            <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekB3"></td>
+                        </tr>
+                        <tr>
+                            <td class="col-no">4</td>
+                            <td class="td-pertanyaan">
+                                <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah melakukan tindak pidana kekerasan/kejahatan seksual atau tindak pidana terorisme/separatisme?</div>
+                                <div class="bukti-text" id="pdf-buktiB4">Bukti/Informasi Pendukung</div>
+                            </td>
+                            <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekB4"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div id="pdf-bagianC-container" style="display: none; margin-top: 30px;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h3 style="font-size: 11pt; font-weight: bold; text-decoration: underline;">RISIKO RESIDIVISME INDONESIA - BAGIAN C</h3>
+                        <h4 style="font-size: 11pt; font-weight: bold;">FAKTOR RISIKO KHUSUS NARAPIDANA/KLIEN PEMASYARAKATAN PEREMPUAN</h4>
+                    </div>
+                    <table class="pdf-table">
+                        <colgroup>
+                            <col style="width: 5%;">
+                            <col style="width: 75%;">
+                            <col style="width: 20%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th class="col-no">NO</th>
+                                <th class="col-pertanyaan">PERTANYAAN</th>
+                                <th class="col-jawaban">JAWABAN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="col-no">1</td>
+                                <td class="td-pertanyaan">
+                                    <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah melahirkan sebelum berusia 20 (dua puluh) tahun?</div>
+                                    <div class="bukti-text" id="pdf-buktiC1">Bukti/Informasi Pendukung</div>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekC1"></td>
+                            </tr>
+                            <tr>
+                                <td class="col-no">2</td>
+                                <td class="td-pertanyaan">
+                                    <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah mengalami masalah dalam merawat/membesarkan anak?</div>
+                                    <div class="bukti-text" id="pdf-buktiC2">Bukti/Informasi Pendukung</div>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekC2"></td>
+                            </tr>
+                            <tr>
+                                <td class="col-no">3</td>
+                                <td class="td-pertanyaan">
+                                    <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah terlibat dalam praktik dan/atau jaringan prostitusi?</div>
+                                    <div class="bukti-text" id="pdf-buktiC3">Bukti/Informasi Pendukung</div>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekC3"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="pdf-bagianD-container" style="display: none; margin-top: 30px;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h3 style="font-size: 11pt; font-weight: bold; text-decoration: underline;">RISIKO RESIDIVISME INDONESIA - BAGIAN D</h3>
+                        <h4 style="font-size: 11pt; font-weight: bold;">FAKTOR RISIKO KHUSUS NARAPIDANA/KLIEN PEMASYARAKATAN DENGAN TINDAK PIDANA NARKOTIKA</h4>
+                    </div>
+                    <table class="pdf-table">
+                        <colgroup>
+                            <col style="width: 5%;">
+                            <col style="width: 75%;">
+                            <col style="width: 20%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th class="col-no">NO</th>
+                                <th class="col-pertanyaan">PERTANYAAN</th>
+                                <th class="col-jawaban">JAWABAN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="col-no">1</td>
+                                <td class="td-pertanyaan">
+                                    <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah terlibat dalam jaringan pengedar narkotika?</div>
+                                    <div class="bukti-text" id="pdf-buktiD1">Bukti/Informasi Pendukung</div>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekD1"></td>
+                            </tr>
+                            <tr>
+                                <td class="col-no">2</td>
+                                <td class="td-pertanyaan">
+                                    <div class="tanya-text">Apakah narapidana/klien pemasyarakatan menilai penggunaan narkotika oleh dirinya adalah sesuatu yang wajar?</div>
+                                    <div class="bukti-text" id="pdf-buktiD2">Bukti/Informasi Pendukung</div>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekD2"></td>
+                            </tr>
+                            <tr>
+                                <td class="col-no">3</td>
+                                <td class="td-pertanyaan">
+                                    <div class="tanya-text">Apakah narapidana/klien pemasyarakatan memiliki sejarah penggunaan narkotika rutin/berulang?</div>
+                                    <div class="bukti-text" id="pdf-buktiD3">Bukti/Informasi Pendukung</div>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekD3"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 30px; border: 1px solid black; padding: 10px; font-weight: bold;">
+                    REKOMENDASI KRIMINOGENIK: <span id="pdf-statusKrim" style="font-weight: normal;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Logika -->
+    <script>
+        const SUPABASE_URL = 'https://udghusxmebnjfastiwmi.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkZ2h1c3htZWJuamZhc3Rpd21pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyODE2OTQsImV4cCI6MjEwNjg1NzY5NH0.ZX8KGUuGll4xnm4AEJH6_xfGS086dDRyI23QRKo56dM'; 
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const swalLightTheme = { background: '#ffffff', color: '#1e293b', customClass: { popup: 'border border-slate-200 rounded-3xl shadow-2xl' }};
+        let globalNamaPetugas = "Petugas Asesmen"; 
+
+        // ==================== DEFINISI STRUKTUR PERTANYAAN RRI (BAGIAN A, B, C, D) ====================
+        const daftarBagianA = [
+            {
+                no: '1', kode: 'a1',
+                teks: 'Apakah pada saat pertama kali ditahan masih berusia 16 tahun atau dibawah 16 tahun?',
+                opsi: [{ label: 'Ya', nilai: 3 }, { label: 'Tidak', nilai: 0 }]
+            },
+            {
+                no: '2', kode: 'a2',
+                teks: 'Apakah pernah dihukum oleh pengadilan dan divonis hukuman penjara?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            },
+            {
+                no: '3', kode: 'a3',
+                teks: 'Berapa jumlah pasal yang dipidanakan untuk kejahatan saat ini?',
+                opsi: [{ label: '1 - 2', nilai: 0 }, { label: '3 atau lebih', nilai: 1 }]
+            },
+            {
+                no: '4', kode: 'a4',
+                teks: 'Apakah pernah melakukan pelanggaran ketika sedang menjalani program reintegrasi?',
+                subTeks: '(Contoh : pelanggaran ketentuan reintegrasi dan/atau pelanggaran hukum/hukum adat/norma masyarakat)',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            },
+            {
+                no: '5', kode: 'a5',
+                teks: 'Apakah pernah mendapatkan vonis sebelumnya? (Di luar kasus sekarang)',
+                opsi: [{ label: 'Tidak', nilai: 0 }, { label: '1 - 2', nilai: 2 }, { label: '3 atau lebih', nilai: 4 }]
+            },
+            {
+                no: '6', kode: 'a6',
+                teks: 'Apakah ada catatan perilaku buruk selama berada di Rutan/Lapas/Bapas?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            },
+            {
+                no: '7', kode: 'a7',
+                teks: 'Apakah pernah diskors atau dikeluarkan dari sekolah?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            },
+            {
+                no: '8', kode: 'a8',
+                teks: 'Apakah ada anggota keluarga/pasangan yang pernah diproses hukum/mendapatkan vonis?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            },
+            {
+                no: '9', kode: 'a9',
+                teks: 'Apakah pernah menggunakan narkotika dan/atau alkohol secara berlebihan?',
+                opsi: [
+                    { label: 'Tidak Pernah', nilai: 0 },
+                    { label: 'Alkohol', nilai: 1 },
+                    { label: 'Narkotika', nilai: 2 },
+                    { label: 'Keduanya', nilai: 3 }
+                ]
+            },
+            {
+                no: '10', kode: 'a10',
+                teks: 'Apakah pernah menganggur secara terus-menerus selama 12 bulan atau lebih?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            }
+        ];
+
+        const daftarBagianB = [
+            {
+                no: '1', kode: 'b1',
+                teks: 'Apakah tindak pidana saat ini merupakan peningkatan dari tindak pidana sebelumnya?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            },
+            {
+                no: '2', kode: 'b2',
+                teks: 'Apakah ada sejarah tindak kekerasan sebelum berusia 15 tahun?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            },
+            {
+                no: '3', kode: 'b3',
+                teks: 'Apakah pernah menjadi pelaku atau korban kekerasan dalam rumah tangga (KDRT)?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            },
+            {
+                no: '4', kode: 'b4',
+                teks: 'Apakah pernah melakukan kekerasan/kejahatan seksual atau terorisme/separatisme?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            }
+        ];
+
+        const daftarBagianC = [
+            {
+                no: '1', kode: 'c1',
+                teks: 'Apakah pernah melahirkan sebelum berusia 20 tahun?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            },
+            {
+                no: '2', kode: 'c2',
+                teks: 'Apakah pernah mengalami masalah merawat anak?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            },
+            {
+                no: '3', kode: 'c3',
+                teks: 'Apakah pernah terlibat jaringan prostitusi?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            }
+        ];
+
+        const daftarBagianD = [
+            {
+                no: '1', kode: 'd1',
+                teks: 'Apakah pernah terlibat dalam jaringan pengedar narkotika?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            },
+            {
+                no: '2', kode: 'd2',
+                teks: 'Apakah menilai penggunaan narkotika wajar/melakukan pembenaran?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            },
+            {
+                no: '3', kode: 'd3',
+                teks: 'Apakah memiliki sejarah penggunaan narkotika rutin/berulang?',
+                opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }]
+            }
+        ];
+
+        // OBJEK PEDOMAN UNTUK TIAP PERTANYAAN BAGIAN A
+        const pedomanPertanyaanRRI = {
+            1: "<b>Apakah pada saat pertama kali ditahan masih berusia 16 tahun atau dibawah 16 tahun?\n\nPertanyaan ini mengukur derajat risiko residivisme Narapidana dengan melihat usia pada saat pertama kali ditahan karena melakukan pelanggaran hukum. .\n\n Jawaban “Ya” diberikan apabila: </b>\n 1. Narapidana/klien pemasyarakatan pernah ditahan pada saat berusia 16 tahun atau dibawah 16 tahun. \n 2. Narapidana/klien pemasyarakatan diproses hukum dan mendapatkan vonis penjara \n 3. Narapidana/klien pemasyarakatan diproses hukum namun tidak mendapatkan hukuman, atau diberikan hukuman denda, atau diversi \n\nCatatan: \n\n Jika Narapidana/klien pemasyarakatan  pernah menjalani proses penyidikan/penuntutan/pemeriksaan :\n • Dalam melakukan penelusuran informasi diutamakan adanya catatan resmi penahanan dari Narapidana (seperti BAP, dokumen pengadilan). \n • Di beberapa wilayah Indonesia masih banyak ditemukan penyelesaian perkara secara adat. Maka, tidak dipungkiri terdapat kasus pelanggaran hukum yang tidak diproses secara resmi/formal, dan dilakukan penyelesaian dengan mekanisme informal seperti penyelesaian secara kekeluargaan, atau mekanisme adat. Apabila didapatkan narapidana/klien pemasyarakatan yang pernah melakukan pelanggaran hukum pada usia 16 tahun atau lebih muda namun diselesaikan melalui mekanisme kekeluargaan/adat maka tetap diberikan jawaban <b>“Ya”</b>. \n\n Apabila narapidana/klien pemasyarakatan menyampaikan secara lisan bahwa pada saat berusia 16 tahun atau lebih muda pernah melakukan tindakan kriminal/melanggar hukum namun tidak pernah ditangkap/atau diproses secara hukum maka disarankan untuk memberi jawaban <b>“tidak”</b> \n\n • Penetapan batas usia 16 tahun atau lebih muda tidak berkaitan dengan peraturan usia anak yang berlaku secara UU, namun merujuk ke hasil penelitian yang menunjukkan bahwa orang yang melakukan pelanggaran hukum ketika berusia 16 tahun atau lebih muda memiliki risiko residivisme yang lebih tinggi dibandingkan dengan orang yang pertama kali melakukan pelanggaran hukum diusia atas 16 tahun",
+            2: "<b>Apakah pernah dihukum oleh pengadilan dan divonis hukuman penjara?\n\nPertanyaan ini mengukur derajat risiko residivisme narapidana/klien pemasyarakatan dengan melihat apakah ia pernah melakukan pelanggaran hukum dan mendapatkan vonis hukuman penjara.\n\n Jawaban “Ya” diberikan apabila:</b>\n\n 1. Asesmen RRI dilakukan terhadap narapidana yang berada di dalam LAPAS \n2. Asesmen RRI dilakukan terhadap narapidana yang sudah pernah mendapatkan hukuman penjara sebelumnya termasuk LPKA\n\n Catatan: \n\n 1. Apabila narapidana/klien pemasyarakatan pernah diproses hukum namun diberikan vonis denda, diversi, atau rehabilitasi maka diberikan jawaban <b>“Tidak”</b>\n 2. Pertanyaan ini berkaitan dengan Pertanyaan no. 5, maka perlu diperiksa konsistensi dari jawaban pada kedua nomor ini. Apabila pada Pertanyaan no 2 didapatkan narapidana/klien pemasyarakatan pernah dihukum penjara sebelumnya maka pada Pertanyaan no 5 diperinci berapa kali mereka pernah dipenjara sebelumnya",
+            3: "Pedoman Penilaian Pertanyaan 3:\n\nBerapa jumlah pasal yang dipidanakan untuk kejahatan saat ini?\n\n• Acuan: Hitung berapa banyak pasal dakwaan/tuntutan/putusan yang dikenakan pada kasus tindak pidana saat ini.\n• Kriteria Penilaian:\n- 1 - 2 Pasal (Nilai 0)\n- 3 atau lebih Pasal (Nilai 1)",
+            4: "Pedoman Penilaian Pertanyaan 4:\n\nApakah pernah melakukan pelanggaran ketika sedang menjalani program reintegrasi?\n\n• Acuan: Mencakup pelanggaran ketentuan wajib lapor, aturan pembimbingan, atau melakukan tindak pidana/pelanggaran norma masyarakat/adat saat menjalani PB, CB, atau CMB sebelumnya.\n• Kriteria Penilaian:\n- Ya (Nilai 1)\n- Tidak (Nilai 0)",
+            5: "Pedoman Penilaian Pertanyaan 5:\n\nApakah pernah mendapatkan vonis sebelumnya? (Di luar kasus sekarang)\n\n• Acuan: Menghitung frekuensi vonis/putusan pengadilan masa lalu di luar kasus yang sedang berjalan.\n• Kriteria Penilaian:\n- Tidak / Belum pernah (Nilai 0)\n- 1 - 2 Kali vonis (Nilai 2)\n- 3 atau lebih vonis (Nilai 4)",
+            6: "Pedoman Penilaian Pertanyaan 6:\n\nApakah ada catatan perilaku buruk selama berada di Rutan/Lapas/Bapas?\n\n• Acuan: Memeriksa register F atau catatan pelanggaran tata tertib/disiplin selama menjalani penahanan di Lapas/Rutan.\n• Kriteria Penilaian:\n- Ya (Nilai 1): Ada catatan pelanggaran disiplin.\n- Tidak (Nilai 0): Berkelakuan baik / tidak ada catatan.",
+            7: "Pedoman Penilaian Pertanyaan 7:\n\nApakah pernah diskors atau dikeluarkan dari sekolah?\n\n• Acuan: Riwayat pendidikan formal klien di masa lalu.\n• Kriteria Penilaian:\n- Ya (Nilai 1): Pernah diskors atau dikeluarkan (drop out karena masalah disiplin).\n- Tidak (Nilai 0): Tidak pernah.",
+            8: "Pedoman Penilaian Pertanyaan 8:\n\nApakah ada anggota keluarga/pasangan yang pernah diproses hukum/mendapatkan vonis?\n\n• Acuan: Memeriksa latar belakang keluarga inti (orang tua, saudara kandung, atau pasangan sah) yang memiliki catatan kriminal.\n• Kriteria Penilaian:\n- Ya (Nilai 1): Ada anggota keluarga inti yang pernah dihukum.\n- Tidak (Nilai 0): Tidak ada.",
+            9: "Pedoman Penilaian Pertanyaan 9:\n\nApakah pernah menggunakan narkotika dan/atau alkohol secara berlebihan?\n\n• Acuan: Penilaian kebiasaan penyalahgunaan zat terlarang atau minuman beralkohol sebelum atau selama proses hukum.\n• Kriteria Penilaian:\n- Tidak Pernah (Nilai 0)\n- Alkohol (Nilai 1)\n- Narkotika (Nilai 2)\n- Keduanya (Nilai 3)",
+            10: "Pedoman Penilaian Pertanyaan 10:\n\nApakah pernah menganggur secara terus-menerus selama 12 bulan atau lebih?\n\n• Acuan: Stabilitas pekerjaan klien di masyarakat sebelum ditahan.\n• Kriteria Penilaian:\n- Ya (Nilai 1): Pernah menganggur berturut-turut selama minimal 1 tahun.\n- Tidak (Nilai 0): Bekerja aktif / sekolah / berpenghasilan."
+        };
+
+        function bukaPedoman(nomor) {
+            const teksPedoman = pedomanPertanyaanRRI[nomor] || "Pedoman belum tersedia.";
+            Swal.fire({
+                ...swalLightTheme,
+                title: `<i class="fa-solid fa-book-open text-blue-600 mr-2"></i> Pedoman Pertanyaan No. ${nomor}`,
+                html: `<div class="text-left text-sm text-slate-700 whitespace-pre-line leading-relaxed mt-2 p-3 bg-slate-50 rounded-xl border border-slate-200 max-h-[60vh] overflow-y-auto">${teksPedoman}</div>`,
+                width: '650px',
+                confirmButtonText: 'Mengerti',
+                confirmButtonColor: '#2563eb'
+            });
+        }
+
+        function toggleDeskripsi() {
+            const konten = document.getElementById('kontenDeskripsi');
+            const label = document.getElementById('labelToggleDeskripsi');
+            const icon = document.getElementById('iconToggleDeskripsi');
+            konten.classList.toggle('hidden');
+            if (konten.classList.contains('hidden')) {
+                label.innerText = 'Tampilkan Pedoman';
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            } else {
+                label.innerText = 'Sembunyikan';
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            }
+        }
+
+        // ==================== RENDER FORMULIR BAGIAN A, B, C, D DENGAN STYLE NILAI DISAMPING JAWABAN ====================
+        function buatHtmlPertanyaan(daftar, temaWarna, isRequired, tampilPedoman = false) {
+            let activeClasses = 'peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 hover:bg-blue-50';
+            let borderClasses = 'border-slate-300';
+            let numColor = 'text-blue-700';
+            let ringFocus = 'focus:ring-blue-500';
+
+            if (temaWarna === 'pink') {
+                activeClasses = 'peer-checked:bg-pink-600 peer-checked:text-white peer-checked:border-pink-600 hover:bg-pink-50';
+                borderClasses = 'border-pink-300';
+                numColor = 'text-pink-700';
+                ringFocus = 'focus:ring-pink-500';
+            } else if (temaWarna === 'rose') {
+                activeClasses = 'peer-checked:bg-rose-600 peer-checked:text-white peer-checked:border-rose-600 hover:bg-rose-50';
+                borderClasses = 'border-rose-300';
+                numColor = 'text-rose-700';
+                ringFocus = 'focus:ring-rose-500';
+            }
+
+            return daftar.map((item, idx) => {
+                const opsiHtml = item.opsi.map(op => `
+                    <label class="cursor-pointer select-none flex-1 min-w-[130px]">
+                        <input type="radio" name="${item.kode}" value="${op.nilai}" data-label="${op.label}" onchange="hitungSkorRRI()" class="peer hidden" ${isRequired ? 'required' : ''}>
+                        <div class="px-4 py-3 rounded-xl border ${borderClasses} bg-white text-slate-600 font-bold text-center transition-all duration-200 ${activeClasses} shadow-sm text-sm flex items-center justify-between gap-2">
+                            <span>${op.label}</span>
+                            <span class="badge-nilai text-xs px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 peer-checked:bg-white/20 peer-checked:text-white font-mono">=${op.nilai}</span>
+                        </div>
+                    </label>
+                `).join('');
+
+                const tombolPedomanHtml = tampilPedoman ? `
+                    <button type="button" onclick="bukaPedoman(${item.no})" class="w-7 h-7 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white border border-blue-200 flex items-center justify-center transition shrink-0 shadow-sm" title="Lihat Pedoman Pertanyaan ${item.no}">
+                        <i class="fa-solid fa-question text-xs"></i>
+                    </button>
+                ` : '';
+
+                const subTeksHtml = item.subTeks ? `<span class="text-xs text-slate-500 font-normal mt-1 block">${item.subTeks}</span>` : '';
+
+                return `
+                    <div class="space-y-3 ${idx > 0 ? 'pt-6 border-t border-slate-200/80' : ''}">
+                        <div class="flex items-start justify-between gap-3">
+                            <p class="font-semibold text-slate-800 text-sm md:text-base flex-1">
+                                <span class="inline-block font-black ${numColor} mr-1.5">${item.no}.</span>${item.teks}
+                                ${subTeksHtml}
+                            </p>
+                            ${tombolPedomanHtml}
+                        </div>
+                        <div class="flex flex-wrap gap-3">
+                            ${opsiHtml}
+                        </div>
+                        <div>
+                            <input type="text" id="bukti_${item.kode}" class="w-full px-3.5 py-2 bg-slate-50/90 border border-slate-200 rounded-xl text-xs text-slate-700 placeholder-slate-400 focus:bg-white focus:ring-1 ${ringFocus} outline-none transition" placeholder="Bukti / Informasi pendukung untuk nomor ${item.no} (opsional)...">
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderFormulirRRI() {
+            const tglInput = document.getElementById('tanggalAsesmen');
+            if (!tglInput.value) {
+                tglInput.value = new Date().toISOString().split('T')[0];
+            }
+
+            document.getElementById('containerBagianA').innerHTML = buatHtmlPertanyaan(daftarBagianA, 'blue', true, true);
+            document.getElementById('containerBagianB').innerHTML = buatHtmlPertanyaan(daftarBagianB, 'blue', true, false);
+            document.getElementById('containerBagianC').innerHTML = buatHtmlPertanyaan(daftarBagianC, 'pink', false, false);
+            document.getElementById('containerBagianD').innerHTML = buatHtmlPertanyaan(daftarBagianD, 'rose', false, false);
+
+            hitungSkorRRI();
+        }
+
+        // ==================== KALKULASI OTOMATIS SKOR & KATEGORI RRI ====================
+        function tentukanKategoriRRI(skor) {
+            if (skor <= 6) return 'RENDAH';
+            if (skor <= 11) return 'SEDANG';
+            if (skor <= 15) return 'TINGGI';
+            return 'SANGAT TINGGI';
+        }
+
+        function hitungSkorRRI() {
+            let skorA = 0;
+            daftarBagianA.forEach(item => {
+                const checked = document.querySelector(`input[name="${item.kode}"]:checked`);
+                if (checked) skorA += parseInt(checked.value);
+            });
+
+            let cekB = 0;
+            daftarBagianB.forEach(item => {
+                const checked = document.querySelector(`input[name="${item.kode}"]:checked`);
+                if (checked && checked.value === "1") cekB += 1;
+            });
+
+            let cekC = 0;
+            daftarBagianC.forEach(item => {
+                const checked = document.querySelector(`input[name="${item.kode}"]:checked`);
+                if (checked && checked.value === "1") cekC += 1;
+            });
+
+            let cekD = 0;
+            daftarBagianD.forEach(item => {
+                const checked = document.querySelector(`input[name="${item.kode}"]:checked`);
+                if (checked && checked.value === "1") cekD += 1;
+            });
+
+            document.getElementById('subSkor_A').innerText = skorA;
+            document.getElementById('subSkor_B').innerText = cekB;
+            document.getElementById('subSkor_C').innerText = cekC;
+            document.getElementById('subSkor_D').innerText = cekD;
+
+            const kategori = tentukanKategoriRRI(skorA);
+            const adaTambahanCeklis = (cekB + cekC + cekD) > 0;
+            const statusKriminogenik = (kategori === 'RENDAH' && !adaTambahanCeklis)
+                ? 'Tidak Memerlukan Asesmen Kriminogenik'
+                : 'Memerlukan Asesmen Kriminogenik';
+
+            let katBadgeClass = 'bg-green-100 text-green-700 border-green-300';
+            if (kategori === 'SEDANG') katBadgeClass = 'bg-sky-100 text-sky-700 border-sky-300';
+            else if (kategori === 'TINGGI') katBadgeClass = 'bg-amber-100 text-amber-700 border-amber-300';
+            else if (kategori === 'SANGAT TINGGI') katBadgeClass = 'bg-red-100 text-red-700 border-red-300';
+
+            const isPerempuan = document.getElementById('jenisKelamin')?.value === 'Perempuan';
+            const isNarkoba = document.getElementById('tindakPidana')?.value.trim().toLowerCase() === 'narkoba';
+
+            const rekapGrid = document.getElementById('rekapBagianGrid');
+            if (rekapGrid) {
+                rekapGrid.innerHTML = `
+                    <div class="bg-white/90 border border-slate-200 p-3.5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase leading-tight">BAGIAN A — FAKTOR RISIKO UTAMA</span>
+                        <div class="mt-2 flex items-center justify-between">
+                            <span class="text-xl font-black text-slate-800">${skorA} <span class="text-xs font-semibold text-slate-400">/ 17</span></span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${katBadgeClass}">${kategori}</span>
+                        </div>
+                    </div>
+                    <div class="bg-white/90 border border-slate-200 p-3.5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase leading-tight">BAGIAN B — FAKTOR RISIKO TAMBAHAN</span>
+                        <div class="mt-2 flex items-center justify-between">
+                            <span class="text-xl font-black text-slate-800">${cekB} <span class="text-xs font-semibold text-slate-400">Item Ya</span></span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${cekB > 0 ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-slate-100 text-slate-600 border-slate-200'}">${cekB > 0 ? 'ADA INDIKATOR' : 'NIHIL'}</span>
+                        </div>
+                    </div>
+                    <div class="bg-white/90 border border-slate-200 p-3.5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase leading-tight">BAGIAN C — KHUSUS PEREMPUAN</span>
+                        <div class="mt-2 flex items-center justify-between">
+                            <span class="text-xl font-black text-slate-800">${isPerempuan ? cekC : '-'}</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${isPerempuan ? 'bg-pink-100 text-pink-700 border-pink-200' : 'bg-slate-100 text-slate-400 border-slate-200'}">${isPerempuan ? 'AKTIF' : 'NONAKTIF'}</span>
+                        </div>
+                    </div>
+                    <div class="bg-white/90 border border-slate-200 p-3.5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase leading-tight">BAGIAN D — KHUSUS NARKOTIKA</span>
+                        <div class="mt-2 flex items-center justify-between">
+                            <span class="text-xl font-black text-slate-800">${isNarkoba ? cekD : '-'}</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${isNarkoba ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-slate-100 text-slate-400 border-slate-200'}">${isNarkoba ? 'AKTIF' : 'NONAKTIF'}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('rekapTotalSkor').innerText = skorA;
+            document.getElementById('rekapTotalKategori').innerText = kategori;
+            document.getElementById('rekapRekomendasiKrim').innerText = statusKriminogenik;
+
+            const liveSkor = document.getElementById('liveHeaderSkor');
+            const liveKat = document.getElementById('liveHeaderKategori');
+            if (liveSkor) liveSkor.innerText = skorA;
+            if (liveKat) {
+                liveKat.innerText = kategori;
+                liveKat.className = `text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${katBadgeClass}`;
+            }
+
+            return { skorA, kategori, adaTambahanCeklis, statusKriminogenik };
+        }
+
+        const listTindakPidana = [
+            "Korupsi", "Narkoba", "Pencurian", "Penipuan", "Politik", "Terhadap Negara",
+            "Perdagangan Manusia", "Pembunuhan", "Teroris", "KDRT", "ITE", "Migas",
+            "Pembalakan Liar", "Pencucian Uang", "Perbankan", "Pajak", "Cukai",
+            "Kejahatan Dalam Jabatan", "Penyuapan", "Mata Uang", "Pemalsuan Materai/ Surat/ Lainnya",
+            "Penggelapan", "Dalam Jabatan", "Penyelundupan", "Perikanan", "Keimigrasian",
+            "Pangan", "Kesusilaan", "Perampokan", "Pornografi", "Perlindungan Anak",
+            "Farmasi", "Laka Lantas", "Penculikan", "Pengeroyokan", "Penganiayaan",
+            "Pengrusakan", "Senjata Api", "Ketertiban", "Pembakaran", "Pemerasan",
+            "Pengancaman", "Penadahan", "Perjudian", "Pelanggaran", "Lainnya"
+        ];
+
+        const listFasilitas = [
+            "Lembaga Pemasyarakatan Kelas IIA Bengkalis", "Lembaga Pemasyarakatan Kelas IIA Bengkulu", "Lembaga Pemasyarakatan Kelas IIA Besi Nusakambangan", "Lembaga Pemasyarakatan Kelas I Bandar Lampung", "Lembaga Pemasyarakatan Kelas I Batu Nusakambangan", "Lembaga Pemasyarakatan Kelas I Cipinang", "Lembaga Pemasyarakatan Kelas I Cirebon", "Lembaga Pemasyarakatan Kelas I Madiun", "Lembaga Pemasyarakatan Kelas I Makassar", "Lembaga Pemasyarakatan Kelas I Malang", "Lembaga Pemasyarakatan Kelas I Medan", "Lembaga Pemasyarakatan Kelas I Palembang", "Lembaga Pemasyarakatan Kelas I Semarang", "Lembaga Pemasyarakatan Kelas I Sukamiskin", "Lembaga Pemasyarakatan Kelas I Surabaya", "Lembaga Pemasyarakatan Kelas I Tangerang", "Lembaga Pemasyarakatan Kelas II B Kuala Tungkal", "Lembaga Pemasyarakatan Kelas II B Muara Bulian", "Lembaga Pemasyarakatan Kelas II B Muara Tebo", "Lembaga Pemasyarakatan Kelas II Takalar", "Lembaga Pemasyarakatan Kelas IIA Abepura", "Lembaga Pemasyarakatan Kelas IIA Ambarawa", "Lembaga Pemasyarakatan Kelas IIA Ambon", "Lembaga Pemasyarakatan Kelas IIA Bagan Siapiapi", "Lembaga Pemasyarakatan Kelas IIA Balikpapan", "Lembaga Pemasyarakatan Kelas IIA Banceuy Bandung", "Lembaga Pemasyarakatan Kelas IIA Banda Aceh", "Lembaga Pemasyarakatan Kelas IIA Bangkinang", "Lembaga Pemasyarakatan Kelas IIA Banjarmasin", "Lembaga Pemasyarakatan Kelas IIA Banyuasin", "Lembaga Pemasyarakatan Kelas IIA Batam", "Lembaga Pemasyarakatan Kelas IIA Baubau", "Lembaga Pemasyarakatan Kelas IIA Bekasi", "Lembaga Pemasyarakatan Kelas IIA Kotabumi", "Lembaga Pemasyarakatan Kelas IIA Waingapu", "Lembaga Pemasyarakatan Kelas IIA Binjai", "Lembaga Pemasyarakatan Kelas IIA Bogor", "Lembaga Pemasyarakatan Kelas IIA Bojonegoro", "Lembaga Pemasyarakatan Kelas IIA Bontang", "Lembaga Pemasyarakatan Kelas IIA Bukittinggi", "Lembaga Pemasyarakatan Kelas IIA Bulukumba", "Lembaga Pemasyarakatan Kelas IIA Cibinong", "Lembaga Pemasyarakatan Kelas IIA Cikarang", "Lembaga Pemasyarakatan Kelas IIA Cilegon", "Lembaga Pemasyarakatan Kelas IIA Curup", "Lembaga Pemasyarakatan Kelas IIA Gorontalo", "Lembaga Pemasyarakatan Kelas IIA Jambi", "Lembaga Pemasyarakatan Kelas IIA Jember", "Lembaga Pemasyarakatan Kelas IIA Kalianda", "Lembaga Pemasyarakatan Kelas IIA Karanganyar Nusakambangan", "Lembaga Pemasyarakatan Kelas IIA Karawang", "Lembaga Pemasyarakatan Kelas IIA Kediri", "Lembaga Pemasyarakatan Kelas IIA Kembangkuning Nusakambangan", "Lembaga Pemasyarakatan Kelas IIA Kendal", "Lembaga Pemasyarakatan Kelas IIA Kendari", "Lembaga Pemasyarakatan Kelas IIA Kerobokan", "Lembaga Pemasyarakatan Kelas IIA Kotabaru", "Lembaga Pemasyarakatan Kelas IIA Kuningan", "Lembaga Pemasyarakatan Kelas IIA Kupang", "Lembaga Pemasyarakatan Kelas IIA Labuhan Ruku", "Lembaga Pemasyarakatan Kelas IIA Lahat", "Lembaga Pemasyarakatan Kelas IIA Lhoksumawe", "Lembaga Pemasyarakatan Kelas IIA Lubuklinggau", "Lembaga Pemasyarakatan Kelas IIA Magelang", "Lembaga Pemasyarakatan Kelas IIA Majalengka", "Lembaga Pemasyarakatan Kelas IIA Manado", "Lembaga Pemasyarakatan Kelas IIA Mataram", "Lembaga Pemasyarakatan Kelas IIA Metro", "Lembaga Pemasyarakatan Kelas IIA Narkotika Pangkalpinang", "Lembaga Pemasyarakatan Kelas IIA Padang", "Lembaga Pemasyarakatan Kelas IIA Palangkaraya", "Lembaga Pemasyarakatan Kelas IIA Palopo", "Lembaga Pemasyarakatan Kelas IIA Palu", "Lembaga Pemasyarakatan Kelas IIA Pamekasan", "Lembaga Pemasyarakatan Kelas IIA Pancur Batu", "Lembaga Pemasyarakatan Kelas IIA Pangkalpinang", "Lembaga Pemasyarakatan Kelas IIA Parepare", "Lembaga Pemasyarakatan Kelas IIA Pasir Putih Nusakambangan", "Lembaga Pemasyarakatan Kelas IIA Pekalongan", "Lembaga Pemasyarakatan Kelas IIA Pekanbaru", "Lembaga Pemasyarakatan Kelas IIA Pematangsiantar", "Lembaga Pemasyarakatan Kelas IIA Permisan Nusakambangan", "Lembaga Pemasyarakatan Kelas IIA Pontianak", "Lembaga Pemasyarakatan Kelas IIA Purwokerto", "Lembaga Pemasyarakatan Kelas IIA Rantauprapat", "Lembaga Pemasyarakatan Kelas IIA Salemba", "Lembaga Pemasyarakatan Kelas IIA Samarinda", "Lembaga Pemasyarakatan Kelas IIA Serang", "Lembaga Pemasyarakatan Kelas IIA Sibolga", "Lembaga Pemasyarakatan Kelas IIA Sidoarjo", "Lembaga Pemasyarakatan Kelas IIA Sragen", "Lembaga Pemasyarakatan Kelas IIA Subang", "Lembaga Pemasyarakatan Kelas IIA Sumbawa Besar", "Lembaga Pemasyarakatan Kelas IIA Tangerang", "Lembaga Pemasyarakatan Kelas IIA Tanjung Raja", "Lembaga Pemasyarakatan Kelas IIA Tanjungpinang", "Lembaga Pemasyarakatan Kelas IIA Tarakan", "Lembaga Pemasyarakatan Kelas IIA Tembilahan", "Lembaga Pemasyarakatan Kelas IIA Tenggarong", "Lembaga Pemasyarakatan Kelas IIA Ternate", "Lembaga Pemasyarakatan Kelas IIA Watampone", "Lembaga Pemasyarakatan Kelas IIA Yogyakarta", "Lembaga Pemasyarakatan Kelas IIB Ampana", "Lembaga Pemasyarakatan Kelas IIB Amuntai", "Lembaga Pemasyarakatan Kelas IIB Argamakmur", "Lembaga Pemasyarakatan Kelas IIB Atambua", "Lembaga Pemasyarakatan Kelas IIB Bangko", "Lembaga Pemasyarakatan Kelas IIB Banjar", "Lembaga Pemasyarakatan Kelas IIB Banjarbaru", "Lembaga Pemasyarakatan Kelas IIB Banyuwangi", "Lembaga Pemasyarakatan Kelas IIB Biak", "Lembaga Pemasyarakatan Kelas IIB Bireun", "Lembaga Pemasyarakatan Kelas IIB Bitung", "Lembaga Pemasyarakatan Kelas IIB Blangkejeren", "Lembaga Pemasyarakatan Kelas IIB Blitar", "Lembaga Pemasyarakatan Kelas IIB Boalemo", "Lembaga Pemasyarakatan Kelas IIB Bondowoso", "Lembaga Pemasyarakatan Kelas IIB Brebes", "Lembaga Pemasyarakatan Kelas IIB Ciamis", "Lembaga Pemasyarakatan Kelas IIB Cianjur", "Lembaga Pemasyarakatan Kelas IIB Cilacap", "Lembaga Pemasyarakatan Kelas IIB Dompu", "Lembaga Pemasyarakatan Kelas IIB Empat Lawang", "Lembaga Pemasyarakatan Kelas IIB Ende", "Lembaga Pemasyarakatan Kelas IIB Fakfak", "Lembaga Pemasyarakatan Kelas IIB Garut", "Lembaga Pemasyarakatan Kelas IIB Gunung Sugih", "Lembaga Pemasyarakatan Kelas IIB Gunungsitoli", "Lembaga Pemasyarakatan Kelas IIB Idi", "Lembaga Pemasyarakatan Kelas IIB Idi Rayeuk", "Lembaga Pemasyarakatan Kelas IIB Indramayu", "Lembaga Pemasyarakatan Kelas IIB Jailolo", "Lembaga Pemasyarakatan Kelas IIB Jombang", "Lembaga Pemasyarakatan Kelas IIB Kalabahi", "Lembaga Pemasyarakatan Kelas IIB Karangasem", "Lembaga Pemasyarakatan Kelas IIB Kayuagung", "Lembaga Pemasyarakatan Kelas IIB Ketapang", "Lembaga Pemasyarakatan Kelas IIB Klaten", "Lembaga Pemasyarakatan Kelas IIB Kota Agung", "Lembaga Pemasyarakatan Kelas IIB Kota Bakti", "Lembaga Pemasyarakatan Kelas IIB Kuala Simpang", "Lembaga Pemasyarakatan Kelas IIB Kutacane", "Lembaga Pemasyarakatan Kelas IIB Lamongan", "Lembaga Pemasyarakatan Kelas IIB Lhoksukon", "Lembaga Pemasyarakatan Kelas IIB Lubuk Basung", "Lembaga Pemasyarakatan Kelas IIB Lubuk Pakam", "Lembaga Pemasyarakatan Kelas IIB Lumajang", "Lembaga Pemasyarakatan Kelas IIB Luwuk", "Lembaga Pemasyarakatan Kelas IIB Manokwari", "Lembaga Pemasyarakatan Kelas IIB Martapura", "Lembaga Pemasyarakatan Kelas IIB Merauke", "Lembaga Pemasyarakatan Kelas IIB Meulaboh", "Lembaga Pemasyarakatan Kelas IIB Mojokerto", "Lembaga Pemasyarakatan Kelas IIB Muara Bungo", "Lembaga Pemasyarakatan Kelas IIB Muara Enim", "Lembaga Pemasyarakatan Kelas IIB Muara Sijunjung", "Lembaga Pemasyarakatan Kelas IIB Muara Teweh", "Lembaga Pemasyarakatan Kelas IIB Muaradua", "Lembaga Pemasyarakatan Kelas IIB Nabire", "Lembaga Pemasyarakatan Kelas IIB Ngawi", "Lembaga Pemasyarakatan Kelas IIB Nunukan", "Lembaga Pemasyarakatan Kelas IIB Padangsidimpuan", "Lembaga Pemasyarakatan Kelas IIB Pahuwato", "Lembaga Pemasyarakatan Kelas IIB Pangkalan Bun", "Lembaga Pemasyarakatan Kelas IIB Panyabungan", "Lembaga Pemasyarakatan Kelas IIB Pariaman", "Lembaga Pemasyarakatan Kelas IIB Pasir Pangaraian", "Lembaga Pemasyarakatan Kelas IIB Pasuruan", "Lembaga Pemasyarakatan Kelas IIB Pati", "Lembaga Pemasyarakatan Kelas IIB Payakumbuh", "Lembaga Pemasyarakatan Kelas IIB Piru", "Lembaga Pemasyarakatan Kelas IIB Polewali", "Lembaga Pemasyarakatan Kelas IIB Probolinggo", "Lembaga Pemasyarakatan Kelas IIB Purwakarta", "Lembaga Pemasyarakatan Kelas IIB Sampit", "Lembaga Pemasyarakatan Kelas IIB Sanana", "Lembaga Pemasyarakatan Kelas IIB Sarolangun", "Lembaga Pemasyarakatan Kelas IIB Sekayu", "Lembaga Pemasyarakatan Kelas IIB Selat Panjang", "Lembaga Pemasyarakatan Kelas IIB Selong", "Lembaga Pemasyarakatan Kelas IIB Serui", "Lembaga Pemasyarakatan Kelas IIB Siborongborong", "Lembaga Pemasyarakatan Kelas IIB Singaraja", "Lembaga Pemasyarakatan Kelas IIB Singkawang", "Lembaga Pemasyarakatan Kelas IIB Sintang", "Lembaga Pemasyarakatan Kelas IIB Slawi", "Lembaga Pemasyarakatan Kelas IIB Sleman", "Lembaga Pemasyarakatan Kelas IIB Solok", "Lembaga Pemasyarakatan Kelas IIB Sorong", "Lembaga Pemasyarakatan Kelas IIB Sukabumi", "Lembaga Pemasyarakatan Kelas IIB Sumedang", "Lembaga Pemasyarakatan Kelas IIB Sungailiat", "Lembaga Pemasyarakatan Kelas IIB Tabanan", "Lembaga Pemasyarakatan Kelas IIB Tagulandang", "Lembaga Pemasyarakatan Kelas IIB Tahuna", "Lembaga Pemasyarakatan Kelas IIB Tanjung", "Lembaga Pemasyarakatan Kelas IIB Tanjung Balai", "Lembaga Pemasyarakatan Kelas IIB Tanjungpandan", "Lembaga Pemasyarakatan Kelas IIB Tasikmalaya", "Lembaga Pemasyarakatan Kelas IIB Tebing Tinggi", "Lembaga Pemasyarakatan Kelas IIB Tegal", "Lembaga Pemasyarakatan Kelas IIB Teluk Kuantan", "Lembaga Pemasyarakatan Kelas IIB Timika", "Lembaga Pemasyarakatan Kelas IIB Tobelo", "Lembaga Pemasyarakatan Kelas IIB Toli-Toli", "Lembaga Pemasyarakatan Kelas IIB Tondano", "Lembaga Pemasyarakatan Kelas IIB Tual", "Lembaga Pemasyarakatan Kelas IIB Tuban", "Lembaga Pemasyarakatan Kelas IIB Tulungagung", "Lembaga Pemasyarakatan Kelas IIB Waikabubak", "Lembaga Pemasyarakatan Kelas IIB Wamena", "Lembaga Pemasyarakatan Kelas IIB Warungkiara", "Lembaga Pemasyarakatan Kelas IIB Way Kanan", "Lembaga Pemasyarakatan Kelas III Alahan Panjang", "Lembaga Pemasyarakatan Kelas III Amurang", "Lembaga Pemasyarakatan Kelas III Arjasa", "Lembaga Pemasyarakatan Kelas III Baa", "Lembaga Pemasyarakatan Kelas III Bandanaira", "Lembaga Pemasyarakatan Kelas III Barus", "Lembaga Pemasyarakatan Kelas III Blang Pidie", "Lembaga Pemasyarakatan Kelas III Calang", "Lembaga Pemasyarakatan Kelas III Dabo Singkep", "Lembaga Pemasyarakatan Kelas III Dharmasraya", "Lembaga Pemasyarakatan Kelas III Dobo", "Lembaga Pemasyarakatan Kelas III Enemawira", "Lembaga Pemasyarakatan Kelas III Geser", "Lembaga Pemasyarakatan Kelas III Gunungtua", "Lembaga Pemasyarakatan Kelas III Kaimana", "Lembaga Pemasyarakatan Kelas III Kolonedale", "Lembaga Pemasyarakatan Kelas III Kotanopan", "Lembaga Pemasyarakatan Kelas III Kotapinang", "Lembaga Pemasyarakatan Kelas III Labuha", "Lembaga Pemasyarakatan Kelas III Labuhan Bilik", "Lembaga Pemasyarakatan Kelas III Lembata", "Lembaga Pemasyarakatan Kelas III Leok", "Lembaga Pemasyarakatan Kelas III Lhoknga", "Lembaga Pemasyarakatan Kelas III Lirung", "Lembaga Pemasyarakatan Kelas III Mamasa", "Lembaga Pemasyarakatan Kelas III Namlea", "Lembaga Pemasyarakatan Kelas III Pagaralam", "Lembaga Pemasyarakatan Kelas III Pangururan", "Lembaga Pemasyarakatan Kelas III Parigi", "Lembaga Pemasyarakatan Kelas III Rangkasbitung", "Lembaga Pemasyarakatan Kelas III Saparua", "Lembaga Pemasyarakatan Kelas III Saumlaki", "Lembaga Pemasyarakatan Kelas III Sinabang", "Lembaga Pemasyarakatan Kelas III Sukamara", "Lembaga Pemasyarakatan Kelas III Suliki", "Lembaga Pemasyarakatan Kelas III Surulangun Rawas", "Lembaga Pemasyarakatan Kelas III Talu", "Lembaga Pemasyarakatan Kelas III Tamako", "Lembaga Pemasyarakatan Kelas III Tanah Merah", "Lembaga Pemasyarakatan Kelas III Teluk Dalam", "Lembaga Pemasyarakatan Kelas III Teminabuan", "Lembaga Pemasyarakatan Kelas III Ulu Siau", "Lembaga Pemasyarakatan Kelas III Wahai", "Lembaga Pemasyarakatan Kelas III Wonreli", "Lembaga Pemasyarakatan Perempuan Kelas II Sigli", "Lembaga Pemasyarakatan Perempuan Kelas II Sungguminasa", "Lembaga Pemasyarakatan Perempuan Kelas IIA Bandar Lampung", "Lembaga Pemasyarakatan Perempuan Kelas IIA Bandung", "Lembaga Pemasyarakatan Perempuan Kelas IIA Denpasar", "Lembaga Pemasyarakatan Perempuan Kelas IIA Jakarta", "Lembaga Pemasyarakatan Perempuan Kelas IIA Malang", "Lembaga Pemasyarakatan Perempuan Kelas IIA Martapura", "Lembaga Pemasyarakatan Perempuan Kelas IIA Medan", "Lembaga Pemasyarakatan Perempuan Kelas IIA Palangka Raya", "Lembaga Pemasyarakatan Perempuan Kelas IIA Palembang", "Lembaga Pemasyarakatan Perempuan Kelas IIA Pekanbaru", "Lembaga Pemasyarakatan Perempuan Kelas IIA Pontianak", "Lembaga Pemasyarakatan Perempuan Kelas IIA Samarinda", "Lembaga Pemasyarakatan Perempuan Kelas IIA Semarang", "Lembaga Pemasyarakatan Perempuan Kelas IIA Tangerang", "Lembaga Pemasyarakatan Perempuan Kelas IIB Batam", "Lembaga Pemasyarakatan Perempuan Kelas IIB Bengkulu", "Lembaga Pemasyarakatan Perempuan Kelas IIB Jambi", "Lembaga Pemasyarakatan Perempuan Kelas IIB Kupang", "Lembaga Pemasyarakatan Perempuan Kelas IIB Manado", "Lembaga Pemasyarakatan Perempuan Kelas IIB Padang", "Lembaga Pemasyarakatan Perempuan Kelas IIB Yogyakarta", "Lembaga Pemasyarakatan Perempuan Kelas III Ambon", "Lembaga Pemasyarakatan Perempuan Kelas III Gorontalo", "Lembaga Pemasyarakatan Perempuan Kelas III Jayapura", "Lembaga Pemasyarakatan Perempuan Kelas III Kendari", "Lembaga Pemasyarakatan Perempuan Kelas III Mamuju", "Lembaga Pemasyarakatan Perempuan Kelas III Manokwari", "Lembaga Pemasyarakatan Perempuan Kelas III Mataram", "Lembaga Pemasyarakatan Perempuan Kelas III Palu", "Lembaga Pemasyarakatan Perempuan Kelas III Pangkalpinang", "Lembaga Pemasyarakatan Terbuka Kelas IIB Nusakambangan", "Lembaga Pemasyarakatan Terbuka Kelas IIB Pasaman", "Lembaga Pemasyarakatan Terbuka Kelas IIB Waikabubak", "Lembaga Pemasyarakatan Narkotika Kelas II B Muara Sabak", "Lembaga Pemasyarakatan Narkotika Kelas II Langsa", "Lembaga Pemasyarakatan Narkotika Kelas IIA Bandar Lampung", "Lembaga Pemasyarakatan Narkotika Kelas IIA Bandung", "Lembaga Pemasyarakatan Narkotika Kelas IIA Bangli", "Lembaga Pemasyarakatan Narkotika Kelas IIA Cirebon", "Lembaga Pemasyarakatan Narkotika Kelas IIA Gunung Sindur", "Lembaga Pemasyarakatan Narkotika Kelas IIA Jakarta", "Lembaga Pemasyarakatan Narkotika Kelas IIA Jayapura", "Lembaga Pemasyarakatan Narkotika Kelas IIA Karang Intan", "Lembaga Pemasyarakatan Narkotika Kelas IIA Kasongan", "Lembaga Pemasyarakatan Narkotika Kelas IIA Langkat", "Lembaga Pemasyarakatan Narkotika Kelas IIA Muara Beliti", "Lembaga Pemasyarakatan Narkotika Kelas IIA Nusakambangan", "Lembaga Pemasyarakatan Narkotika Kelas IIA Pematangsiantar", "Lembaga Pemasyarakatan Narkotika Kelas IIA Samarinda", "Lembaga Pemasyarakatan Narkotika Kelas IIA Sungguminasa", "Lembaga Pemasyarakatan Narkotika Kelas IIA Tanjungpinang", "Lembaga Pemasyarakatan Narkotika Kelas IIA Yogyakarta", "Lembaga Pemasyarakatan Narkotika Kelas IIB Banyuasin", "Lembaga Pemasyarakatan Narkotika Kelas IIB Purwokerto", "Lembaga Pemasyarakatan Narkotika Kelas IIB Rumbai", "Lembaga Pemasyarakatan Narkotika Kelas III Sawahlunto", "Lembaga Pemasyarakatan Narkotika Pamekasan", "Lembaga Pemasyarakatan Pemuda Kelas IIA Tangerang", "Lembaga Pemasyarakatan Pemuda Kelas IIB Plantungan", "Lembaga Pemasyarakatan Pemuda Kelas III Langkat", "Lembaga Pemasyarakatan Terbuka Kelas IIB Ciangir", "Lembaga Pemasyarakatan Terbuka Kelas IIB Kendal", "Lembaga Pemasyarakatan Terbuka Kelas IIB Lombok", "Lembaga Pemasyarakatan Terbuka Kelas III Rumbai", "Lembaga Pemasyarakatan Khusus Kelas IIA Gunung Sindur", "Lembaga Pemasyarakatan Khusus Kelas IIB Sentul", "Lembaga Pemasyarakatan Pemuda Kelas II Madiun", "Rumah Tahanan Negara Kelas IIB Bangil", "Rumah Tahanan Negara Kelas IIB Bangkalan", "Rumah Tahanan Negara Kelas IIB Bangli", "Rumah Tahanan Negara Kelas I Cipinang", "Rumah Tahanan Negara Kelas I Cirebon", "Rumah Tahanan Negara Kelas I Depok", "Rumah Tahanan Negara Kelas I Jakarta Pusat", "Rumah Tahanan Negara Kelas I Labuhan Deli", "Rumah Tahanan Negara Kelas I Makassar", "Rumah Tahanan Negara Kelas I Medan", "Rumah Tahanan Negara Kelas I Palembang", "Rumah Tahanan Negara Kelas I Pekanbaru", "Rumah Tahanan Negara Kelas I Pondok Bambu", "Rumah Tahanan Negara Kelas I Surabaya", "Rumah Tahanan Negara Kelas I Surakarta", "Rumah Tahanan Negara Kelas I Tangerang", "Rumah Tahanan Negara Kelas I Tanjungpinang", "Rumah Tahanan Negara Kelas II B Prabumulih", "Rumah Tahanan Negara Kelas IIA Ambon", "Rumah Tahanan Negara Kelas IIA Balikpapan", "Rumah Tahanan Negara Kelas IIA Batam", "Rumah Tahanan Negara Kelas IIA Kendari", "Rumah Tahanan Negara Kelas IIA Manado", "Rumah Tahanan Negara Kelas IIA Palangka Raya", "Rumah Tahanan Negara Kelas IIA Palu", "Rumah Tahanan Negara Kelas IIA Pekalongan", "Rumah Tahanan Negara Kelas IIA Perempuan Surabaya", "Rumah Tahanan Negara Kelas IIA Pontianak", "Rumah Tahanan Negara Kelas IIA Samarinda", "Rumah Tahanan Negara Kelas IIA Yogyakarta", "Rumah Tahanan Negara Kelas IIB Bajawa", "Rumah Tahanan Negara Kelas IIB Balige", "Rumah Tahanan Negara Kelas IIB Banda Aceh", "Rumah Tahanan Negara Kelas I Bandar Lampung", "Rumah Tahanan Negara Kelas I Bandung", "Rumah Tahanan Negara Kelas IIB Banjarnegara", "Rumah Tahanan Negara Kelas IIB Bantaeng", "Rumah Tahanan Negara Kelas IIB Bantul", "Rumah Tahanan Negara Kelas IIB Banyumas", "Rumah Tahanan Negara Kelas IIB Barabai", "Rumah Tahanan Negara Kelas IIB Barru", "Rumah Tahanan Negara Kelas IIB Batang", "Rumah Tahanan Negara Kelas IIB Baturaja", "Rumah Tahanan Negara Kelas IIB Batusangkar", "Rumah Tahanan Negara Kelas IIB Bener Meriah", "Rumah Tahanan Negara Kelas IIB Bengkayang", "Rumah Tahanan Negara Kelas IIB Bengkulu", "Rumah Tahanan Negara Kelas IIB Bintuni", "Rumah Tahanan Negara Kelas IIB Blora", "Rumah Tahanan Negara Kelas IIB Boyolali", "Rumah Tahanan Negara Kelas IIB Buntok", "Rumah Tahanan Negara Kelas IIB Demak", "Rumah Tahanan Negara Kelas IIB Donggala", "Rumah Tahanan Negara Kelas IIB Dumai", "Rumah Tahanan Negara Kelas IIB Enrekang", "Rumah Tahanan Negara Kelas IIB Garut", "Rumah Tahanan Negara Kelas IIB Gianyar", "Rumah Tahanan Negara Kelas IIB Gresik", "Rumah Tahanan Negara Kelas IIB Humbang Hasundutan", "Rumah Tahanan Negara Kelas IIB Jantho", "Rumah Tahanan Negara Kelas IIB Jeneponto", "Rumah Tahanan Negara Kelas IIB Jepara", "Rumah Tahanan Negara Kelas IIB Kabanjahe", "Rumah Tahanan Negara Kelas IIB Kandangan", "Rumah Tahanan Negara Kelas IIB Kebumen", "Rumah Tahanan Negara Kelas IIB Kefamenanu", "Rumah Tahanan Negara Kelas IIB Klungkung", "Rumah Tahanan Negara Kelas IIB Kolaka", "Rumah Tahanan Negara Kelas IIB Kota Agung", "Rumah Tahanan Negara Kelas IIB Kotabumi", "Rumah Tahanan Negara Kelas IIB Kotamobagu", "Rumah Tahanan Negara Kelas IIB Kraksaan", "Rumah Tahanan Negara Kelas IIB Krui", "Rumah Tahanan Negara Kelas IIB Kuala Kapuas", "Rumah Tahanan Negara Kelas IIB Kudus", "Rumah Tahanan Negara Kelas IIB Kupang", "Rumah Tahanan Negara Kelas IIB Landak", "Rumah Tahanan Negara Kelas IIB Larantuka", "Rumah Tahanan Negara Kelas IIB Lubuk Sikaping", "Rumah Tahanan Negara Kelas IIB Magetan", "Rumah Tahanan Negara Kelas IIB Majene", "Rumah Tahanan Negara Kelas IIB Makale", "Rumah Tahanan Negara Kelas IIB Malino", "Rumah Tahanan Negara Kelas IIB Mamuju", "Rumah Tahanan Negara Kelas IIB Maninjau", "Rumah Tahanan Negara Kelas IIB Manna", "Rumah Tahanan Negara Kelas IIB Marabahan", "Rumah Tahanan Negara Kelas IIB Masamba", "Rumah Tahanan Negara Kelas IIB Masohi", "Rumah Tahanan Negara Kelas IIB Maumere", "Rumah Tahanan Negara Kelas IIB Mempawah", "Rumah Tahanan Negara Kelas IIB Menggala", "Rumah Tahanan Negara Kelas IIB Muara Labuh", "Rumah Tahanan Negara Kelas IIB Muntok", "Rumah Tahanan Negara Kelas IIB Natal", "Rumah Tahanan Negara Kelas IIB Negara", "Rumah Tahanan Negara Kelas IIB Nganjuk", "Rumah Tahanan Negara Kelas IIB Pacitan", "Rumah Tahanan Negara Kelas IIB Padang", "Rumah Tahanan Negara Kelas IIB Padang Panjang", "Rumah Tahanan Negara Kelas IIB Painan", "Rumah Tahanan Negara Kelas IIB Pandeglang", "Rumah Tahanan Negara Kelas IIB Pangkajene", "Rumah Tahanan Negara Kelas IIB Pangkalan Brandan", "Rumah Tahanan Negara Kelas IIB Pasangkayu", "Rumah Tahanan Negara Kelas IIB Pelaihari", "Rumah Tahanan Negara Kelas IIB Pemalang", "Rumah Tahanan Negara Kelas IIB Pinrang", "Rumah Tahanan Negara Kelas IIB Ponorogo", "Rumah Tahanan Negara Kelas IIB Poso", "Rumah Tahanan Negara Kelas IIB Praya", "Rumah Tahanan Negara Kelas IIB Purbalingga", "Rumah Tahanan Negara Kelas IIB Purwodadi", "Rumah Tahanan Negara Kelas IIB Purworejo", "Rumah Tahanan Negara Kelas IIB Putussibau", "Rumah Tahanan Negara Kelas IIB Raba Bima", "Rumah Tahanan Negara Kelas IIB Raha", "Rumah Tahanan Negara Kelas IIB Rantau", "Rumah Tahanan Negara Kelas IIB Rembang", "Rumah Tahanan Negara Kelas IIB Rengat", "Rumah Tahanan Negara Kelas IIB Ruteng", "Rumah Tahanan Negara Kelas IIB Sabang", "Rumah Tahanan Negara Kelas IIB Salatiga", "Rumah Tahanan Negara Kelas IIB Sambas", "Rumah Tahanan Negara Kelas IIB Sampang", "Rumah Tahanan Negara Kelas IIB Sanggau", "Rumah Tahanan Negara Kelas IIB Sawahlunto", "Rumah Tahanan Negara Kelas IIB Selayar", "Rumah Tahanan Negara Kelas IIB Sengkang", "Rumah Tahanan Negara Kelas IIB Serang", "Rumah Tahanan Negara Kelas IIB Siak Sri Indrapura", "Rumah Tahanan Negara Kelas IIB Sibuhuan", "Rumah Tahanan Negara Kelas IIB Sidenreng Rappang", "Rumah Tahanan Negara Kelas IIB Sidikalang", "Rumah Tahanan Negara Kelas IIB Sigli", "Rumah Tahanan Negara Kelas IIB Singkil", "Rumah Tahanan Negara Kelas IIB Sinjai", "Rumah Tahanan Negara Kelas IIB Sipirok", "Rumah Tahanan Negara Kelas IIB Situbondo", "Rumah Tahanan Negara Kelas IIB Soasiu", "Rumah Tahanan Negara Kelas IIB Soe", "Rumah Tahanan Negara Kelas IIB Sukadana", "Rumah Tahanan Negara Kelas IIB Sumenep", "Rumah Tahanan Negara Kelas IIB Sungai Penuh", "Rumah Tahanan Negara Kelas IIB Takengon", "Rumah Tahanan Negara Kelas IIB Tamiang Layang", "Rumah Tahanan Negara Kelas IIB Tanah Grogot", "Rumah Tahanan Negara Kelas IIB Tanjung", "Rumah Tahanan Negara Kelas IIB Tanjung Balai Karimun", "Rumah Tahanan Negara Kelas IIB Tanjung Pura", "Rumah Tahanan Negara Kelas IIB Tanjung Redeb", "Rumah Tahanan Negara Kelas IIB Tapaktuan", "Rumah Tahanan Negara Kelas IIB Tarutung", "Rumah Tahanan Negara Kelas IIB Temanggung", "Rumah Tahanan Negara Kelas IIB Ternate", "Rumah Tahanan Negara Kelas IIB Trenggalek", "Rumah Tahanan Negara Kelas IIB Unaaha", "Rumah Tahanan Negara Kelas IIB Watansoppeng", "Rumah Tahanan Negara Kelas IIB Wates", "Rumah Tahanan Negara Kelas IIB Weda", "Rumah Tahanan Negara Kelas IIB Wonogiri", "Rumah Tahanan Negara Kelas IIB Wonosari", "Rumah Tahanan Negara Kelas IIB Wonosobo", "Rumah Tahanan Negara Perempuan Kelas IIA Bandung", "Rumah Tahanan Negara Perempuan Kelas IIA Medan", "Lembaga Pembinaan Khusus Anak Kelas I Blitar", "Lembaga Pembinaan Khusus Anak Kelas I Kupang", "Lembaga Pembinaan Khusus Anak Kelas I Kutoarjo", "Lembaga Pembinaan Khusus Anak Kelas I Martapura", "Lembaga Pembinaan Khusus Anak Kelas I Medan", "Lembaga Pembinaan Khusus Anak Kelas I Palembang", "Lembaga Pembinaan Khusus Anak Kelas I Tangerang", "Lembaga Pembinaan Khusus Anak Kelas II Ambon", "Lembaga Pembinaan Khusus Anak Kelas II Banda Aceh", "Lembaga Pembinaan Khusus Anak Kelas II Bandar Lampung", "Lembaga Pembinaan Khusus Anak Kelas II Bandung", "Lembaga Pembinaan Khusus Anak Kelas II Batam", "Lembaga Pembinaan Khusus Anak Kelas II Bengkulu", "Lembaga Pembinaan Khusus Anak Kelas II Gorontalo", "Lembaga Pembinaan Khusus Anak Kelas II Jakarta", "Lembaga Pembinaan Khusus Anak Kelas II Jayapura", "Lembaga Pembinaan Khusus Anak Kelas II Karangasem", "Lembaga Pembinaan Khusus Anak Kelas II Kendari", "Lembaga Pembinaan Khusus Anak Kelas II Lombok Tengah", "Lembaga Pembinaan Khusus Anak Kelas II Mamuju", "Lembaga Pembinaan Khusus Anak Kelas II Manokwari", "Lembaga Pembinaan Khusus Anak Kelas II Maros", "Lembaga Pembinaan Khusus Anak Kelas II Muara Bulian", "Lembaga Pembinaan Khusus Anak Kelas II Palangka Raya", "Lembaga Pembinaan Khusus Anak Kelas II Palu", "Lembaga Pembinaan Khusus Anak Kelas II Pangkalpinang", "Lembaga Pembinaan Khusus Anak Kelas II Pekanbaru", "Lembaga Pembinaan Khusus Anak Kelas II Samarinda", "Lembaga Pembinaan Khusus Anak Kelas II Sungai Raya", "Lembaga Pembinaan Khusus Anak Kelas II Tanjung Pati", "Lembaga Pembinaan Khusus Anak Kelas II Ternate", "Lembaga Pembinaan Khusus Anak Kelas II Tomohon", "Lembaga Pembinaan Khusus Anak Kelas II Yogyakarta"
+        ];
+
+        const inputPidana = document.getElementById("tindakPidana");
+        const listPidanaContainer = document.getElementById("listPidana");
+
+        function filterPidana() {
+            const query = inputPidana.value.toLowerCase();
+            listPidanaContainer.innerHTML = "";
+            
+            if (query.length >= 0) {
+                const matched = listTindakPidana.filter(item => item.toLowerCase().includes(query));
+                if(matched.length > 0) {
+                    listPidanaContainer.style.display = "block";
+                    matched.forEach(item => {
+                        const li = document.createElement("li");
+                        if(query !== "") {
+                            const regex = new RegExp(`(${query})`, "gi");
+                            li.innerHTML = item.replace(regex, "<span class='text-blue-600 font-bold'>$1</span>");
+                        } else {
+                            li.innerText = item;
+                        }
+                        
+                        li.onclick = function(e) {
+                            e.stopPropagation();
+                            inputPidana.value = item;
+                            listPidanaContainer.style.display = "none";
+                            toggleSections();
+                        };
+                        listPidanaContainer.appendChild(li);
+                    });
+                } else {
+                    listPidanaContainer.style.display = "none";
+                }
+            } else {
+                listPidanaContainer.style.display = "none";
+            }
+        }
+
+        const inputLapas = document.getElementById("lokasiPidana");
+        const listContainer = document.getElementById("listLapas");
+
+        function filterLapas() {
+            const query = inputLapas.value.toLowerCase();
+            listContainer.innerHTML = "";
+            
+            if (query.length >= 0) {
+                const matched = listFasilitas.filter(item => item.toLowerCase().includes(query));
+                if(matched.length > 0) {
+                    listContainer.style.display = "block";
+                    matched.forEach(item => {
+                        const li = document.createElement("li");
+                        if(query !== "") {
+                            const regex = new RegExp(`(${query})`, "gi");
+                            li.innerHTML = item.replace(regex, "<span class='text-blue-600 font-bold'>$1</span>");
+                        } else {
+                            li.innerText = item;
+                        }
+                        
+                        li.onclick = function(e) {
+                            e.stopPropagation();
+                            inputLapas.value = item;
+                            listContainer.style.display = "none";
+                        };
+                        listContainer.appendChild(li);
+                    });
+                } else {
+                    listContainer.style.display = "none";
+                }
+            } else {
+                listContainer.style.display = "none";
+            }
+        }
+
+        function closeAllDropdowns() {
+            listContainer.style.display = "none";
+            listPidanaContainer.style.display = "none";
+        }
+
+        let padPetugas, padKlien;
+
+        function initSignaturePads() {
+            const canvasPetugas = document.getElementById('canvasPetugas');
+            const canvasKlien = document.getElementById('canvasKlien');
+
+            function resizeCanvas(canvas) {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext("2d").scale(ratio, ratio);
+            }
+
+            resizeCanvas(canvasPetugas);
+            resizeCanvas(canvasKlien);
+
+            padPetugas = new SignaturePad(canvasPetugas, { penColor: 'rgb(37, 99, 235)' });
+            padKlien = new SignaturePad(canvasKlien, { penColor: 'rgb(37, 99, 235)' });
+
+            document.getElementById('btnClearPetugas').addEventListener('click', () => padPetugas.clear());
+            document.getElementById('btnClearKlien').addEventListener('click', () => padKlien.clear());
+        }
+
+        window.addEventListener('load', () => {
+            renderFormulirRRI();
+            initSignaturePads();
+            cekSesiLogin();
+        });
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        async function cekSesiLogin() {
+            const { data } = await supabaseClient.auth.getSession();
+            if (!data.session) {
+                window.location.href = 'index.html';
+                return;
+            }
+            const userMeta = data.session.user.user_metadata;
+            if(userMeta && userMeta.nama_petugas) {
+                globalNamaPetugas = userMeta.nama_petugas;
+                document.getElementById('userName').innerText = userMeta.nama_petugas;
+                document.getElementById('userRole').innerText = userMeta.jabatan || "Petugas Bapas";
+                
+                if (userMeta.avatar_base64) {
+                    const imgHtml = `<img src="${userMeta.avatar_base64}" class="w-full h-full object-cover">`;
+                    document.getElementById('userInitialContainer').innerHTML = imgHtml;
+                    document.getElementById('mobileUserInitialContainer').innerHTML = imgHtml;
+                } else {
+                    document.getElementById('userInitial').innerText = userMeta.nama_petugas.charAt(0).toUpperCase();
+                    document.getElementById('mobileUserInitial').innerText = userMeta.nama_petugas.charAt(0).toUpperCase();
+                }
+            }
+        }
+
+        const jenisKelamin = document.getElementById('jenisKelamin');
+        const bagianC = document.getElementById('bagianC');
+        const bagianD = document.getElementById('bagianD');
+        const pdfBagianCContainer = document.getElementById('pdf-bagianC-container');
+        const pdfBagianDContainer = document.getElementById('pdf-bagianD-container');
+
+        function toggleSections() {
+            if(jenisKelamin.value === 'Perempuan') {
+                bagianC.classList.remove('hidden');
+                document.querySelectorAll('input[name^="c"]').forEach(r => r.required = true);
+                pdfBagianCContainer.style.display = 'block'; 
+            } else {
+                bagianC.classList.add('hidden');
+                document.querySelectorAll('input[name^="c"]').forEach(r => { r.checked = false; r.required = false; });
+                pdfBagianCContainer.style.display = 'none'; 
+            }
+
+            if(inputPidana.value.trim().toLowerCase() === 'narkoba') {
+                bagianD.classList.remove('hidden');
+                document.querySelectorAll('input[name^="d"]').forEach(r => r.required = true);
+                pdfBagianDContainer.style.display = 'block'; 
+            } else {
+                bagianD.classList.add('hidden');
+                document.querySelectorAll('input[name^="d"]').forEach(r => { r.checked = false; r.required = false; });
+                pdfBagianDContainer.style.display = 'none'; 
+            }
+
+            hitungSkorRRI();
+        }
+
+        function formatTanggal(tglStr) {
+            if(!tglStr) return "-";
+            const dt = new Date(tglStr);
+            return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        async function submitDataRRI() {
+            Swal.fire({
+                ...swalLightTheme,
+                title: 'Menyimpan & Membuat PDF...',
+                html: '<span class="text-slate-500">Tunggu sebentar, file sedang diproses.</span>',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            const namaKlien = document.getElementById('namaKlien').value;
+            const noRegister = document.getElementById('noRegister').value;
+            const tanggalLahir = document.getElementById('tanggalLahir').value;
+            const statusWbp = document.getElementById('statusWbp').value;
+            const tujuanAsesmen = document.getElementById('tujuanAsesmen').value;
+            const tanggalAsesmen = document.getElementById('tanggalAsesmen').value;
+            const jk = document.getElementById('jenisKelamin').value;
+            const tp = document.getElementById('tindakPidana').value;
+            const lokasi = document.getElementById('lokasiPidana').value;
+
+            if (!padPetugas.isEmpty()) {
+                const imgPetugas = document.getElementById('pdf-ttdPetugas');
+                imgPetugas.src = padPetugas.toDataURL('image/png');
+                imgPetugas.style.display = 'block';
+            }
+            if (!padKlien.isEmpty()) {
+                const imgKlien = document.getElementById('pdf-ttdKlien');
+                imgKlien.src = padKlien.toDataURL('image/png');
+                imgKlien.style.display = 'block';
+            }
+
+            if(jk === 'Perempuan') pdfBagianCContainer.style.display = 'block';
+            else pdfBagianCContainer.style.display = 'none';
+
+            if(tp.trim().toLowerCase() === 'narkoba') pdfBagianDContainer.style.display = 'block';
+            else pdfBagianDContainer.style.display = 'none';
+
+            let totalSkor = 0;
+            let detailJawaban = { bukti_pendukung: {} };
+            
+            for (let i = 1; i <= 10; i++) {
+                const checkedRadio = document.querySelector(`input[name="a${i}"]:checked`);
+                const buktiVal = document.getElementById(`bukti_a${i}`)?.value.trim() || "";
+                if (buktiVal) detailJawaban.bukti_pendukung[`a${i}`] = buktiVal;
+
+                const elBuktiPdf = document.getElementById(`pdf-buktiA${i}`);
+                if (elBuktiPdf) {
+                    elBuktiPdf.innerText = buktiVal ? `Bukti/Informasi Pendukung: ${buktiVal}` : "Bukti/Informasi Pendukung";
+                }
+
+                if (checkedRadio) {
+                    const nilai = parseInt(checkedRadio.value);
+                    totalSkor += nilai;
+                    detailJawaban[`a${i}`] = nilai;
+                    
+                    let labelText = checkedRadio.getAttribute('data-label') || checkedRadio.parentElement.innerText.trim();
+                    document.getElementById(`pdf-jawabanA${i}`).innerText = labelText;
+                    document.getElementById(`pdf-nilaiA${i}`).innerText = nilai;
+                }
+            }
+
+            let adaTambahanCeklis = false;
+            const radioTambahan = document.querySelectorAll('input[name^="b"]:checked, input[name^="c"]:checked, input[name^="d"]:checked');
+            radioTambahan.forEach(radio => {
+                detailJawaban[radio.name] = parseInt(radio.value);
+                const buktiVal = document.getElementById(`bukti_${radio.name}`)?.value.trim() || "";
+                if (buktiVal) detailJawaban.bukti_pendukung[radio.name] = buktiVal;
+
+                const elBuktiPdf = document.getElementById(`pdf-bukti${radio.name.toUpperCase()}`);
+                if (elBuktiPdf) {
+                    elBuktiPdf.innerText = buktiVal ? `Bukti/Informasi Pendukung: ${buktiVal}` : "Bukti/Informasi Pendukung";
+                }
+
+                const elemenPdf = document.getElementById(`pdf-cek${radio.name.toUpperCase()}`);
+                if (elemenPdf) {
+                    if (radio.value === "1") {
+                        elemenPdf.innerText = "√";
+                        adaTambahanCeklis = true;
+                    } else {
+                        elemenPdf.innerText = "";
+                    }
+                }
+            });
+
+            let kategori = tentukanKategoriRRI(totalSkor);
+            let statusKriminogenik = (kategori === "RENDAH" && !adaTambahanCeklis)
+                ? "Tidak Memerlukan Asesmen Kriminogenik"
+                : "Memerlukan Asesmen Kriminogenik";
+
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                const petugasId = session.user.id;
+
+                detailJawaban.lokasi_pidana = lokasi;
+                detailJawaban.nama_petugas = globalNamaPetugas;
+                if (!padPetugas.isEmpty()) {
+                    detailJawaban.ttd_petugas = padPetugas.toDataURL('image/png');
+                }
+                if (!padKlien.isEmpty()) {
+                    detailJawaban.ttd_klien = padKlien.toDataURL('image/png');
+                }
+
+                const { error } = await supabaseClient
+                    .from('asesmen_risiko')
+                    .insert([{
+                        nama_klien: namaKlien, no_register: noRegister, tanggal_lahir: tanggalLahir,
+                        status_wbp: statusWbp, tujuan_asesmen: tujuanAsesmen, tanggal_asesmen: tanggalAsesmen,
+                        jenis_kelamin: jk, tindak_pidana: tp, skor_total: totalSkor, kategori_risiko: "RISIKO " + kategori,
+                        detail_jawaban: detailJawaban, petugas_id: petugasId
+                    }]);
+
+                if (error) throw error;
+
+                const tglLahirFormatted = formatTanggal(tanggalLahir);
+                const tglAsesmenFormatted = formatTanggal(tanggalAsesmen);
+
+                document.getElementById('pdf-namaKlien1').innerText = namaKlien;
+                document.getElementById('pdf-namaKlien1b').innerText = namaKlien;
+                document.getElementById('pdf-tglLahir1').innerText = tglLahirFormatted;
+                document.getElementById('pdf-jk1').innerText = jk;
+                document.getElementById('pdf-noReg1').innerText = noRegister;
+                document.getElementById('pdf-status1').innerText = statusWbp;
+                document.getElementById('pdf-status1b').innerText = statusWbp;
+                document.getElementById('pdf-lokasi1').innerText = lokasi;
+                document.getElementById('pdf-namaPetugas1').innerText = globalNamaPetugas;
+                document.getElementById('pdf-namaPetugas1b').innerText = globalNamaPetugas;
+                document.getElementById('pdf-tglCetak1').innerText = tglAsesmenFormatted;
+
+                document.getElementById('pdf-namaKlien2').innerText = namaKlien;
+                document.getElementById('pdf-noReg2').innerText = noRegister;
+                document.getElementById('pdf-tglLahir2').innerText = tglLahirFormatted;
+                document.getElementById('pdf-jk2').innerText = jk;
+                document.getElementById('pdf-tp2').innerText = tp;
+                document.getElementById('pdf-lokasi2').innerText = lokasi;
+                document.getElementById('pdf-tujuan2').innerText = tujuanAsesmen;
+                document.getElementById('pdf-tglCetak2').innerText = tglAsesmenFormatted;
+                document.getElementById('pdf-namaPetugas2').innerText = globalNamaPetugas;
+                
+                document.getElementById('pdf-skorAkhir').innerText = totalSkor;
+                document.getElementById('pdf-kategoriAkhir').innerText = kategori;
+                document.getElementById('pdf-statusKrim').innerText = statusKriminogenik;
+
+                const element = document.getElementById('dokumenPdf');
+                const opt = {
+                    margin:       15, 
+                    filename:     `Asesmen_RRI_${namaKlien.replace(/\s+/g, '_')}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true },
+                    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                html2pdf().set(opt).from(element).save().then(() => {
+                    Swal.fire({
+                        ...swalLightTheme,
+                        icon: 'success',
+                        title: 'Asesmen Tersimpan!',
+                        text: 'File PDF berhasil diunduh secara otomatis ke perangkat Anda.',
+                        confirmButtonText: 'Kembali ke Daftar',
+                        confirmButtonColor: '#2563eb', 
+                        allowOutsideClick: false
+                    }).then(() => {
+                        window.location.href = "asesmen.html"; 
+                    });
+                });
+
+            } catch (error) {
+                Swal.fire({ ...swalLightTheme, icon: 'error', title: 'Terjadi Kesalahan', text: error.message, confirmButtonColor: '#2563eb' });
+            }
+        }
+
+        async function prosesLogout() {
+            Swal.fire({
+                ...swalLightTheme,
+                title: 'Keluar Sistem?', icon: 'warning', showCancelButton: true,
+                confirmButtonColor: '#dc2626', confirmButtonText: 'Ya, Keluar'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    await supabaseClient.auth.signOut(); window.location.href = 'index.html';
+                }
+            })
+        }
+    </script>
+</body>
+</html>

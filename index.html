@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Asesmen Risiko - Bapas</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body.modal-open { overflow: hidden; }
+        html.swal2-shown, html.swal2-height-auto,
+        body.swal2-shown, body.swal2-height-auto {
+            padding-right: 0 !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+        }
+        .glass-panel { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .swal2-popup { border-radius: 1.5rem !important; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-slate-800 h-screen overflow-hidden relative antialiased selection:bg-blue-600 selection:text-white flex items-center justify-center"
+      style="background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+
+    <!-- Overlay Cerah Latar Belakang Gedung agar UI terbaca jelas -->
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-100/85 via-white/80 to-blue-50/85 pointer-events-none z-0"></div>
+
+    <div class="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-8 md:gap-12 h-full overflow-y-auto no-scrollbar md:overflow-visible py-10 md:py-0">
+        
+        <!-- Bagian Kiri: Branding & Informasi -->
+        <div class="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left mt-8 md:mt-0 shrink-0">
+            <!-- LOGO KEMENIMIPAS -->
+            <div class="h-20 md:h-28 mb-6 transition transform hover:scale-105 duration-300 drop-shadow-md">
+                <img src="logo.png" alt="Logo Kemenimipas" class="h-full object-contain filter drop-shadow-sm" onerror="this.src='https://placehold.co/120x120/2563eb/ffffff?text=LOGO'">
+            </div>
+            
+            <!-- Tipografi Teks Merah & Slate Gelap -->
+            <div class="mb-5 flex flex-col items-center md:items-start">
+                <h1 class="text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter leading-none">
+                    <span class="text-red-600 block drop-shadow-sm mb-1">ASESMEN</span>
+                    <span class="text-slate-900 block drop-shadow-sm">INDONESIA</span>
+                </h1>
+            </div>
+
+            <p class="text-base md:text-lg lg:text-xl font-normal text-slate-600 mb-8 leading-relaxed max-w-md">
+                Sistem Informasi Terpadu Penilaian Risiko Residivisme & Kriminogenik Klien Pemasyarakatan.
+            </p>
+            
+            <!-- Tombol Tentang -->
+            <button onclick="bukaModalTentang()" class="flex items-center gap-2.5 text-sm font-semibold text-slate-700 hover:text-blue-600 bg-white/80 hover:bg-white px-5 py-3 rounded-xl border border-slate-200/90 transition backdrop-blur-sm w-max group shadow-sm hover:shadow-md">
+                <i class="fa-solid fa-circle-info text-blue-600 group-hover:scale-110 transition-transform"></i> Tentang Aplikasi
+            </button>
+        </div>
+
+        <!-- Bagian Kanan: Form Login Glassmorphism Cerah -->
+        <div class="w-full md:w-1/2 max-w-md mx-auto shrink-0 pb-10 md:pb-0">
+            <div class="glass-panel border border-slate-200/90 rounded-3xl shadow-2xl p-8 md:p-10 relative overflow-hidden">
+                <div class="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="mb-8 relative z-10">
+                    <h3 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2 tracking-tight">Login</h3>
+                    <p class="text-slate-500 text-sm">Masuk untuk mengelola Asesmen</p>
+                </div>
+
+                <form id="loginForm" onsubmit="event.preventDefault(); prosesLogin();" class="relative z-10">
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Username</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+                                <input type="text" id="loginUsername" required 
+                                    class="w-full pl-11 pr-4 py-3.5 bg-slate-50/90 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all outline-none text-slate-800 font-medium text-sm placeholder-slate-400 shadow-sm" 
+                                    placeholder="Contoh: ahmad_w">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Kata Sandi</label>
+                            <div class="relative flex items-center">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                                    <i class="fa-solid fa-lock"></i>
+                                </div>
+                                <input type="password" id="loginPassword" required 
+                                    class="w-full pl-11 pr-12 py-3.5 bg-slate-50/90 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all outline-none text-slate-800 font-medium text-sm placeholder-slate-400 shadow-sm" 
+                                    placeholder="••••••••">
+                                <button type="button" onclick="togglePasswordLogin()" class="absolute right-4 text-slate-400 hover:text-blue-600 focus:outline-none transition-colors">
+                                    <i id="eyeIconLogin" class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btnLogin" class="w-full mt-6 bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 shadow-[0_4px_15px_rgba(37,99,235,0.35)] transition-all active:scale-95 flex justify-center items-center gap-2">
+                            <span id="btnText">Masuk Dashboard</span>
+                            <i id="btnIcon" class="fa-solid fa-arrow-right-to-bracket"></i>
+                            <svg id="btnLoader" class="hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-8 text-center relative z-10">
+                    <p class="text-sm text-slate-500">Belum punya akun? 
+                        <button type="button" onclick="bukaModalDaftar()" class="text-blue-600 font-bold hover:text-blue-700 hover:underline transition">Daftar disini</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL TENTANG APLIKASI ==================== -->
+    <div id="modalTentang" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity opacity-0 duration-300">
+        <div id="modalTentangContent" class="bg-white border border-slate-200 rounded-3xl shadow-2xl w-full max-w-2xl relative flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="border-b border-slate-200 bg-slate-50 px-6 py-5 flex justify-between items-start z-10">
+                <h3 class="text-xl font-bold text-slate-800 tracking-tight flex items-center gap-3">
+                    <i class="fa-solid fa-circle-info text-blue-600"></i> Tentang Asesmen Indonesia
+                </h3>
+                <button type="button" onclick="tutupModalTentang()" class="w-8 h-8 bg-slate-200/70 hover:bg-red-600 text-slate-500 hover:text-white rounded-full flex items-center justify-center transition-colors shrink-0">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 relative z-10 text-slate-600 space-y-4 text-sm leading-relaxed">
+                <p><strong class="text-slate-900">Asesmen Indonesia</strong> adalah platform digital terpadu untuk mempermudah pelaksanaan, pencatatan, dan pelaporan Asesmen Risiko Residivisme dan Kriminogenik.</p>
+                <p>Sistem ini dirancang khusus untuk memenuhi standar pedoman asesmen terbaru (Versi 2 Tahun 2021) pada Balai Pemasyarakatan. Bertujuan memudahkan para Pembimbing Kemasyarakatan (PK) dalam mencetak dokumen PDF yang terstandardisasi dan merekapitulasi data klien secara terpusat dan aman.</p>
+                
+                <div class="mt-6 pt-5 border-t border-slate-200 flex flex-col sm:flex-row justify-between sm:items-end gap-3">
+                    <div>
+                        <p class="text-xs text-slate-400 font-bold tracking-widest uppercase mb-1">Versi Sistem</p>
+                        <p class="text-slate-700 font-mono bg-slate-100 px-2.5 py-1 rounded-lg inline-block text-xs border border-slate-300">v2.0 (Build 2026)</p>
+                    </div>
+                    <div class="sm:text-right">
+                        <p class="text-xs text-slate-400">&copy; Hak Cipta 2026</p>
+                        <p class="text-xs font-semibold text-blue-600">Kementerian Imigrasi dan Pemasyarakatan</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL DAFTAR AKUN ==================== -->
+    <div id="modalDaftar" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity opacity-0 duration-300">
+        <div id="modalDaftarContent" class="bg-white border border-slate-200 rounded-3xl shadow-2xl w-full max-w-lg relative max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="border-b border-slate-200 bg-slate-50 px-6 py-5 flex justify-between items-center shrink-0 z-10">
+                <h3 class="text-xl font-bold text-slate-800 tracking-tight flex items-center gap-2"><i class="fa-solid fa-user-plus text-blue-600"></i> Pendaftaran Petugas</h3>
+                <button type="button" onclick="tutupModalDaftar()" class="w-8 h-8 bg-slate-200/70 hover:bg-red-600 text-slate-500 hover:text-white rounded-full flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto no-scrollbar relative z-10">
+                <form id="formDaftar" onsubmit="event.preventDefault(); prosesDaftar();" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Nama Lengkap</label>
+                        <input type="text" id="regNama" required class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-800 placeholder-slate-400 transition" placeholder="Nama Lengkap">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Jabatan Fungsional</label>
+                        <select id="regJabatan" required class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-800 transition appearance-none">
+                            <option value="" class="bg-white">-- Pilih Jabatan --</option>
+                            <option value="Asisten Pembimbing Kemasyarakatan Terampil" class="bg-white">Asisten Pembimbing Kemasyarakatan Terampil</option>
+                            <option value="Asisten Pembimbing Kemasyarakatan Mahir" class="bg-white">Asisten Pembimbing Kemasyarakatan Mahir</option>
+                            <option value="Asisten Pembimbing Kemasyarakatan Penyelia" class="bg-white">Asisten Pembimbing Kemasyarakatan Penyelia</option>
+                            <option value="Pembimbing Kemasyarakatan Ahli Pertama" class="bg-white">Pembimbing Kemasyarakatan Ahli Pertama</option>
+                            <option value="Pembimbing Kemasyarakatan Ahli Muda" class="bg-white">Pembimbing Kemasyarakatan Ahli Muda</option>
+                            <option value="Pembimbing Kemasyarakatan Ahli Madya" class="bg-white">Pembimbing Kemasyarakatan Ahli Madya</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Unit Kerja</label>
+                        <select id="regUnit" required class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-800 transition appearance-none">
+                            <option value="" class="bg-white">-- Pilih Unit Kerja Bapas --</option>
+                            <option value="Balai Pemasyarakatan Kelas I Bandung" class="bg-white">Balai Pemasyarakatan Kelas I Bandung</option>
+                            <option value="Balai Pemasyarakatan Kelas I Banjarmasin" class="bg-white">Balai Pemasyarakatan Kelas I Banjarmasin</option>
+                            <option value="Balai Pemasyarakatan Kelas I Cirebon" class="bg-white">Balai Pemasyarakatan Kelas I Cirebon</option>
+                            <option value="Balai Pemasyarakatan Kelas I Denpasar" class="bg-white">Balai Pemasyarakatan Kelas I Denpasar</option>
+                            <option value="Balai Pemasyarakatan Kelas I Jakarta Barat" class="bg-white">Balai Pemasyarakatan Kelas I Jakarta Barat</option>
+                            <option value="Balai Pemasyarakatan Kelas I Jakarta Pusat" class="bg-white">Balai Pemasyarakatan Kelas I Jakarta Pusat</option>
+                            <option value="Balai Pemasyarakatan Kelas I Jakarta Selatan" class="bg-white">Balai Pemasyarakatan Kelas I Jakarta Selatan</option>
+                            <option value="Balai Pemasyarakatan Kelas I Jakarta Timur-Utara" class="bg-white">Balai Pemasyarakatan Kelas I Jakarta Timur-Utara</option>
+                            <option value="Balai Pemasyarakatan Kelas I Makassar" class="bg-white">Balai Pemasyarakatan Kelas I Makassar</option>
+                            <option value="Balai Pemasyarakatan Kelas I Malang" class="bg-white">Balai Pemasyarakatan Kelas I Malang</option>
+                            <option value="Balai Pemasyarakatan Kelas I Manado" class="bg-white">Balai Pemasyarakatan Kelas I Manado</option>
+                            <option value="Balai Pemasyarakatan Kelas I Manokwari" class="bg-white">Balai Pemasyarakatan Kelas I Manokwari</option>
+                            <option value="Balai Pemasyarakatan Kelas I Medan" class="bg-white">Balai Pemasyarakatan Kelas I Medan</option>
+                            <option value="Balai Pemasyarakatan Kelas I Padang" class="bg-white">Balai Pemasyarakatan Kelas I Padang</option>
+                            <option value="Balai Pemasyarakatan Kelas I Palangkaraya" class="bg-white">Balai Pemasyarakatan Kelas I Palangkaraya</option>
+                            <option value="Balai Pemasyarakatan Kelas I Palembang" class="bg-white">Balai Pemasyarakatan Kelas I Palembang</option>
+                            <option value="Balai Pemasyarakatan Kelas I Semarang" class="bg-white">Balai Pemasyarakatan Kelas I Semarang</option>
+                            <option value="Balai Pemasyarakatan Kelas I Surabaya" class="bg-white">Balai Pemasyarakatan Kelas I Surabaya</option>
+                            <option value="Balai Pemasyarakatan Kelas I Surakarta" class="bg-white">Balai Pemasyarakatan Kelas I Surakarta</option>
+                            <option value="Balai Pemasyarakatan Kelas I Tangerang" class="bg-white">Balai Pemasyarakatan Kelas I Tangerang</option>
+                            <option value="Balai Pemasyarakatan Kelas I Yogyakarta" class="bg-white">Balai Pemasyarakatan Kelas I Yogyakarta</option>
+                            <option value="Balai Pemasyarakatan Kelas II Ambon" class="bg-white">Balai Pemasyarakatan Kelas II Ambon</option>
+                            <option value="Balai Pemasyarakatan Kelas II Amuntai" class="bg-white">Balai Pemasyarakatan Kelas II Amuntai</option>
+                            <option value="Balai Pemasyarakatan Kelas II Balikpapan" class="bg-white">Balai Pemasyarakatan Kelas II Balikpapan</option>
+                            <option value="Balai Pemasyarakatan Kelas II Banda Aceh" class="bg-white">Balai Pemasyarakatan Kelas II Banda Aceh</option>
+                            <option value="Balai Pemasyarakatan Kelas II Bandar Lampung" class="bg-white">Balai Pemasyarakatan Kelas II Bandar Lampung</option>
+                            <option value="Balai Pemasyarakatan Kelas II Batulicin" class="bg-white">Balai Pemasyarakatan Kelas II Batulicin</option>
+                            <option value="Balai Pemasyarakatan Kelas II Bau-Bau" class="bg-white">Balai Pemasyarakatan Kelas II Bau-Bau</option>
+                            <option value="Balai Pemasyarakatan Kelas II Bekasi" class="bg-white">Balai Pemasyarakatan Kelas II Bekasi</option>
+                            <option value="Balai Pemasyarakatan Kelas II Bengkulu" class="bg-white">Balai Pemasyarakatan Kelas II Bengkulu</option>
+                            <option value="Balai Pemasyarakatan Kelas II Bogor" class="bg-white">Balai Pemasyarakatan Kelas II Bogor</option>
+                            <option value="Balai Pemasyarakatan Kelas II Bojonegoro" class="bg-white">Balai Pemasyarakatan Kelas II Bojonegoro</option>
+                            <option value="Balai Pemasyarakatan Kelas II Bukittinggi" class="bg-white">Balai Pemasyarakatan Kelas II Bukittinggi</option>
+                            <option value="Balai Pemasyarakatan Kelas II Ciangir" class="bg-white">Balai Pemasyarakatan Kelas II Ciangir</option>
+                            <option value="Balai Pemasyarakatan Kelas II Garut" class="bg-white">Balai Pemasyarakatan Kelas II Garut</option>
+                            <option value="Balai Pemasyarakatan Kelas II Gorontalo" class="bg-white">Balai Pemasyarakatan Kelas II Gorontalo</option>
+                            <option value="Balai Pemasyarakatan Kelas II Jambi" class="bg-white">Balai Pemasyarakatan Kelas II Jambi</option>
+                            <option value="Balai Pemasyarakatan Kelas II Jember" class="bg-white">Balai Pemasyarakatan Kelas II Jember</option>
+                            <option value="Balai Pemasyarakatan Kelas II Karangasem" class="bg-white">Balai Pemasyarakatan Kelas II Karangasem</option>
+                            <option value="Balai Pemasyarakatan Kelas II Kediri" class="bg-white">Balai Pemasyarakatan Kelas II Kediri</option>
+                            <option value="Balai Pemasyarakatan Kelas II Kendari" class="bg-white">Balai Pemasyarakatan Kelas II Kendari</option>
+                            <option value="Balai Pemasyarakatan Kelas II Klaten" class="bg-white">Balai Pemasyarakatan Kelas II Klaten</option>
+                            <option value="Balai Pemasyarakatan Kelas II Kotabumi" class="bg-white">Balai Pemasyarakatan Kelas II Kotabumi</option>
+                            <option value="Balai Pemasyarakatan Kelas II Kupang" class="bg-white">Balai Pemasyarakatan Kelas II Kupang</option>
+                            <option value="Balai Pemasyarakatan Kelas II Kutacane" class="bg-white">Balai Pemasyarakatan Kelas II Kutacane</option>
+                            <option value="Balai Pemasyarakatan Kelas II Lahat" class="bg-white">Balai Pemasyarakatan Kelas II Lahat</option>
+                            <option value="Balai Pemasyarakatan Kelas II Lhokseumawe" class="bg-white">Balai Pemasyarakatan Kelas II Lhokseumawe</option>
+                            <option value="Balai Pemasyarakatan Kelas II Luwuk" class="bg-white">Balai Pemasyarakatan Kelas II Luwuk</option>
+                            <option value="Balai Pemasyarakatan Kelas II Madiun" class="bg-white">Balai Pemasyarakatan Kelas II Madiun</option>
+                            <option value="Balai Pemasyarakatan Kelas II Magelang" class="bg-white">Balai Pemasyarakatan Kelas II Magelang</option>
+                            <option value="Balai Pemasyarakatan Kelas II Mataram" class="bg-white">Balai Pemasyarakatan Kelas II Mataram</option>
+                            <option value="Balai Pemasyarakatan Kelas II Metro" class="bg-white">Balai Pemasyarakatan Kelas II Metro</option>
+                            <option value="Balai Pemasyarakatan Kelas II Muara Bungo" class="bg-white">Balai Pemasyarakatan Kelas II Muara Bungo</option>
+                            <option value="Balai Pemasyarakatan Kelas II Muara Tewe" class="bg-white">Balai Pemasyarakatan Kelas II Muara Tewe</option>
+                            <option value="Balai Pemasyarakatan Kelas II Musi Rawas Utara" class="bg-white">Balai Pemasyarakatan Kelas II Musi Rawas Utara</option>
+                            <option value="Balai Pemasyarakatan Kelas II Nagan Raya" class="bg-white">Balai Pemasyarakatan Kelas II Nagan Raya</option>
+                            <option value="Balai Pemasyarakatan Kelas II Nusakambangan" class="bg-white">Balai Pemasyarakatan Kelas II Nusakambangan</option>
+                            <option value="Balai Pemasyarakatan Kelas II Ogan Komering Ulu Induk" class="bg-white">Balai Pemasyarakatan Kelas II Ogan Komering Ulu Induk</option>
+                            <option value="Balai Pemasyarakatan Kelas II Palopo" class="bg-white">Balai Pemasyarakatan Kelas II Palopo</option>
+                            <option value="Balai Pemasyarakatan Kelas II Palu" class="bg-white">Balai Pemasyarakatan Kelas II Palu</option>
+                            <option value="Balai Pemasyarakatan Kelas II Pamekasan" class="bg-white">Balai Pemasyarakatan Kelas II Pamekasan</option>
+                            <option value="Balai Pemasyarakatan Kelas II Pangkal Pinang" class="bg-white">Balai Pemasyarakatan Kelas II Pangkal Pinang</option>
+                            <option value="Balai Pemasyarakatan Kelas II Pangkalan Bun" class="bg-white">Balai Pemasyarakatan Kelas II Pangkalan Bun</option>
+                            <option value="Balai Pemasyarakatan Kelas II Pati" class="bg-white">Balai Pemasyarakatan Kelas II Pati</option>
+                            <option value="Balai Pemasyarakatan Kelas II Pekalongan" class="bg-white">Balai Pemasyarakatan Kelas II Pekalongan</option>
+                            <option value="Balai Pemasyarakatan Kelas II Pekanbaru" class="bg-white">Balai Pemasyarakatan Kelas II Pekanbaru</option>
+                            <option value="Balai Pemasyarakatan Kelas II Polewali" class="bg-white">Balai Pemasyarakatan Kelas II Polewali</option>
+                            <option value="Balai Pemasyarakatan Kelas II Pontianak" class="bg-white">Balai Pemasyarakatan Kelas II Pontianak</option>
+                            <option value="Balai Pemasyarakatan Kelas II Pringsemu" class="bg-white">Balai Pemasyarakatan Kelas II Pringsemu</option>
+                            <option value="Balai Pemasyarakatan Kelas II Purwokerto" class="bg-white">Balai Pemasyarakatan Kelas II Purwokerto</option>
+                            <option value="Balai Pemasyarakatan Kelas II Samarinda" class="bg-white">Balai Pemasyarakatan Kelas II Samarinda</option>
+                            <option value="Balai Pemasyarakatan Kelas II Sambas" class="bg-white">Balai Pemasyarakatan Kelas II Sambas</option>
+                            <option value="Balai Pemasyarakatan Kelas II Sampit" class="bg-white">Balai Pemasyarakatan Kelas II Sampit</option>
+                            <option value="Balai Pemasyarakatan Kelas II Saumlaki" class="bg-white">Balai Pemasyarakatan Kelas II Saumlaki</option>
+                            <option value="Balai Pemasyarakatan Kelas II Serang" class="bg-white">Balai Pemasyarakatan Kelas II Serang</option>
+                            <option value="Balai Pemasyarakatan Kelas II Sibolga" class="bg-white">Balai Pemasyarakatan Kelas II Sibolga</option>
+                            <option value="Balai Pemasyarakatan Kelas II Sintang" class="bg-white">Balai Pemasyarakatan Kelas II Sintang</option>
+                            <option value="Balai Pemasyarakatan Kelas II Soasio" class="bg-white">Balai Pemasyarakatan Kelas II Soasio</option>
+                            <option value="Balai Pemasyarakatan Kelas II Sorong" class="bg-white">Balai Pemasyarakatan Kelas II Sorong</option>
+                            <option value="Balai Pemasyarakatan Kelas II Subang" class="bg-white">Balai Pemasyarakatan Kelas II Subang</option>
+                            <option value="Balai Pemasyarakatan Kelas II Sumbawa Besar" class="bg-white">Balai Pemasyarakatan Kelas II Sumbawa Besar</option>
+                            <option value="Balai Pemasyarakatan Kelas II Tanjung Pinang" class="bg-white">Balai Pemasyarakatan Kelas II Tanjung Pinang</option>
+                            <option value="Balai Pemasyarakatan Kelas II Tarakan" class="bg-white">Balai Pemasyarakatan Kelas II Tarakan</option>
+                            <option value="Balai Pemasyarakatan Kelas II Ternate" class="bg-white">Balai Pemasyarakatan Kelas II Ternate</option>
+                            <option value="Balai Pemasyarakatan Kelas II Waikabubak" class="bg-white">Balai Pemasyarakatan Kelas II Waikabubak</option>
+                            <option value="Balai Pemasyarakatan Kelas II Watampone" class="bg-white">Balai Pemasyarakatan Kelas II Watampone</option>
+                            <option value="Balai Pemasyarakatan Kelas II Wonosari" class="bg-white">Balai Pemasyarakatan Kelas II Wonosari</option>
+                            <option value="Balai Pemasyarakatan Kelas III Fakfak" class="bg-white">Balai Pemasyarakatan Kelas III Fakfak</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Username Login</label>
+                        <input type="text" id="regUsername" required class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-800 placeholder-slate-400 transition" placeholder="Contoh: petugas01 (tanpa spasi)">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Kata Sandi</label>
+                        <div class="relative flex items-center">
+                            <input type="password" id="regPassword" required minlength="6" class="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-800 placeholder-slate-400 transition" placeholder="Minimal 6 karakter">
+                            <button type="button" onclick="togglePasswordReg()" class="absolute right-4 text-slate-400 hover:text-blue-600 focus:outline-none transition-colors">
+                                <i id="eyeIconReg" class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-slate-200 mt-6 flex flex-col-reverse sm:flex-row justify-end gap-3">
+                        <button type="button" onclick="tutupModalDaftar()" class="w-full sm:w-auto px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition text-sm">Batal</button>
+                        <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition shadow-[0_4px_15px_rgba(37,99,235,0.3)] text-sm">Buat Akun</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://udghusxmebnjfastiwmi.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkZ2h1c3htZWJuamZhc3Rpd21pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyODE2OTQsImV4cCI6MjEwNjg1NzY5NH0.ZX8KGUuGll4xnm4AEJH6_xfGS086dDRyI23QRKo56dM'; 
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const swalLightTheme = {
+            heightAuto: false,
+            scrollbarPadding: false,
+            background: '#ffffff',
+            color: '#1e293b',
+            customClass: { popup: 'border border-slate-200 rounded-3xl shadow-2xl' }
+        };
+
+        function bukaModalDaftar() { 
+            const o = document.getElementById('modalDaftar'); const c = document.getElementById('modalDaftarContent'); 
+            o.classList.remove('hidden'); document.body.classList.add('modal-open');
+            setTimeout(() => { o.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10); 
+        }
+
+        function tutupModalDaftar() { 
+            const o = document.getElementById('modalDaftar'); const c = document.getElementById('modalDaftarContent'); 
+            o.classList.add('opacity-0'); c.classList.add('scale-95'); 
+            setTimeout(() => { o.classList.add('hidden'); document.body.classList.remove('modal-open'); document.getElementById('formDaftar').reset(); }, 300); 
+        }
+
+        function bukaModalTentang() { 
+            const o = document.getElementById('modalTentang'); const c = document.getElementById('modalTentangContent'); 
+            o.classList.remove('hidden'); document.body.classList.add('modal-open');
+            setTimeout(() => { o.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10); 
+        }
+
+        function tutupModalTentang() { 
+            const o = document.getElementById('modalTentang'); const c = document.getElementById('modalTentangContent'); 
+            o.classList.add('opacity-0'); c.classList.add('scale-95'); 
+            setTimeout(() => { o.classList.add('hidden'); document.body.classList.remove('modal-open'); }, 300); 
+        }
+
+        function togglePasswordLogin() {
+            const pwdInput = document.getElementById('loginPassword'); const eyeIcon = document.getElementById('eyeIconLogin');
+            if (pwdInput.type === 'password') { pwdInput.type = 'text'; eyeIcon.classList.replace('fa-eye', 'fa-eye-slash'); } 
+            else { pwdInput.type = 'password'; eyeIcon.classList.replace('fa-eye-slash', 'fa-eye'); }
+        }
+
+        function togglePasswordReg() {
+            const pwdInput = document.getElementById('regPassword'); const eyeIcon = document.getElementById('eyeIconReg');
+            if (pwdInput.type === 'password') { pwdInput.type = 'text'; eyeIcon.classList.replace('fa-eye', 'fa-eye-slash'); } 
+            else { pwdInput.type = 'password'; eyeIcon.classList.replace('fa-eye-slash', 'fa-eye'); }
+        }
+
+        async function prosesLogin() {
+            const rawUsername = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const cleanUsername = rawUsername.trim().toLowerCase().replace(/\s+/g, '');
+            const dummyEmail = cleanUsername + '@bapas.go.id';
+
+            const btnLogin = document.getElementById('btnLogin');
+            const btnText = document.getElementById('btnText');
+            const btnIcon = document.getElementById('btnIcon');
+            const btnLoader = document.getElementById('btnLoader');
+
+            btnLogin.disabled = true; btnText.innerText = "Memverifikasi...";
+            btnIcon.classList.add('hidden'); btnLoader.classList.remove('hidden');
+
+            try {
+                const { error } = await supabaseClient.auth.signInWithPassword({ email: dummyEmail, password: password });
+                if (error) throw error;
+                Swal.fire({
+                    ...swalLightTheme,
+                    icon: 'success', title: 'Login Berhasil!', text: 'Membuka Dashboard Asesmen...',
+                    timer: 1500, showConfirmButton: false, allowOutsideClick: false
+                }).then(() => { window.location.href = "asesmen.html"; });
+
+            } catch (error) {
+                Swal.fire({
+                    ...swalLightTheme,
+                    icon: 'error', title: 'Akses Ditolak', text: 'Username atau kata sandi yang Anda masukkan salah.',
+                    confirmButtonColor: '#2563eb'
+                });
+                btnLogin.disabled = false; btnText.innerText = "Masuk Dashboard";
+                btnIcon.classList.remove('hidden'); btnLoader.classList.add('hidden');
+            }
+        }
+
+        async function prosesDaftar() {
+            const nama = document.getElementById('regNama').value;
+            const jabatan = document.getElementById('regJabatan').value;
+            const unit = document.getElementById('regUnit').value;
+            const rawUsername = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+
+            const cleanUsername = rawUsername.trim().toLowerCase().replace(/\s+/g, '');
+            const dummyEmail = cleanUsername + '@bapas.go.id';
+
+            Swal.fire({
+                ...swalLightTheme,
+                title: 'Memproses Pendaftaran...', text: 'Tunggu sebentar.', allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            try {
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email: dummyEmail, password: password,
+                    options: { data: { nama_petugas: nama, jabatan: jabatan, unit_kerja: unit, asli_username: cleanUsername } }
+                });
+
+                if (error) throw error;
+                tutupModalDaftar();
+                
+                if(data.user && data.user.identities && data.user.identities.length === 0) {
+                     Swal.fire({
+                        ...swalLightTheme,
+                        icon: 'error', title: 'Pendaftaran Gagal', text: 'Username ini sudah dipakai. Silakan buat yang lain.',
+                        confirmButtonColor: '#2563eb'
+                    });
+                } else {
+                    Swal.fire({
+                        ...swalLightTheme,
+                        icon: 'success', title: 'Pendaftaran Berhasil!', text: 'Akun petugas Anda telah dibuat. Silakan login.',
+                        confirmButtonColor: '#16a34a'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    ...swalLightTheme,
+                    icon: 'error', title: 'Pendaftaran Gagal', text: error.message,
+                    confirmButtonColor: '#2563eb'
+                });
+            }
+        }
+    </script>
+</body>
+</html>

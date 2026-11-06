@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Asesmen Kriminogenik - Bapas</title>
+    
+    <link rel="icon" type="image/png" href="logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass-panel { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .glass-sidebar { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        html.swal2-shown, html.swal2-height-auto,
+        body.swal2-shown, body.swal2-height-auto { padding-right: 0 !important; height: 100vh !important; overflow: hidden !important; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.35); }
+
+        .canvas-container {
+            position: relative; width: 100%; height: 160px;
+            background-color: #f8fafc;
+            border: 2px dashed #cbd5e1; border-radius: 1rem;
+            touch-action: none; overflow: hidden;
+        }
+        canvas { width: 100%; height: 100%; border-radius: 1rem; }
+
+        /* Efek aktif badge nilai di dalam opsi radio ketika dipilih */
+        input.peer:checked + div .badge-nilai {
+            background-color: rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.75;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+            transform: scale(1.15);
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.4); }
+            50% { box-shadow: 0 0 0 6px rgba(147, 51, 234, 0); }
+        }
+        .select-mandatory-pulse {
+            animation: pulse-border 2s infinite;
+        }
+
+        /* CSS KHUSUS CETAK PDF */
+        #dokumenPdfKrim {
+            font-family: Arial, sans-serif; color: black; background: white; 
+            font-size: 10.5pt; line-height: 1.4; width: 100%; padding: 15px;
+        }
+        .html2pdf__page-break { height: 0; page-break-before: always; margin: 0; padding: 0; border: none; }
+        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 10pt; border: 1px solid black; }
+        .pdf-table th { border: 1px solid black; padding: 6px; text-align: center; font-weight: bold; background-color: #d9ead3; }
+        .pdf-table td { border: 1px solid black; vertical-align: top; padding: 6px; }
+    </style>
+</head>
+<body class="text-slate-800 h-screen overflow-hidden relative antialiased selection:bg-blue-600 selection:text-white flex"
+      style="background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+
+    <!-- Overlay Cerah Background Gedung -->
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-100/85 via-white/80 to-blue-50/85 pointer-events-none z-0"></div>
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30 hidden md:hidden transition-opacity"></div>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed md:relative inset-y-0 left-0 transform -translate-x-full md:translate-x-0 w-72 min-w-[18rem] max-w-[18rem] flex-shrink-0 glass-sidebar border-r border-slate-200/80 text-slate-800 flex flex-col h-full shadow-[5px_0_25px_rgba(0,0,0,0.06)] z-40 transition-transform duration-300 ease-in-out">
+        <div class="p-6 flex items-center justify-between border-b border-slate-200/80 shrink-0">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 md:w-12 md:h-12 shrink-0">
+                    <img src="logo.png" alt="Logo Kemenimipas" class="w-full h-full object-contain filter drop-shadow-sm" onerror="this.src='https://placehold.co/100x100/2563eb/ffffff?text=LOGO'">
+                </div>
+                <div class="flex flex-col justify-center">
+                    <span class="text-red-600 text-sm md:text-[15px] font-black tracking-widest leading-none">ASESMEN</span>
+                    <span class="text-slate-800 text-sm md:text-[15px] font-black tracking-widest leading-none mt-1">INDONESIA</span>
+                </div>
+            </div>
+            <button onclick="toggleSidebar()" class="md:hidden text-slate-600 hover:text-slate-900 focus:outline-none">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto no-scrollbar py-6">
+            <ul class="space-y-2 px-4">
+                <li>
+                    <a href="asesmen.html" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left transition-all text-slate-600 hover:bg-blue-50 hover:text-blue-600 font-medium">
+                        <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                        <span>Dashboard Utama</span>
+                    </a>
+                </li>
+                <li class="pt-6 pb-2 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Menu Asesmen</li>
+                <li>
+                    <a href="form_asesmen_rri.html" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left transition-all text-slate-600 hover:bg-blue-50 hover:text-blue-600 font-medium">
+                        <i class="fa-solid fa-file-signature w-5 text-center"></i>
+                        <span>Asesmen RRI</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left transition-all bg-purple-600 text-white font-bold shadow-[0_4px_15px_rgba(147,51,234,0.3)]">
+                        <i class="fa-solid fa-brain w-5 text-center"></i>
+                        <span>Asesmen Kriminogenik</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="p-5 border-t border-slate-200/80 bg-slate-50/70 shrink-0 relative group">
+            <div class="flex items-center gap-3 mb-4 cursor-pointer hover:bg-white p-2 -mx-2 rounded-xl transition shadow-none hover:shadow-sm" onclick="window.location.href='asesmen.html'">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shrink-0 border border-blue-200 overflow-hidden shadow-inner" id="userInitialContainer">
+                    <span id="userInitial">P</span>
+                </div>
+                <div class="overflow-hidden flex-1">
+                    <p class="text-sm font-bold text-slate-800 truncate" id="userName">Petugas Bapas</p>
+                    <p class="text-[10px] text-slate-500 truncate uppercase tracking-wide" id="userRole">Memuat...</p>
+                </div>
+            </div>
+            <button onclick="prosesLogout()" class="w-full py-2.5 bg-red-50 border border-red-200 hover:bg-red-600 text-red-600 hover:text-white rounded-xl text-sm font-bold transition flex justify-center items-center gap-2">
+                <i class="fa-solid fa-right-from-bracket"></i> Keluar
+            </button>
+        </div>
+    </aside>
+
+    <!-- KONTEN UTAMA -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden relative z-10 w-full">
+        <header class="glass-panel shadow-sm border-b border-slate-200/80 px-5 md:px-8 py-4 flex items-center justify-between z-20 shrink-0">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="md:hidden text-slate-600 hover:text-slate-900 focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <a href="asesmen.html" class="hidden md:flex w-10 h-10 bg-white hover:bg-purple-50 border border-slate-200 text-slate-700 rounded-full items-center justify-center transition shrink-0 shadow-sm">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h2 class="text-lg md:text-2xl font-bold text-slate-800 tracking-tight">Form Asesmen Kebutuhan Kriminogenik</h2>
+                    <p class="text-[11px] text-purple-600 font-semibold hidden sm:block">Instrumen Penilaian Faktor Kebutuhan Kriminogenik Narapidana / Klien Pemasyarakatan</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-2 bg-purple-50 border border-purple-200 px-3.5 py-1.5 rounded-xl">
+                    <span class="text-xs font-bold text-purple-700">Total Skor A:</span>
+                    <span id="liveHeaderSkor" class="text-base font-black text-purple-900">0</span>
+                    <span id="liveHeaderKategori" class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-green-100 text-green-700 border border-green-300">RENDAH</span>
+                </div>
+                <div class="md:hidden flex items-center cursor-pointer" onclick="window.location.href='asesmen.html'">
+                    <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm border border-blue-200 overflow-hidden shadow-sm" id="mobileUserInitialContainer">
+                        <span id="mobileUserInitial">P</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8 relative scroll-smooth">
+            <div class="w-full max-w-6xl mx-auto">
+
+                <div class="md:hidden mb-5">
+                    <a href="asesmen.html" class="inline-flex items-center text-sm font-bold text-purple-600 hover:text-purple-700 transition bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Dashboard
+                    </a>
+                </div>
+
+                <!-- ==================== 1. PANEL DESKRIPSI SINGKAT & PROSES PENILAIAN ==================== -->
+                <div class="glass-panel border border-slate-200/80 rounded-2xl mb-8 overflow-hidden shadow-md">
+                    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4 flex items-center justify-between text-white cursor-pointer" onclick="toggleDeskripsi()">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-book-open-reader text-lg"></i>
+                            <h2 class="text-base md:text-lg font-bold tracking-wide">PEDOMAN: DESKRIPSI SINGKAT & PROSES PENILAIAN</h2>
+                        </div>
+                        <button type="button" class="text-xs font-bold bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                            <span id="labelToggleDeskripsi">Sembunyikan</span>
+                            <i id="iconToggleDeskripsi" class="fa-solid fa-chevron-up"></i>
+                        </button>
+                    </div>
+
+                    <div id="kontenDeskripsi" class="p-6 md:p-8 space-y-6 text-sm text-slate-700 leading-relaxed bg-white/70">
+                        <!-- A. Deskripsi Singkat -->
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-900 mb-2 flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-md bg-purple-100 text-purple-700 flex items-center justify-center text-xs font-black">A</span>
+                                Deskripsi Singkat
+                            </h3>
+                            <p class="mb-3">Instrumen Kebutuhan Kriminogenik dibagi menjadi tiga bagian sebagai berikut:</p>
+                            <ol class="list-decimal pl-5 space-y-3">
+                                <li>
+                                    <strong class="text-slate-900">Bagian A</strong>, yaitu instrumen Kebutuhan Kriminogenik utama yang terdiri atas 30 item pertanyaan. Instrumen Kebutuhan Kriminogenik Bagian A disusun berdasarkan tujuh faktor kebutuhan kriminogenik yang berdasarkan kajian literatur merupakan faktor kontributif penyebab perilaku tindak pidana seseorang. Ketujuh faktor tersebut adalah:
+                                    <ul class="list-disc pl-5 mt-2 space-y-1 text-slate-600 font-medium">
+                                        <li><span class="text-slate-800 font-semibold">Keluarga dan Pernikahan</span> (Item pertanyaan nomor 1, 2, dan 3)</li>
+                                        <li><span class="text-slate-800 font-semibold">Pendidikan dan Pekerjaan</span> (Item pertanyaan nomor 4, 5, 6A, 6B, 7, 8, 9, dan 10)</li>
+                                        <li><span class="text-slate-800 font-semibold">Penggunaan Narkotika, Obat-obatan Terlarang, dan Konsumsi Alkohol</span> (Item pertanyaan nomor 11, 12, 13, 14, 15, dan 16)</li>
+                                        <li><span class="text-slate-800 font-semibold">Hubungan Sosial</span> (Item pertanyaan nomor 17, 18, 19, dan 20)</li>
+                                        <li><span class="text-slate-800 font-semibold">Waktu Luang/Rekreasi</span> (Item pertanyaan nomor 21 dan 22)</li>
+                                        <li><span class="text-slate-800 font-semibold">Manajemen Keuangan</span> (Item pertanyaan nomor 23 dan 24)</li>
+                                        <li><span class="text-slate-800 font-semibold">Sikap Anti-Sosial/Pandangan Terhadap Tindak Kriminal</span> (Item pertanyaan nomor 25, 26, 27, 28, dan 29)</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <strong class="text-slate-900">Bagian B.1</strong>, yaitu instrumen Kebutuhan Kriminogenik khusus untuk tindak pidana tertentu.
+                                </li>
+                                <li>
+                                    <strong class="text-slate-900">Bagian B.2</strong>, yaitu instrumen Kebutuhan Kriminogenik khusus untuk faktor kebutuhan tambahan/pertimbangan lain.
+                                </li>
+                            </ol>
+                        </div>
+
+                        <hr class="border-slate-200">
+
+                        <!-- B. Proses Penilaian -->
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-900 mb-2 flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-black">B</span>
+                                Proses Penilaian
+                            </h3>
+                            <ol class="list-decimal pl-5 space-y-2.5">
+                                <li>Pengisian instrumen Kebutuhan Kriminogenik terhadap narapidana/klien pemasyarakatan dimulai dari instrumen utama Bagian A dengan memberikan nilai sesuai dengan jawaban dan pedoman penilaian untuk setiap pertanyaan. Asesor juga diminta untuk menuliskan informasi penting yang menjadi dasar penilaian setiap pertanyaan di kolom “bukti/informasi pendukung” di lembar instrumen.</li>
+                                <li>Setelah memastikan semua pertanyaan instrumen utama Bagian A terisi, asesor kemudian menjumlahkan nilai total untuk setiap faktor dan menjumlahkan seluruh skor tiap faktor untuk mendapatkan nilai keseluruhan.</li>
+                                <li>Setelah itu, asesor kemudian menentukan kategori tingkat kebutuhan dari narapidana/klien pemasyarakatan yang bersangkutan, baik untuk setiap faktor maupun secara keseluruhan.</li>
+                                <li>Penilaian kebutuhan kriminogenik kemudian dilanjutkan ke Bagian B.1 untuk mengidentifikasi perilaku pidana tertentu yang pernah dilakukan oleh narapidana/klien pemasyarakatan dan Bagian B.2 untuk mengidentifikasi faktor kebutuhan tambahan yang dimiliki narapidana/klien pemasyarakatan.</li>
+                                <li>Perlu dijadikan catatan bahwa hasil penilaian pada Bagian B.1 dan B.2 tidak akan mempengaruhi kategori tingkat kebutuhan narapidana/klien pemasyarakatan yang telah didapatkan sebelumnya melalui instrumen utama Bagian A. Namun begitu, hasil penilaian pada Bagian B.1 dan B.2 dapat dijadikan pertimbangan oleh asesor/pembimbing kemasyarakatan dalam penyusunan <em>case plan</em> dan program intervensi terhadap narapidana/klien pemasyarakatan yang bersangkutan.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== 2. CARD IDENTITAS KLIEN (DARI RRI) & FORM PELAKSANAAN (STACKED ATAS-BAWAH) ==================== -->
+                <form id="formKriminogenik" onsubmit="event.preventDefault(); submitDataKriminogenik();">
+                    
+                    <div class="space-y-6 mb-8">
+                        <!-- Card Identitas Klien (Full Width - Lebih Lega & Dropdown Besar Mandatory) -->
+                        <div id="cardDataKlienContainer" class="glass-panel border-2 border-purple-300 rounded-2xl overflow-hidden shadow-md flex flex-col justify-between transition-all duration-300">
+                            <div>
+                                <div class="bg-purple-50/95 px-6 py-4 border-b border-purple-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                    <h2 class="text-base md:text-lg font-extrabold text-purple-900 tracking-wide flex items-center gap-2.5">
+                                        <i class="fa-solid fa-user-check text-purple-600"></i> DATA KLIEN (DARI ASESMEN RRI)
+                                    </h2>
+                                    <span id="statusPilihKlienBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-red-100 text-red-700 border border-red-300">
+                                        <i class="fa-solid fa-circle-exclamation"></i> WAJIB PILIH KLIEN TERLEBIH DAHULU
+                                    </span>
+                                </div>
+
+                                <!-- Box Besar Dropdown Pilih Klien (Mandatory & Menonjol) -->
+                                <div id="boxSelectKlien" class="mx-6 mt-6 p-5 rounded-2xl bg-gradient-to-r from-purple-50 via-indigo-50/70 to-purple-50 border-2 border-purple-300 shadow-sm transition-all duration-300">
+                                    <label for="selectKlienRRI" class="block text-xs md:text-sm font-black text-purple-900 uppercase tracking-wider mb-2.5 flex items-center gap-2">
+                                        <i class="fa-solid fa-hand-pointer text-purple-600 animate-bounce"></i>
+                                        PILIH NAMA KLIEN DARI DATA RRI <span class="text-red-600 font-black">* (WAJIB)</span>
+                                    </label>
+                                    <div class="relative">
+                                        <select id="selectKlienRRI" required onchange="pilihKlienDariDropdown()" class="select-mandatory-pulse w-full pl-4 pr-12 py-4 bg-white border-2 border-purple-400 hover:border-purple-600 rounded-xl text-sm md:text-base font-extrabold text-slate-800 focus:ring-4 focus:ring-purple-500/20 focus:border-purple-600 outline-none shadow-sm cursor-pointer transition-all appearance-none">
+                                            <option value="">-- Pilih Klien dari Data RRI (Wajib Dipilih) --</option>
+                                        </select>
+                                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-purple-700">
+                                            <i class="fa-solid fa-chevron-down text-base"></i>
+                                        </div>
+                                    </div>
+                                    <p id="helperPilihKlien" class="text-xs font-semibold text-red-600 mt-2.5 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-lock"></i> Pengisian instrumen Bagian A dan Bagian B dikunci sebelum Anda memilih Nama Klien di atas.
+                                    </p>
+                                </div>
+
+                                <div class="p-6 md:p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 text-sm">
+                                    <div class="bg-white/90 border border-slate-200/90 p-4 rounded-xl shadow-sm">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Nama Klien</span>
+                                        <span id="cardNamaKlien" class="font-extrabold text-slate-800 text-base mt-1 block">-</span>
+                                    </div>
+                                    <div class="bg-white/90 border border-slate-200/90 p-4 rounded-xl shadow-sm">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Nomor Register Lapas/Rutan</span>
+                                        <span id="cardNoRegister" class="font-bold text-slate-700 font-mono mt-1 block">-</span>
+                                    </div>
+                                    <div class="bg-white/90 border border-slate-200/90 p-4 rounded-xl shadow-sm">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Tanggal Lahir</span>
+                                        <span id="cardTglLahir" class="font-semibold text-slate-700 mt-1 block">-</span>
+                                    </div>
+                                    <div class="bg-white/90 border border-slate-200/90 p-4 rounded-xl shadow-sm">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Jenis Kelamin</span>
+                                        <span id="cardJenisKelamin" class="font-semibold text-slate-700 mt-1 block">-</span>
+                                    </div>
+                                    <div class="bg-white/90 border border-slate-200/90 p-4 rounded-xl shadow-sm">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Lokasi Pidana</span>
+                                        <span id="cardLokasiPidana" class="font-semibold text-slate-700 mt-1 block break-words" title="-">-</span>
+                                    </div>
+                                    <div class="bg-purple-50/70 border border-purple-200 p-4 rounded-xl shadow-sm">
+                                        <span class="text-[10px] font-bold text-purple-600 uppercase tracking-widest block">Nama Petugas PK</span>
+                                        <span id="cardNamaPK" class="font-bold text-purple-900 mt-1 block">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-6 py-3.5 bg-slate-50/80 border-t border-slate-200/70 flex items-center justify-between text-xs text-slate-500">
+                                <span>Hasil RRI Sebelumnya: <strong id="cardHasilRRI" class="text-slate-800">-</strong></span>
+                                <span id="badgeRRI" class="px-2.5 py-1 rounded-md font-bold text-[10px] bg-slate-200 text-slate-700">-</span>
+                            </div>
+                        </div>
+
+                        <!-- Form Informasi Pelaksanaan Asesmen (Di Bawah Data Klien) -->
+                        <div class="glass-panel border border-slate-200/80 rounded-2xl overflow-hidden shadow-md">
+                            <div class="bg-slate-100/90 px-6 py-4 border-b border-slate-200">
+                                <h2 class="text-base font-bold text-blue-600 tracking-wide flex items-center gap-2">
+                                    <i class="fa-solid fa-calendar-check"></i> PELAKSANAAN ASESMEN
+                                </h2>
+                            </div>
+                            <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Tanggal Asesmen</label>
+                                    <input type="date" id="tanggalAsesmenKrim" style="color-scheme: light;" onclick="try { if(this.showPicker) this.showPicker(); } catch(e) {}" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-600 outline-none text-sm text-slate-700 transition cursor-pointer shadow-sm" required>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Alasan Asesmen</label>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <label class="cursor-pointer select-none">
+                                            <input type="radio" name="alasanAsesmen" value="Awal" class="peer hidden" checked required>
+                                            <div class="px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-600 font-bold text-center transition-all peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-50 shadow-sm text-sm">
+                                                Awal
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer select-none">
+                                            <input type="radio" name="alasanAsesmen" value="Ulang" class="peer hidden" required>
+                                            <div class="px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-600 font-bold text-center transition-all peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-50 shadow-sm text-sm">
+                                                Ulang
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Keterangan</label>
+                                    <textarea id="keteranganAsesmen" rows="3" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-600 outline-none text-sm text-slate-800 placeholder-slate-400 transition shadow-sm" placeholder="Tuliskan keterangan atau catatan pelaksanaan asesmen..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== BANNER PERINGATAN INSTRUMEN TERKUNCI ==================== -->
+                    <div id="bannerInstrumenTerkunci" onclick="fokusKePilihKlien()" class="cursor-pointer mb-6 p-4 md:p-5 rounded-2xl bg-amber-50/95 border-2 border-amber-300 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-amber-100/80 transition">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-11 h-11 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                                <i class="fa-solid fa-lock text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm md:text-base font-extrabold text-amber-950">Bagian A & Bagian B Masih Terkunci (Disabled)</h4>
+                                <p class="text-xs text-amber-800 font-medium mt-0.5">Silakan pilih <strong>Nama Klien dari Data RRI</strong> terlebih dahulu pada kotak pilihan di atas untuk mengaktifkan pengisian instrumen.</p>
+                            </div>
+                        </div>
+                        <button type="button" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shrink-0 shadow-sm transition">
+                            <i class="fa-solid fa-arrow-up mr-1"></i> Pilih Klien Sekarang
+                        </button>
+                    </div>
+
+                    <!-- ==================== WRAPPER INSTRUMEN BAGIAN A & BAGIAN B (DISABLED JIKA KLIEN BELUM DIPILIH) ==================== -->
+                    <div id="wrapperKunciInstrumen" onclick="handleKlikInstrumenTerkunci(event)" class="relative">
+                        <fieldset id="fieldsetInstrumen" disabled class="opacity-50 pointer-events-none select-none transition-all duration-300">
+
+                            <!-- ==================== 3. BAGIAN A: INSTRUMEN KEBUTUHAN KRIMINOGENIK UTAMA ==================== -->
+                            <div class="mb-4 flex items-center justify-between">
+                                <div>
+                                    <h2 class="text-xl font-black text-slate-800 tracking-tight">BAGIAN A — INSTRUMEN UTAMA (30 ITEM)</h2>
+                                    <p class="text-xs text-slate-500">Pilih jawaban pada setiap nomor dan lengkapi bukti/informasi pendukung bila diperlukan.</p>
+                                </div>
+                            </div>
+
+                            <!-- Container dinamis 7 Faktor Bagian A -->
+                            <div id="containerBagianA" class="space-y-8 mb-8"></div>
+
+                            <!-- ==================== RINGKASAN SKOR BAGIAN A ==================== -->
+                            <div class="glass-panel border-2 border-purple-300 rounded-2xl mb-8 overflow-hidden shadow-lg">
+                                <div class="bg-purple-100/90 px-6 py-4 border-b border-purple-200 flex items-center justify-between">
+                                    <h2 class="text-lg font-bold text-purple-900 tracking-wide"><i class="fa-solid fa-calculator mr-2"></i>REKAPITULASI SKOR BAGIAN A</h2>
+                                    <span class="text-xs font-bold text-purple-700">Otomatis Terhitung</span>
+                                </div>
+                                <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="rekapFaktorGrid">
+                                    <!-- Diisi via JS -->
+                                </div>
+                                <div class="px-6 py-4 bg-gradient-to-r from-purple-600 to-indigo-700 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+                                    <div>
+                                        <p class="text-xs uppercase tracking-widest text-purple-200 font-bold">Total Nilai Keseluruhan Bagian A</p>
+                                        <p class="text-sm text-purple-100">Acuan: Rendah (0-10) &bull; Sedang (11-22) &bull; Tinggi (23-29) &bull; Sangat Tinggi (30+)</p>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <div class="text-right">
+                                            <span class="text-xs text-purple-200 block">Skor Total</span>
+                                            <span id="rekapTotalSkor" class="text-3xl font-black">0</span>
+                                        </div>
+                                        <div class="h-10 w-px bg-white/20"></div>
+                                        <div>
+                                            <span class="text-xs text-purple-200 block">Kategori Tingkat Kebutuhan</span>
+                                            <span id="rekapTotalKategori" class="inline-block mt-0.5 px-3 py-1 rounded-lg bg-white text-purple-900 font-black text-sm tracking-wider uppercase">RENDAH</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ==================== 4. BAGIAN B.1 – JENIS TINDAK KRIMINAL TERTENTU ==================== -->
+                            <div class="glass-panel border border-slate-200/80 rounded-2xl mb-8 overflow-hidden shadow-md">
+                                <div class="bg-amber-100/90 px-6 py-4 border-b border-amber-200">
+                                    <h2 class="text-lg font-bold text-amber-900 tracking-wide">BAGIAN B.1 – PERTIMBANGAN LAIN – JENIS TINDAK KRIMINAL TERTENTU</h2>
+                                    <p class="text-xs text-amber-800 mt-0.5">Apakah ada dari fitur berikut di profil Narapidana/Klien Pemasyarakatan?</p>
+                                </div>
+                                <div class="p-6 overflow-x-auto">
+                                    <table class="w-full text-left border-collapse border border-slate-300 rounded-xl overflow-hidden text-sm">
+                                        <thead class="bg-slate-100 text-slate-700 border-b border-slate-300">
+                                            <tr>
+                                                <th class="p-3.5 w-16 text-center font-bold border-r border-slate-300">No.</th>
+                                                <th class="p-3.5 font-bold border-r border-slate-300">Deskripsi</th>
+                                                <th class="p-3.5 w-44 text-center font-bold">Centang Jika Ada</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbodyB1" class="divide-y divide-slate-200 bg-white/80">
+                                            <!-- Diisi otomatis via JS -->
+                                        </tbody>
+                                    </table>
+                                    <div class="mt-4 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-900 flex items-center gap-2.5">
+                                        <i class="fa-solid fa-circle-exclamation text-amber-600 text-base"></i>
+                                        <span>Kehadiran pertimbangan lain di atas, menunjukkan kebutuhan atau Penilaian Bagian 5 (Asesmen Khusus/Pertimbangan untuk Intervensi Khusus)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ==================== 5. BAGIAN B.2 – FAKTOR KEBUTUHAN TAMBAHAN ==================== -->
+                            <div class="glass-panel border border-slate-200/80 rounded-2xl mb-8 overflow-hidden shadow-md">
+                                <div class="bg-sky-100/90 px-6 py-4 border-b border-sky-200">
+                                    <h2 class="text-lg font-bold text-sky-900 tracking-wide">BAGIAN B.2 – PERTIMBANGAN LAIN – FAKTOR KEBUTUHAN TAMBAHAN</h2>
+                                </div>
+                                <div class="p-6 overflow-x-auto">
+                                    <table class="w-full text-left border-collapse border border-slate-300 rounded-xl overflow-hidden text-sm">
+                                        <thead class="bg-slate-100 text-slate-700 border-b border-slate-300">
+                                            <tr>
+                                                <th class="p-3.5 w-16 text-center font-bold border-r border-slate-300">No.</th>
+                                                <th class="p-3.5 font-bold border-r border-slate-300">Deskripsi</th>
+                                                <th class="p-3.5 w-44 text-center font-bold">Centang Jika Ada</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbodyB2" class="divide-y divide-slate-200 bg-white/80">
+                                            <!-- Diisi otomatis via JS -->
+                                        </tbody>
+                                    </table>
+                                    <div class="mt-4 p-3.5 rounded-xl bg-sky-50 border border-sky-200 text-xs font-semibold text-sky-900 flex items-center gap-2.5">
+                                        <i class="fa-solid fa-circle-info text-sky-600 text-base"></i>
+                                        <span>Kehadiran B2 Pertimbangan Lainnya, menunjukkan masalah responsif atau manajemen risiko</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+
+                    <!-- ==================== 6. TANDA TANGAN DIGITAL ==================== -->
+                    <div class="glass-panel border border-slate-200/80 rounded-2xl mb-8 overflow-hidden shadow-md">
+                        <div class="bg-slate-100/90 px-6 py-4 border-b border-slate-200">
+                            <h2 class="text-lg font-bold text-slate-800 tracking-wide"><i class="fa-solid fa-pen-nib mr-2"></i>Pengesahan (Tanda Tangan)</h2>
+                        </div>
+                        <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="flex flex-col items-center">
+                                <label class="block text-sm font-bold text-slate-700 uppercase tracking-widest mb-3">TTD Petugas Asesmen</label>
+                                <div class="canvas-container shadow-inner">
+                                    <canvas id="canvasPetugas" class="cursor-crosshair"></canvas>
+                                </div>
+                                <button type="button" id="btnClearPetugas" class="mt-3 text-xs text-red-600 font-bold hover:text-red-700 transition px-4 py-2 bg-red-50 border border-red-200 hover:bg-red-100 rounded-lg">
+                                    <i class="fa-solid fa-eraser mr-1"></i> Hapus / Ulangi
+                                </button>
+                            </div>
+
+                            <div class="flex flex-col items-center">
+                                <label class="block text-sm font-bold text-slate-700 uppercase tracking-widest mb-3">TTD Narapidana/Klien</label>
+                                <div class="canvas-container shadow-inner">
+                                    <canvas id="canvasKlien" class="cursor-crosshair"></canvas>
+                                </div>
+                                <button type="button" id="btnClearKlien" class="mt-3 text-xs text-red-600 font-bold hover:text-red-700 transition px-4 py-2 bg-red-50 border border-red-200 hover:bg-red-100 rounded-lg">
+                                    <i class="fa-solid fa-eraser mr-1"></i> Hapus / Ulangi
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TOMBOL AKSI -->
+                    <div class="flex flex-col-reverse md:flex-row justify-end gap-4 mb-4 md:mb-10 pt-2">
+                        <a href="asesmen.html" class="w-full md:w-auto px-8 py-3.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 transition text-center shadow-sm border border-slate-300 text-sm">Batal</a>
+                        <button type="submit" id="btnSubmitKrim" disabled class="w-full md:w-auto px-10 py-3.5 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none disabled:cursor-not-allowed shadow-[0_4px_15px_rgba(147,51,234,0.35)] transition active:scale-95 flex justify-center items-center gap-2 text-sm">
+                            <i class="fa-solid fa-print"></i> Simpan & Cetak PDF Kriminogenik
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- BOTTOM NAV MOBILE -->
+    <nav id="bottom-nav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-200 z-50 flex justify-around items-center px-2 pb-2 pt-3 shadow-[0_-8px_20px_rgba(0,0,0,0.06)]">
+        <a href="asesmen.html" class="flex-1 flex flex-col items-center gap-1.5 text-slate-500 hover:text-blue-600 transition">
+            <i class="fa-solid fa-chart-pie text-xl"></i>
+            <span class="text-[10px] font-bold tracking-wide">Utama</span>
+        </a>
+        <a href="form_asesmen_rri.html" class="flex-1 flex flex-col items-center gap-1.5 text-slate-500 hover:text-blue-600 transition">
+            <i class="fa-solid fa-file-signature text-xl"></i>
+            <span class="text-[10px] font-bold tracking-wide">RRI</span>
+        </a>
+        <a href="#" class="flex-1 flex flex-col items-center gap-1.5 text-purple-600 transition">
+            <i class="fa-solid fa-brain text-xl"></i>
+            <span class="text-[10px] font-bold tracking-wide">Krim</span>
+        </a>
+        <button onclick="prosesLogout()" class="flex-1 flex flex-col items-center gap-1.5 text-slate-500 hover:text-red-600 transition focus:outline-none">
+            <i class="fa-solid fa-right-from-bracket text-xl"></i>
+            <span class="text-[10px] font-bold tracking-wide">Keluar</span>
+        </button>
+    </nav>
+
+    <!-- ==================== TEMPLATE CETAK PDF KRIMINOGENIK ==================== -->
+    <div style="display: none;">
+        <div id="dokumenPdfKrim">
+            <div style="text-align: center; margin-bottom: 18px;">
+                <h2 style="font-size: 13pt; font-weight: bold; margin: 0; text-decoration: underline;">INSTRUMEN ASESMEN KEBUTUHAN KRIMINOGENIK</h2>
+                <p style="font-size: 10pt; margin: 4px 0 0 0;">Versi 02 Tahun 2021 - Direktorat Jenderal Pemasyarakatan</p>
+            </div>
+
+            <!-- Tabel Identitas Klien & Pelaksanaan -->
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 10pt; border: 1px solid black;">
+                <tr>
+                    <td style="width: 22%; padding: 5px; border: 1px solid black; font-weight: bold;">Nama Klien</td>
+                    <td style="width: 28%; padding: 5px; border: 1px solid black;" id="pdf-namaKlien"></td>
+                    <td style="width: 22%; padding: 5px; border: 1px solid black; font-weight: bold;">Tanggal Asesmen</td>
+                    <td style="width: 28%; padding: 5px; border: 1px solid black;" id="pdf-tglAsesmen"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 5px; border: 1px solid black; font-weight: bold;">No. Register</td>
+                    <td style="padding: 5px; border: 1px solid black;" id="pdf-noReg"></td>
+                    <td style="padding: 5px; border: 1px solid black; font-weight: bold;">Alasan Asesmen</td>
+                    <td style="padding: 5px; border: 1px solid black;" id="pdf-alasan"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 5px; border: 1px solid black; font-weight: bold;">Tgl Lahir / JK</td>
+                    <td style="padding: 5px; border: 1px solid black;" id="pdf-tglLahirJk"></td>
+                    <td style="padding: 5px; border: 1px solid black; font-weight: bold;">Nama Petugas PK</td>
+                    <td style="padding: 5px; border: 1px solid black;" id="pdf-namaPK"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 5px; border: 1px solid black; font-weight: bold;">Lokasi Pidana</td>
+                    <td style="padding: 5px; border: 1px solid black;" id="pdf-lokasi"></td>
+                    <td style="padding: 5px; border: 1px solid black; font-weight: bold;">Keterangan</td>
+                    <td style="padding: 5px; border: 1px solid black;" id="pdf-keterangan"></td>
+                </tr>
+            </table>
+
+            <h3 style="font-size: 11pt; font-weight: bold; margin-bottom: 6px;">BAGIAN A. FAKTOR KEBUTUHAN KRIMINOGENIK UTAMA</h3>
+            <table class="pdf-table">
+                <thead>
+                    <tr>
+                        <th style="width: 7%;">NO</th>
+                        <th style="width: 58%;">PERTANYAAN & BUKTI PENDUKUNG</th>
+                        <th style="width: 20%;">JAWABAN</th>
+                        <th style="width: 15%;">NILAI</th>
+                    </tr>
+                </thead>
+                <tbody id="pdf-tbodyA"></tbody>
+            </table>
+
+            <div class="html2pdf__page-break"></div>
+
+            <h3 style="font-size: 11pt; font-weight: bold; margin-bottom: 6px;">BAGIAN B.1 – PERTIMBANGAN LAIN – JENIS TINDAK KRIMINAL TERTENTU</h3>
+            <table class="pdf-table">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;">NO</th>
+                        <th style="width: 77%;">DESKRIPSI</th>
+                        <th style="width: 15%;">CENTANG</th>
+                    </tr>
+                </thead>
+                <tbody id="pdf-tbodyB1"></tbody>
+            </table>
+
+            <h3 style="font-size: 11pt; font-weight: bold; margin-bottom: 6px;">BAGIAN B.2 – PERTIMBANGAN LAIN – FAKTOR KEBUTUHAN TAMBAHAN</h3>
+            <table class="pdf-table">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;">NO</th>
+                        <th style="width: 77%;">DESKRIPSI</th>
+                        <th style="width: 15%;">CENTANG</th>
+                    </tr>
+                </thead>
+                <tbody id="pdf-tbodyB2"></tbody>
+            </table>
+
+            <table style="width: 100%; text-align: center; margin-top: 25px; font-size: 10pt;">
+                <tr>
+                    <td style="width: 50%; vertical-align: bottom;">
+                        <p>Petugas Asesmen / PK,</p>
+                        <div style="height: 80px; display: flex; align-items: center; justify-content: center; margin: 5px 0;">
+                            <img id="pdf-ttdPetugas" src="" style="max-height: 75px; max-width: 180px; display: none; margin: 0 auto;" />
+                        </div>
+                        <p style="font-weight: bold; text-decoration: underline;" id="pdf-ttdNamaPK"></p>
+                    </td>
+                    <td style="width: 50%; vertical-align: bottom;">
+                        <p>Narapidana / Klien Pemasyarakatan,</p>
+                        <div style="height: 80px; display: flex; align-items: center; justify-content: center; margin: 5px 0;">
+                            <img id="pdf-ttdKlien" src="" style="max-height: 75px; max-width: 180px; display: none; margin: 0 auto;" />
+                        </div>
+                        <p style="font-weight: bold; text-decoration: underline;" id="pdf-ttdNamaKlien"></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://udghusxmebnjfastiwmi.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkZ2h1c3htZWJuamZhc3Rpd21pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyODE2OTQsImV4cCI6MjEwNjg1NzY5NH0.ZX8KGUuGll4xnm4AEJH6_xfGS086dDRyI23QRKo56dM'; 
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const swalLightTheme = {
+            heightAuto: false,
+            scrollbarPadding: false,
+            background: '#ffffff',
+            color: '#1e293b',
+            customClass: { popup: 'border border-slate-200 rounded-3xl shadow-2xl' }
+        };
+
+        let currentPetugasId = null;
+        let globalNamaPetugas = "Petugas Asesmen";
+        let daftarKlienRRI = [];
+        let klienTerpilih = null;
+
+        // ==================== DEFINISI DATA INSTRUMEN BAGIAN A (30 ITEM DALAM 7 FAKTOR) ====================
+        const strukturBagianA = [
+            {
+                idFaktor: 'f1',
+                namaFaktor: 'KELUARGA DAN PERNIKAHAN',
+                icon: 'fa-people-roof',
+                warnaHeader: 'bg-blue-50/90 text-blue-800 border-blue-200',
+                batasKategori: { rendah: [0, 1], sedang: [2, 3], tinggi: [4, 5], sangatTinggi: [6, 99] },
+                items: [
+                    { no: '1', kode: 'a1', teks: 'Apakah narapidana/klien pemasyarakatan mempunyai hubungan yang baik dengan pasangan mereka?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Sebagian', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
+                    { no: '2', kode: 'a2', teks: 'Apakah Narapidana/Klien Pemasyarakatan mempunyai hubungan yang baik dengan orangtua atau wali mereka?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Hanya salah satu', nilai: 1 }, { label: 'Keduanya', nilai: 0 }] },
+                    { no: '3', kode: 'a3', teks: 'Apakah Narapidana/Klien Pemasyarakatan mempunyai hubungan yang baik dengan anggota keluarga lainnya?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Sebagian', nilai: 1 }, { label: 'Ya', nilai: 0 }] }
+                ]
+            },
+            {
+                idFaktor: 'f2',
+                namaFaktor: 'PENDIDIKAN DAN PEKERJAAN',
+                icon: 'fa-briefcase',
+                warnaHeader: 'bg-indigo-50/90 text-indigo-800 border-indigo-200',
+                batasKategori: { rendah: [0, 2], sedang: [3, 6], tinggi: [7, 9], sangatTinggi: [10, 99] },
+                items: [
+                    { no: '4', kode: 'a4', teks: 'Apakah Narapidana/Klien Pemasyarakatan dapat membaca dan menulis?', opsi: [{ label: 'Tidak', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
+                    { no: '5', kode: 'a5', teks: 'Apakah Narapidana/Klien Pemasyarakatan menyelesaikan pendidikan yang tinggi?', opsi: [{ label: 'Tidak', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
+                    { no: '6A', kode: 'a6a', teks: 'Apakah Narapidana/Klien Pemasyarakatan menganggur sebelum menjalani pidana sekarang ?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
+                    { no: '6B', kode: 'a6b', teks: 'Apakah Narapidana/Klien Pemasyarakatan mengikuti program pekerjaan di dalam Lapas selama 12 bulan terakhir ?', opsi: [{ label: 'Tidak', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
+                    { no: '7', kode: 'a7', teks: 'Apakah Narapidana/Klien Pemasyarakatan menghabiskan kurang-lebih setengah waktunya dalam keadaan menganggur/tidak bekerja ketika berada di masyarakat ?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
+                    { no: '8', kode: 'a8', teks: 'Apakah Narapidana/Klien Pemasyarakatan merasa kegiatannya di tempat kerja/sekolah/universitas bermakna ?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Perlu Dikembangkan', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
+                    { no: '9', kode: 'a9', teks: 'Apakah Narapidana/Klien Pemasyarakatan dapat berhubungan baik dengan rekan kerja/teman sekolah/kuliah ?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Perlu Dikembangkan', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
+                    { no: '10', kode: 'a10', teks: 'Apakah Narapidana/Klien Pemasyarakatan berhubungan baik dengan atasan di tempat kerja, atau dengan pengajar di institusi pendidikan tempat ia belajar ?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Perlu Dikembangkan', nilai: 1 }, { label: 'Ya', nilai: 0 }] }
+                ]
+            },
+            {
+                idFaktor: 'f3',
+                namaFaktor: 'PENGGUNAAN OBAT-OBATAN TERLARANG DAN KONSUMSI ALKOHOL (DULU DAN SEKARANG)',
+                icon: 'fa-capsules',
+                warnaHeader: 'bg-rose-50/90 text-rose-800 border-rose-200',
+                batasKategori: { rendah: [0, 1], sedang: [2, 3], tinggi: [4, 5], sangatTinggi: [6, 99] },
+                items: [
+                    { no: '11', kode: 'a11', teks: 'Apakah Narapidana/Klien Pemasyarakatan secara rutin menggunakan obat-obatan, narkotika dan/atau alkohol sebelum mengalami permasalahan hukum?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
+                    { no: '12', kode: 'a12', teks: 'Apakah tindakan kriminal Narapidana/Klien Pemasyarakatan disebabkan oleh penggunaan obat-obatan, narkotika dan/atau alkohol ?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
+                    { no: '13', kode: 'a13', teks: 'Apakah Narapidana/Klien Pemasyarakatan menggunakan obat/narkotik/alkohol selama di dalam Lapas, atau pada saat menjalani proses PB ?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
+                    { no: '14', kode: 'a14', teks: 'Apakah penggunaan obat/narkotik/alkohol oleh Narapidana/Klien Pemasyarakatan berdampak negatif pada pekerjaan dan/atau pendidikannya ?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
+                    { no: '15', kode: 'a15', teks: 'Apakah penggunaan obat/narkotik/alkohol oleh Narapidana/Klien Pemasyarakatan berdampak negatif pada hubungan dengan pasangannya, dan/atau hubungan dengan anggota keluarga ?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
+                    { no: '16', kode: 'a16', teks: 'Apakah penggunaan obat/narkotik/alkohol oleh Narapidana/Klien Pemasyarakatan berdampak negatif pada kesehatan dirinya ?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] }
+                ]
+            },
+            {
+                idFaktor: 'f4',
+                namaFaktor: 'HUBUNGAN SOSIAL',
+                icon: 'fa-users-Viewfinder',
+                warnaHeader: 'bg-emerald-50/90 text-emerald-800 border-emerald-200',
+                batasKategori: { rendah: [0, 1], sedang: [2, 2], tinggi: [3, 4], sangatTinggi: [5, 99] },
+                items: [
+                    { no: '17', kode: 'a17', teks: 'Apakah Narapidana/Klien Pemasyarakatan melakukan tindak kriminal yang sekarang dengan teman/rekannya?', opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }] },
+                    { no: '18', kode: 'a18', teks: 'Apakah Narapidana/Klien Pemasyarakatan anggota dari suatu kelompok/organisasi/grup yang melakukan aktivitas kriminal ?', opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }] },
+                    { no: '19', kode: 'a19', teks: 'Apakah Narapidana/Klien Pemasyarakatan mempunyai teman selama di dalam Lapas ?', opsi: [{ label: 'Ya', nilai: 1 }, { label: 'Tidak', nilai: 0 }] },
+                    { no: '20', kode: 'a20', teks: 'Apakah Narapidana/Klien Pemasyarakatan mempunyai teman dan rekan yang pro-sosial?', opsi: [{ label: 'Ya', nilai: 0 }, { label: 'Terbatas', nilai: 1 }, { label: 'Tidak', nilai: 2 }] }
+                ]
+            },
+            {
+                idFaktor: 'f5',
+                namaFaktor: 'WAKTU LUANG/REKREASI',
+                icon: 'fa-clock',
+                warnaHeader: 'bg-teal-50/90 text-teal-800 border-teal-200',
+                batasKategori: { rendah: [0, 0], sedang: [1, 1], tinggi: [2, 99], sangatTinggi: [99, 100] },
+                items: [
+                    { no: '21', kode: 'a21', teks: 'Apakah Narapidana/Klien Pemasyarakatan melibatkan diri dalam kegiatan yang konstruktif dan bermanfaat?', opsi: [{ label: 'Ya', nilai: 0 }, { label: 'Tidak', nilai: 1 }] },
+                    { no: '22', kode: 'a22', teks: 'Apakah Narapidana/Klien Pemasyarakatan memiliki terlalu banyak waktu luang?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] }
+                ]
+            },
+            {
+                idFaktor: 'f6',
+                namaFaktor: 'MANAJEMEN KEUANGAN',
+                icon: 'fa-wallet',
+                warnaHeader: 'bg-amber-50/90 text-amber-800 border-amber-200',
+                batasKategori: { rendah: [0, 0], sedang: [1, 1], tinggi: [2, 99], sangatTinggi: [99, 100] },
+                items: [
+                    { no: '23', kode: 'a23', teks: 'Apakah masalah kesulitan keuangan menyebabkan Narapidana/Klien Pemasyarakatan melakukan tindak pidana yang sekarang?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
+                    { no: '24', kode: 'a24', teks: 'Apakah Narapidana/Klien Pemasyarakatan memiliki hutang yang sulit dibayarnya?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] }
+                ]
+            },
+            {
+                idFaktor: 'f7',
+                namaFaktor: 'SIKAP ANTI-SOSIAL/PANDANGAN TERHADAP TINDAK KRIMINAL',
+                icon: 'fa-scale-unbalanced',
+                warnaHeader: 'bg-purple-50/90 text-purple-800 border-purple-200',
+                batasKategori: { rendah: [0, 1], sedang: [2, 4], tinggi: [5, 6], sangatTinggi: [7, 99] },
+                items: [
+                    { no: '25', kode: 'a25', teks: 'Apakah Narapidana/Klien Pemasyarakatan memiliki Sikap/penilaian negatif terhadap Sistem Peradilan Pidana?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
+                    { no: '26', kode: 'a26', teks: 'Apakah Narapidana/Klien Pemasyarakatan menunjukkan rasa empati terhadap korban dari kejahatannya?', opsi: [{ label: 'Tidak', nilai: 2 }, { label: 'Sedikit', nilai: 1 }, { label: 'Ya', nilai: 0 }] },
+                    { no: '27', kode: 'a27', teks: 'Apakah Narapidana/Klien Pemasyarakatan memiliki riwayat kejahatan menggunakan kekerasan, dan/atau kejahatan amoral yang berulang?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Perhatian', nilai: 1 }, { label: 'Ya', nilai: 2 }] },
+                    { no: '28', kode: 'a28', teks: 'Apakah Narapidana/Klien Pemasyarakatan memiliki sikap negatif terhadap rehabilitasi/program layanan lainnya?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] },
+                    { no: '29', kode: 'a29', teks: 'Apakah Narapidana/Klien Pemasyarakatan meyakini kejahatan adalah cara yang sah untuk memenuhi kebutuhan mereka?', opsi: [{ label: 'Tidak', nilai: 0 }, { label: 'Ya', nilai: 1 }] }
+                ]
+            }
+        ];
+
+        // ==================== DEFINISI DATA BAGIAN B.1 & B.2 ====================
+        const daftarB1 = [
+            { no: 'A', teks: 'Apakah Narapidana/Klien Pemasyarakatan memiliki sejarah kekerasan?' },
+            { no: 'B', teks: 'Apakah Narapidana/Klien Pemasyarakatan memiliki kejahatan karena tindakan tidak bermoral?' },
+            { no: 'C', teks: 'Apakah Narapidana/Klien Pemasyarakatan memiliki kejahatan karena kekerasan ekstremis atau terorisme?' },
+            { no: 'D', teks: 'Apakah Narapidana/Klien Pemasyarakatan menjadi korban kekerasan (termasuk kekerasan dalam rumah tangga)?' },
+            { no: 'E', teks: 'Apakah ada kejahatan luar biasa yang harus dibawa ke Pengadilan?' },
+            { no: 'F', teks: 'Apakah Narapidana/Klien Pemasyarakatan memiliki kejahatan karena tindakan seperti korupsi atau penipuan?' },
+            { no: 'G', teks: 'Apakah Narapidana/Klien Pemasyarakatan kesulitan mengelola emosi mereka?' },
+            { no: 'H', teks: 'Apakah ada kejahatan rasial (mis. Kejahatan berdasarkan ras atau agama)?' },
+            { no: 'I', teks: 'Apakah kejahatan terkait dengan narkoba, seperti berurusan, memanen atau mengimpor?' }
+        ];
+
+        const daftarB2 = [
+            { no: 'A', teks: 'Apakah ada ancaman terhadap Narapidana/Klien Pemasyarakatan/Klien dari pihak ketiga?' },
+            { no: 'B', teks: 'Apakah Narapidana/Klien Pemasyarakatan memiliki kejahatan karena tindakan tidak bermoral?' },
+            { no: 'C', teks: 'Apakah ada masalah akomodasi/rumah (bukan tunawisma)?' },
+            { no: 'D', teks: 'Apakah Narapidana/Klien Pemasyarakatan/Klien menjadi target dari institusi penegak hukum untuk jangka waktu yang lama dalam hidup mereka?' },
+            { no: 'E', teks: 'Apakah ada masalah kepatuhan saat ini?' },
+            { no: 'F', teks: 'Apakah Narapidana/Klien Pemasyarakatan/Klien memiliki keterampilan sosial yang buruk/kurang?' },
+            { no: 'G', teks: 'Apakah Narapidana/Klien Pemasyarakatan/Klien mengalami kesulitan belajar?' },
+            { no: 'H', teks: 'Apakah Narapidana/Klien Pemasyarakatan/Klien memiliki cacat fisik?' },
+            { no: 'I', teks: 'Apakah ada masalah imigrasi?' }
+        ];
+
+        // ==================== FUNGSI ENABLE / DISABLE BAGIAN A & BAGIAN B ====================
+        function aturStatusKunciInstrumen(isAktif) {
+            const fieldset = document.getElementById('fieldsetInstrumen');
+            const banner = document.getElementById('bannerInstrumenTerkunci');
+            const btnSubmit = document.getElementById('btnSubmitKrim');
+            const selectEl = document.getElementById('selectKlienRRI');
+            const statusBadge = document.getElementById('statusPilihKlienBadge');
+            const helperText = document.getElementById('helperPilihKlien');
+            const boxSelect = document.getElementById('boxSelectKlien');
+
+            if (isAktif) {
+                fieldset.disabled = false;
+                fieldset.classList.remove('opacity-50', 'pointer-events-none', 'select-none');
+                fieldset.querySelectorAll('input, textarea, select, button').forEach(el => el.disabled = false);
+
+                if (banner) banner.classList.add('hidden');
+                if (btnSubmit) btnSubmit.disabled = false;
+
+                if (selectEl) {
+                    selectEl.classList.remove('select-mandatory-pulse', 'border-purple-400');
+                    selectEl.classList.add('border-emerald-500', 'bg-emerald-50/20');
+                }
+                if (boxSelect) {
+                    boxSelect.classList.replace('border-purple-300', 'border-emerald-300');
+                }
+                if (statusBadge) {
+                    statusBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300';
+                    statusBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> KLIEN TERPILIH — INSTRUMEN AKTIF';
+                }
+                if (helperText) {
+                    helperText.className = 'text-xs font-semibold text-emerald-700 mt-2.5 flex items-center gap-1.5';
+                    helperText.innerHTML = '<i class="fa-solid fa-unlock"></i> Data klien telah dipilih. Silakan lanjutkan mengisi Bagian A dan Bagian B di bawah.';
+                }
+            } else {
+                fieldset.disabled = true;
+                fieldset.classList.add('opacity-50', 'pointer-events-none', 'select-none');
+                fieldset.querySelectorAll('input, textarea, select, button').forEach(el => el.disabled = true);
+
+                if (banner) banner.classList.remove('hidden');
+                if (btnSubmit) btnSubmit.disabled = true;
+
+                if (selectEl) {
+                    selectEl.classList.add('select-mandatory-pulse', 'border-purple-400');
+                    selectEl.classList.remove('border-emerald-500', 'bg-emerald-50/20');
+                }
+                if (boxSelect) {
+                    boxSelect.classList.replace('border-emerald-300', 'border-purple-300');
+                }
+                if (statusBadge) {
+                    statusBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-red-100 text-red-700 border border-red-300';
+                    statusBadge.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> WAJIB PILIH KLIEN TERLEBIH DAHULU';
+                }
+                if (helperText) {
+                    helperText.className = 'text-xs font-semibold text-red-600 mt-2.5 flex items-center gap-1.5';
+                    helperText.innerHTML = '<i class="fa-solid fa-lock"></i> Pengisian instrumen Bagian A dan Bagian B dikunci sebelum Anda memilih Nama Klien di atas.';
+                }
+            }
+        }
+
+        function fokusKePilihKlien() {
+            const selectEl = document.getElementById('selectKlienRRI');
+            if (selectEl) {
+                selectEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => selectEl.focus(), 350);
+            }
+        }
+
+        function handleKlikInstrumenTerkunci(e) {
+            if (!klienTerpilih) {
+                e.preventDefault();
+                e.stopPropagation();
+                Swal.fire({
+                    ...swalLightTheme,
+                    icon: 'warning',
+                    title: 'Pilih Nama Klien Terlebih Dahulu!',
+                    text: 'Bagian A dan Bagian B dinonaktifkan sebelum Anda memilih Nama Klien dari Data RRI.',
+                    confirmButtonText: 'Pilih Klien Sekarang',
+                    confirmButtonColor: '#9333ea'
+                }).then(() => {
+                    fokusKePilihKlien();
+                });
+            }
+        }
+
+        // ==================== RENDER FORMULIR BAGIAN A, B.1, DAN B.2 ====================
+        function renderFormulirKriminogenik() {
+            // Set tanggal hari ini secara default
+            document.getElementById('tanggalAsesmenKrim').value = new Date().toISOString().split('T')[0];
+
+            // 1. Render Bagian A
+            const containerA = document.getElementById('containerBagianA');
+            containerA.innerHTML = '';
+
+            strukturBagianA.forEach((faktor, idxFaktor) => {
+                let itemsHtml = '';
+                faktor.items.forEach((item, idxItem) => {
+                    let opsiHtml = '';
+                    item.opsi.forEach(op => {
+                        opsiHtml += `
+                            <label class="cursor-pointer select-none flex-1 min-w-[130px]">
+                                <input type="radio" name="${item.kode}" value="${op.nilai}" data-label="${op.label}" onchange="hitungSkorKriminogenik()" class="peer hidden" required>
+                                <div class="px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-600 font-bold text-center transition-all duration-200 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-50 shadow-sm text-sm flex items-center justify-between gap-2">
+                                    <span>${op.label}</span>
+                                    <span class="badge-nilai text-xs px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 peer-checked:bg-white/20 peer-checked:text-white font-mono">=${op.nilai}</span>
+                                </div>
+                            </label>
+                        `;
+                    });
+
+                    itemsHtml += `
+                        <div class="space-y-3 ${idxItem > 0 ? 'pt-6 border-t border-slate-200/80' : ''}">
+                            <p class="font-semibold text-slate-800 text-sm md:text-base">
+                                <span class="inline-block font-black text-purple-700 mr-1.5">${item.no}.</span>${item.teks}
+                            </p>
+                            <div class="flex flex-wrap gap-3">
+                                ${opsiHtml}
+                            </div>
+                            <div>
+                                <input type="text" id="bukti_${item.kode}" class="w-full px-3.5 py-2 bg-slate-50/90 border border-slate-200 rounded-xl text-xs text-slate-700 placeholder-slate-400 focus:bg-white focus:ring-1 focus:ring-purple-500 outline-none transition" placeholder="Bukti / Informasi pendukung untuk nomor ${item.no} (opsional)...">
+                            </div>
+                        </div>
+                    `;
+                });
+
+                const sectionEl = document.createElement('div');
+                sectionEl.className = 'glass-panel border border-slate-200/80 rounded-2xl overflow-hidden shadow-md';
+                sectionEl.innerHTML = `
+                    <div class="${faktor.warnaHeader} px-6 py-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <h3 class="text-base font-extrabold tracking-wide flex items-center gap-2.5">
+                            <span class="w-7 h-7 rounded-lg bg-white/80 flex items-center justify-center text-xs font-black shadow-sm">${idxFaktor + 1}</span>
+                            ${faktor.namaFaktor}
+                        </h3>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold opacity-75">Sub-Skor:</span>
+                            <span id="subSkor_${faktor.idFaktor}" class="px-2.5 py-0.5 rounded-lg bg-white font-black text-sm shadow-sm">0</span>
+                        </div>
+                    </div>
+                    <div class="p-6 md:p-8 space-y-6">
+                        ${itemsHtml}
+                    </div>
+                `;
+                containerA.appendChild(sectionEl);
+            });
+
+            // 2. Render Bagian B.1
+            const tbodyB1 = document.getElementById('tbodyB1');
+            tbodyB1.innerHTML = daftarB1.map(item => `
+                <tr class="hover:bg-amber-50/40 transition">
+                    <td class="p-3.5 text-center font-bold text-slate-700 border-r border-slate-200">${item.no}</td>
+                    <td class="p-3.5 text-slate-800 border-r border-slate-200">${item.teks}</td>
+                    <td class="p-3.5 text-center">
+                        <label class="inline-flex items-center justify-center cursor-pointer">
+                            <input type="checkbox" name="b1_${item.no}" value="1" class="w-5 h-5 text-amber-600 rounded border-slate-300 focus:ring-amber-500 cursor-pointer">
+                        </label>
+                    </td>
+                </tr>
+            `).join('');
+
+            // 3. Render Bagian B.2
+            const tbodyB2 = document.getElementById('tbodyB2');
+            tbodyB2.innerHTML = daftarB2.map(item => `
+                <tr class="hover:bg-sky-50/40 transition">
+                    <td class="p-3.5 text-center font-bold text-slate-700 border-r border-slate-200">${item.no}</td>
+                    <td class="p-3.5 text-slate-800 border-r border-slate-200">${item.teks}</td>
+                    <td class="p-3.5 text-center">
+                        <label class="inline-flex items-center justify-center cursor-pointer">
+                            <input type="checkbox" name="b2_${item.no}" value="1" class="w-5 h-5 text-sky-600 rounded border-slate-300 focus:ring-sky-500 cursor-pointer">
+                        </label>
+                    </td>
+                </tr>
+            `).join('');
+
+            hitungSkorKriminogenik();
+            aturStatusKunciInstrumen(false);
+        }
+
+        // ==================== KALKULASI OTOMATIS SKOR PER FAKTOR & TOTAL ====================
+        function tentukanKategoriFaktor(skor, batas) {
+            if (skor >= batas.rendah[0] && skor <= batas.rendah[1]) return 'RENDAH';
+            if (skor >= batas.sedang[0] && skor <= batas.sedang[1]) return 'SEDANG';
+            if (skor >= batas.tinggi[0] && skor <= batas.tinggi[1]) return 'TINGGI';
+            return 'SANGAT TINGGI';
+        }
+
+        function tentukanKategoriTotal(total) {
+            if (total <= 10) return 'RENDAH';
+            if (total <= 22) return 'SEDANG';
+            if (total <= 29) return 'TINGGI';
+            return 'SANGAT TINGGI';
+        }
+
+        function hitungSkorKriminogenik() {
+            let totalKeseluruhan = 0;
+            const rekapGrid = document.getElementById('rekapFaktorGrid');
+            rekapGrid.innerHTML = '';
+
+            strukturBagianA.forEach(faktor => {
+                let skorFaktor = 0;
+                faktor.items.forEach(item => {
+                    const checked = document.querySelector(`input[name="${item.kode}"]:checked`);
+                    if (checked) {
+                        skorFaktor += parseInt(checked.value);
+                    }
+                });
+                totalKeseluruhan += skorFaktor;
+
+                const elSub = document.getElementById(`subSkor_${faktor.idFaktor}`);
+                if (elSub) elSub.innerText = skorFaktor;
+
+                const katFaktor = tentukanKategoriFaktor(skorFaktor, faktor.batasKategori);
+                let badgeClass = 'bg-green-100 text-green-700 border-green-200';
+                if (katFaktor === 'SEDANG') badgeClass = 'bg-amber-100 text-amber-700 border-amber-200';
+                else if (katFaktor === 'TINGGI') badgeClass = 'bg-orange-100 text-orange-700 border-orange-200';
+                else if (katFaktor === 'SANGAT TINGGI') badgeClass = 'bg-red-100 text-red-700 border-red-200';
+
+                rekapGrid.innerHTML += `
+                    <div class="bg-white/90 border border-slate-200 p-3.5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase leading-tight">${faktor.namaFaktor}</span>
+                        <div class="mt-2 flex items-center justify-between">
+                            <span class="text-xl font-black text-slate-800">${skorFaktor}</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${badgeClass}">${katFaktor}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const kategoriAkhir = tentukanKategoriTotal(totalKeseluruhan);
+            document.getElementById('rekapTotalSkor').innerText = totalKeseluruhan;
+            document.getElementById('rekapTotalKategori').innerText = kategoriAkhir;
+            document.getElementById('liveHeaderSkor').innerText = totalKeseluruhan;
+            document.getElementById('liveHeaderKategori').innerText = kategoriAkhir;
+
+            return { totalKeseluruhan, kategoriAkhir };
+        }
+
+        function toggleDeskripsi() {
+            const konten = document.getElementById('kontenDeskripsi');
+            const label = document.getElementById('labelToggleDeskripsi');
+            const icon = document.getElementById('iconToggleDeskripsi');
+            konten.classList.toggle('hidden');
+            if (konten.classList.contains('hidden')) {
+                label.innerText = 'Tampilkan Pedoman';
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            } else {
+                label.innerText = 'Sembunyikan';
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        function formatTanggal(tglStr) {
+            if (!tglStr) return "-";
+            const dt = new Date(tglStr);
+            return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        // ==================== MUAT DATA KLIEN DARI ASESMEN RRI ====================
+        function isiCardKlien(row) {
+            klienTerpilih = row;
+            if (!row) {
+                document.getElementById('cardNamaKlien').innerText = "-";
+                document.getElementById('cardNoRegister').innerText = "-";
+                document.getElementById('cardTglLahir').innerText = "-";
+                document.getElementById('cardJenisKelamin').innerText = "-";
+                document.getElementById('cardLokasiPidana').innerText = "-";
+                document.getElementById('cardNamaPK').innerText = globalNamaPetugas;
+                document.getElementById('cardHasilRRI').innerText = "-";
+                document.getElementById('badgeRRI').innerText = "-";
+                aturStatusKunciInstrumen(false);
+                return;
+            }
+
+            let detailObj = {};
+            if (row.detail_jawaban) {
+                detailObj = typeof row.detail_jawaban === 'string' ? JSON.parse(row.detail_jawaban) : row.detail_jawaban;
+            }
+            const lokasi = row.lokasi_pidana || detailObj.lokasi_pidana || "-";
+            const namaPK = row.nama_petugas || detailObj.nama_petugas || globalNamaPetugas;
+
+            document.getElementById('cardNamaKlien').innerText = row.nama_klien || "-";
+            document.getElementById('cardNoRegister').innerText = row.no_register || "-";
+            document.getElementById('cardTglLahir').innerText = formatTanggal(row.tanggal_lahir);
+            document.getElementById('cardJenisKelamin').innerText = row.jenis_kelamin || "-";
+            document.getElementById('cardLokasiPidana').innerText = lokasi;
+            document.getElementById('cardLokasiPidana').title = lokasi;
+            document.getElementById('cardNamaPK').innerText = namaPK;
+            document.getElementById('cardHasilRRI').innerText = `Skor ${row.skor_total ?? '-'}`;
+            document.getElementById('badgeRRI').innerText = row.kategori_risiko || "-";
+
+            aturStatusKunciInstrumen(true);
+        }
+
+        function pilihKlienDariDropdown() {
+            const val = document.getElementById('selectKlienRRI').value;
+            if (!val) {
+                isiCardKlien(null);
+                return;
+            }
+            const found = daftarKlienRRI.find(item => String(item.id) === String(val) || String(item.no_register).trim() === String(val).trim());
+            if (found) {
+                isiCardKlien(found);
+            } else {
+                isiCardKlien(null);
+            }
+        }
+
+        async function muatDaftarKlienRRI() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('asesmen_risiko')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                // Filter sesuai Petugas PK yang login
+                const namaTarget = (globalNamaPetugas || "").trim().toLowerCase();
+                daftarKlienRRI = (data || []).filter(row => {
+                    let detailObj = {};
+                    if (row.detail_jawaban) {
+                        detailObj = typeof row.detail_jawaban === 'string' ? JSON.parse(row.detail_jawaban) : row.detail_jawaban;
+                    }
+                    const matchId = currentPetugasId && row.petugas_id === currentPetugasId;
+                    const namaDiRow = (row.nama_petugas || detailObj.nama_petugas || "").trim().toLowerCase();
+                    return matchId || (namaDiRow !== "" && namaDiRow === namaTarget);
+                });
+
+                const selectEl = document.getElementById('selectKlienRRI');
+                selectEl.innerHTML = '<option value="">-- Pilih Klien dari Data RRI (Wajib Dipilih) --</option>';
+
+                daftarKlienRRI.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.id || item.no_register;
+                    opt.textContent = `${item.nama_klien} (Reg: ${item.no_register})`;
+                    selectEl.appendChild(opt);
+                });
+
+                // Cek apakah ada parameter ?rri_id= atau ?reg= di URL
+                const params = new URLSearchParams(window.location.search);
+                const rriIdParam = params.get('rri_id');
+                const regParam = params.get('reg');
+
+                let targetRow = null;
+                if (rriIdParam) {
+                    targetRow = daftarKlienRRI.find(r => String(r.id) === String(rriIdParam));
+                }
+                if (!targetRow && regParam) {
+                    targetRow = daftarKlienRRI.find(r => String(r.no_register).trim() === String(regParam).trim());
+                }
+
+                // Hanya pilih otomatis jika ada parameter URL yang cocok; jika tidak ada, biarkan kosong (mandatory) agar petugas memilih sendiri
+                if (targetRow) {
+                    selectEl.value = targetRow.id || targetRow.no_register;
+                    isiCardKlien(targetRow);
+                } else {
+                    selectEl.value = "";
+                    isiCardKlien(null);
+                }
+            } catch (err) {
+                console.error("Gagal memuat klien RRI:", err.message);
+                isiCardKlien(null);
+            }
+        }
+
+        async function cekSesiLogin() {
+            const { data } = await supabaseClient.auth.getSession();
+            if (!data.session) {
+                window.location.href = 'index.html';
+                return;
+            }
+            currentPetugasId = data.session.user.id;
+            const userMeta = data.session.user.user_metadata || {};
+            if (userMeta.nama_petugas) {
+                globalNamaPetugas = userMeta.nama_petugas;
+                document.getElementById('userName').innerText = userMeta.nama_petugas;
+                document.getElementById('userRole').innerText = userMeta.jabatan || "Petugas Bapas";
+                document.getElementById('cardNamaPK').innerText = userMeta.nama_petugas;
+
+                if (userMeta.avatar_base64) {
+                    const imgHtml = `<img src="${userMeta.avatar_base64}" class="w-full h-full object-cover">`;
+                    document.getElementById('userInitialContainer').innerHTML = imgHtml;
+                    document.getElementById('mobileUserInitialContainer').innerHTML = imgHtml;
+                } else {
+                    const init = userMeta.nama_petugas.charAt(0).toUpperCase();
+                    document.getElementById('userInitial').innerText = init;
+                    document.getElementById('mobileUserInitial').innerText = init;
+                }
+            }
+            await muatDaftarKlienRRI();
+        }
+
+        // ==================== SIGNATURE PAD ====================
+        let padPetugas, padKlien;
+        function initSignaturePads() {
+            const canvasPetugas = document.getElementById('canvasPetugas');
+            const canvasKlien = document.getElementById('canvasKlien');
+
+            function resizeCanvas(canvas) {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext("2d").scale(ratio, ratio);
+            }
+
+            resizeCanvas(canvasPetugas);
+            resizeCanvas(canvasKlien);
+
+            padPetugas = new SignaturePad(canvasPetugas, { penColor: 'rgb(37, 99, 235)' });
+            padKlien = new SignaturePad(canvasKlien, { penColor: 'rgb(37, 99, 235)' });
+
+            document.getElementById('btnClearPetugas').addEventListener('click', () => padPetugas.clear());
+            document.getElementById('btnClearKlien').addEventListener('click', () => padKlien.clear());
+        }
+
+        window.addEventListener('load', () => {
+            renderFormulirKriminogenik();
+            initSignaturePads();
+            cekSesiLogin();
+        });
+
+        // ==================== SIMPAN & CETAK PDF KRIMINOGENIK ====================
+        async function submitDataKriminogenik() {
+            if (!klienTerpilih) {
+                Swal.fire({
+                    ...swalLightTheme,
+                    icon: 'warning',
+                    title: 'Pilih Klien Terlebih Dahulu',
+                    text: 'Silakan pilih klien dari daftar Asesmen RRI pada Card Identitas Klien di atas.',
+                    confirmButtonColor: '#9333ea'
+                }).then(() => {
+                    fokusKePilihKlien();
+                });
+                return;
+            }
+
+            Swal.fire({
+                ...swalLightTheme,
+                title: 'Menyimpan & Membuat PDF...',
+                html: '<span class="text-slate-500">Sedang memproses dokumen Asesmen Kriminogenik.</span>',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            const tglAsesmen = document.getElementById('tanggalAsesmenKrim').value;
+            const alasan = document.querySelector('input[name="alasanAsesmen"]:checked')?.value || 'Awal';
+            const keterangan = document.getElementById('keteranganAsesmen').value || '-';
+
+            const { totalKeseluruhan, kategoriAkhir } = hitungSkorKriminogenik();
+
+            // Kumpulkan jawaban Bagian A, B.1, B.2 dan isi tabel PDF
+            let jawabanBagianA = {};
+            let pdfRowsA = '';
+
+            strukturBagianA.forEach(faktor => {
+                let subSkor = 0;
+                pdfRowsA += `
+                    <tr>
+                        <td colspan="4" style="background-color: #f1f5f9; font-weight: bold; font-size: 9.5pt;">${faktor.namaFaktor}</td>
+                    </tr>
+                `;
+                faktor.items.forEach(item => {
+                    const radio = document.querySelector(`input[name="${item.kode}"]:checked`);
+                    const nilai = radio ? parseInt(radio.value) : 0;
+                    const labelJawaban = radio ? radio.getAttribute('data-label') : '-';
+                    const bukti = document.getElementById(`bukti_${item.kode}`)?.value || '-';
+                    subSkor += nilai;
+
+                    jawabanBagianA[item.kode] = { nilai, jawaban: labelJawaban, bukti };
+
+                    pdfRowsA += `
+                        <tr>
+                            <td style="text-align: center;">${item.no}</td>
+                            <td>
+                                <div>${item.teks}</div>
+                                <div style="font-size: 8pt; color: #555; margin-top: 3px; border-top: 1px dashed #ccc; padding-top: 2px;">Bukti/Info: ${bukti}</div>
+                            </td>
+                            <td style="text-align: center; vertical-align: middle;">${labelJawaban}</td>
+                            <td style="text-align: center; vertical-align: middle; font-weight: bold;">${nilai}</td>
+                        </tr>
+                    `;
+                });
+                const katFaktor = tentukanKategoriFaktor(subSkor, faktor.batasKategori);
+                pdfRowsA += `
+                    <tr>
+                        <td colspan="3" style="text-align: right; font-weight: bold; background-color: #fafafa;">Sub-Total ${faktor.namaFaktor} (${katFaktor})</td>
+                        <td style="text-align: center; font-weight: bold; background-color: #fafafa;">${subSkor}</td>
+                    </tr>
+                `;
+            });
+
+            pdfRowsA += `
+                <tr>
+                    <td colspan="3" style="font-weight: bold; background-color: #d9ead3;">NILAI TOTAL KESELURUHAN BAGIAN A</td>
+                    <td style="text-align: center; font-weight: bold; background-color: #d9ead3;">${totalKeseluruhan}</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="font-weight: bold; background-color: #d9ead3;">KATEGORI TINGKAT KEBUTUHAN KRIMINOGENIK</td>
+                    <td style="text-align: center; font-weight: bold; background-color: #d9ead3;">${kategoriAkhir}</td>
+                </tr>
+            `;
+            document.getElementById('pdf-tbodyA').innerHTML = pdfRowsA;
+
+            // Bagian B.1
+            let jawabanB1 = {};
+            let pdfRowsB1 = '';
+            daftarB1.forEach(item => {
+                const isChecked = document.querySelector(`input[name="b1_${item.no}"]`)?.checked || false;
+                jawabanB1[item.no] = isChecked ? 1 : 0;
+                pdfRowsB1 += `
+                    <tr>
+                        <td style="text-align: center;">${item.no}</td>
+                        <td>${item.teks}</td>
+                        <td style="text-align: center; font-weight: bold; font-size: 12pt;">${isChecked ? '√' : ''}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('pdf-tbodyB1').innerHTML = pdfRowsB1;
+
+            // Bagian B.2
+            let jawabanB2 = {};
+            let pdfRowsB2 = '';
+            daftarB2.forEach(item => {
+                const isChecked = document.querySelector(`input[name="b2_${item.no}"]`)?.checked || false;
+                jawabanB2[item.no] = isChecked ? 1 : 0;
+                pdfRowsB2 += `
+                    <tr>
+                        <td style="text-align: center;">${item.no}</td>
+                        <td>${item.teks}</td>
+                        <td style="text-align: center; font-weight: bold; font-size: 12pt;">${isChecked ? '√' : ''}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('pdf-tbodyB2').innerHTML = pdfRowsB2;
+
+            // Isi Header PDF
+            let detailLama = {};
+            if (klienTerpilih.detail_jawaban) {
+                detailLama = typeof klienTerpilih.detail_jawaban === 'string' ? JSON.parse(klienTerpilih.detail_jawaban) : klienTerpilih.detail_jawaban;
+            }
+            const lokasiPidana = klienTerpilih.lokasi_pidana || detailLama.lokasi_pidana || '-';
+
+            document.getElementById('pdf-namaKlien').innerText = klienTerpilih.nama_klien || '-';
+            document.getElementById('pdf-noReg').innerText = klienTerpilih.no_register || '-';
+            document.getElementById('pdf-tglLahirJk').innerText = `${formatTanggal(klienTerpilih.tanggal_lahir)} / ${klienTerpilih.jenis_kelamin || '-'}`;
+            document.getElementById('pdf-lokasi').innerText = lokasiPidana;
+            document.getElementById('pdf-tglAsesmen').innerText = formatTanggal(tglAsesmen);
+            document.getElementById('pdf-alasan').innerText = alasan;
+            document.getElementById('pdf-namaPK').innerText = globalNamaPetugas;
+            document.getElementById('pdf-keterangan').innerText = keterangan;
+            document.getElementById('pdf-ttdNamaPK').innerText = globalNamaPetugas;
+            document.getElementById('pdf-ttdNamaKlien').innerText = klienTerpilih.nama_klien || '-';
+
+            if (!padPetugas.isEmpty()) {
+                const imgPetugas = document.getElementById('pdf-ttdPetugas');
+                imgPetugas.src = padPetugas.toDataURL('image/png');
+                imgPetugas.style.display = 'block';
+            }
+            if (!padKlien.isEmpty()) {
+                const imgKlien = document.getElementById('pdf-ttdKlien');
+                imgKlien.src = padKlien.toDataURL('image/png');
+                imgKlien.style.display = 'block';
+            }
+
+            try {
+                // Simpan data kriminogenik ke dalam detail_jawaban pada baris asesmen_risiko terkait agar terintegrasi penuh
+                const detailBaru = {
+                    ...detailLama,
+                    kriminogenik: {
+                        sudah_diisi: true,
+                        tanggal_asesmen_krim: tglAsesmen,
+                        alasan_asesmen: alasan,
+                        keterangan: keterangan,
+                        skor_total_krim: totalKeseluruhan,
+                        kategori_krim: "KEBUTUHAN " + kategoriAkhir,
+                        bagian_a: jawabanBagianA,
+                        bagian_b1: jawabanB1,
+                        bagian_b2: jawabanB2,
+                        nama_petugas: globalNamaPetugas
+                    }
+                };
+
+                if (klienTerpilih.id) {
+                    const { error: updateErr } = await supabaseClient
+                        .from('asesmen_risiko')
+                        .update({ detail_jawaban: detailBaru })
+                        .eq('id', klienTerpilih.id);
+                    if (updateErr) throw updateErr;
+                }
+
+                const element = document.getElementById('dokumenPdfKrim');
+                const opt = {
+                    margin:       12,
+                    filename:     `Asesmen_Kriminogenik_${(klienTerpilih.nama_klien || 'Klien').replace(/\s+/g, '_')}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true },
+                    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                html2pdf().set(opt).from(element).save().then(() => {
+                    Swal.fire({
+                        ...swalLightTheme,
+                        icon: 'success',
+                        title: 'Asesmen Kriminogenik Tersimpan!',
+                        text: 'Data berhasil disimpan dan file PDF telah diunduh.',
+                        confirmButtonText: 'Kembali ke Dashboard',
+                        confirmButtonColor: '#9333ea',
+                        allowOutsideClick: false
+                    }).then(() => {
+                        window.location.href = 'asesmen.html';
+                    });
+                });
+
+            } catch (error) {
+                Swal.fire({
+                    ...swalLightTheme,
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan',
+                    text: error.message,
+                    confirmButtonColor: '#9333ea'
+                });
+            }
+        }
+
+        async function prosesLogout() {
+            Swal.fire({
+                ...swalLightTheme,
+                title: 'Keluar Sistem?', icon: 'warning', showCancelButton: true,
+                confirmButtonColor: '#dc2626', confirmButtonText: 'Ya, Keluar'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    await supabaseClient.auth.signOut();
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
