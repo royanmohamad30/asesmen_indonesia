@@ -271,9 +271,43 @@
                             <span class="text-xs font-bold text-blue-600 hidden sm:inline">Wajib Diisi Lengkap</span>
                         </div>
 
-                        <div class="p-6 md:p-8 grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-                            <!-- Kolom Form Identitas (Melebar Kiri-Kanan) -->
-                            <div class="xl:col-span-9 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <div class="p-6 md:p-8 space-y-6">
+                            <!-- Bagian Foto Klien (Portrait) di Atas Kolom Nama Klien -->
+                            <div class="flex flex-col items-center justify-center bg-slate-50/90 border border-slate-200/90 rounded-2xl p-5 shadow-inner">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-1 text-center">
+                                    <i class="fa-solid fa-camera-retro text-blue-600 mr-1"></i> Foto Narapidana / Klien Pemasyarakatan (Portrait)
+                                </label>
+                                <p class="text-[11px] text-slate-500 text-center mb-3">Ditampilkan pada Halaman 2 di bawah judul Identitas (di atas Nama Klien)</p>
+
+                                <!-- Bingkai Preview Portrait 3:4 -->
+                                <div id="previewFotoWrapper" class="w-40 h-52 rounded-xl border-2 border-dashed border-slate-300 bg-white flex flex-col items-center justify-center overflow-hidden relative shadow-sm mb-3">
+                                    <div id="placeholderFoto" class="flex flex-col items-center justify-center text-slate-400 p-4 text-center">
+                                        <i class="fa-solid fa-user-tie text-4xl mb-2 text-slate-300"></i>
+                                        <span class="text-[11px] font-semibold">Belum Ada Foto</span>
+                                        <span class="text-[10px] text-slate-400">Rasio Portrait 3:4</span>
+                                    </div>
+                                    <img id="imgPreviewFoto" src="" alt="Preview Foto Klien" class="hidden w-full h-full object-cover" />
+                                </div>
+
+                                <!-- Input File Hidden -->
+                                <input type="file" id="inputFotoFile" accept="image/*" class="hidden" onchange="handleUploadFoto(event)">
+
+                                <!-- Tombol Aksi Upload & Kamera -->
+                                <div class="flex flex-wrap items-center justify-center gap-2.5">
+                                    <button type="button" onclick="document.getElementById('inputFotoFile').click()" class="px-4 py-2.5 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+                                        <i class="fa-solid fa-upload"></i> Upload Foto
+                                    </button>
+                                    <button type="button" onclick="bukaModalKamera()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+                                        <i class="fa-solid fa-camera"></i> Ambil Kamera
+                                    </button>
+                                    <button type="button" id="btnHapusFoto" onclick="hapusFotoKlien()" class="hidden px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-xl text-xs font-bold transition items-center justify-center gap-1.5">
+                                        <i class="fa-solid fa-trash-can"></i> Hapus Foto
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Kolom Input Identitas Klien (Melebar Kanan & Kiri) -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Nama Lengkap Klien/WBP</label>
                                     <input type="text" id="namaKlien" class="w-full px-4 py-3.5 bg-white border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none text-sm text-slate-800 placeholder-slate-400 transition shadow-sm" required placeholder="Masukkan Nama Klien">
@@ -338,41 +372,6 @@
                                         <option value="Sebagai pedoman dalam penyusunan program pembinaan/pembimbingan (Case plan)" class="bg-white text-slate-800">Sebagai pedoman dalam penyusunan program pembinaan/pembimbingan (Case plan)</option>
                                     </select>
                                 </div>
-                            </div>
-
-                            <!-- Kolom Fitur Foto Klien (Upload / Ambil Kamera Portrait) -->
-                            <div class="xl:col-span-3 flex flex-col items-center justify-center bg-slate-50/90 border border-slate-200/90 rounded-2xl p-4 shadow-inner">
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-1 text-center">
-                                    <i class="fa-solid fa-camera-retro text-blue-600 mr-1"></i> Foto Klien (Portrait)
-                                </label>
-                                <p class="text-[11px] text-slate-500 text-center mb-3">Dicetak pada Hal. 2 di bawah Identitas</p>
-
-                                <!-- Bingkai Preview Portrait 3:4 -->
-                                <div id="previewFotoWrapper" class="w-40 h-52 rounded-xl border-2 border-dashed border-slate-300 bg-white flex flex-col items-center justify-center overflow-hidden relative shadow-sm mb-3">
-                                    <div id="placeholderFoto" class="flex flex-col items-center justify-center text-slate-400 p-4 text-center">
-                                        <i class="fa-solid fa-user-tie text-4xl mb-2 text-slate-300"></i>
-                                        <span class="text-[11px] font-semibold">Belum Ada Foto</span>
-                                        <span class="text-[10px] text-slate-400">Rasio Portrait 3:4</span>
-                                    </div>
-                                    <img id="imgPreviewFoto" src="" alt="Preview Foto Klien" class="hidden w-full h-full object-cover" />
-                                </div>
-
-                                <!-- Input File Hidden -->
-                                <input type="file" id="inputFotoFile" accept="image/*" class="hidden" onchange="handleUploadFoto(event)">
-
-                                <!-- Tombol Aksi Upload & Kamera -->
-                                <div class="w-full grid grid-cols-2 gap-2">
-                                    <button type="button" onclick="document.getElementById('inputFotoFile').click()" class="px-3 py-2.5 bg-white hover:bg-blue-50 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
-                                        <i class="fa-solid fa-upload"></i> Upload
-                                    </button>
-                                    <button type="button" onclick="bukaModalKamera()" class="px-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
-                                        <i class="fa-solid fa-camera"></i> Kamera
-                                    </button>
-                                </div>
-
-                                <button type="button" id="btnHapusFoto" onclick="hapusFotoKlien()" class="hidden w-full mt-2 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-xl text-xs font-bold transition items-center justify-center gap-1.5">
-                                    <i class="fa-solid fa-trash-can"></i> Hapus Foto
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -623,15 +622,22 @@
                 </table>
             </div>
 
-            <!-- HALAMAN 2: IDENTITAS NARAPIDANA/KLIEN PEMASYARAKATAN + FOTO PORTRAIT DI BAWAHNYA -->
+            <!-- HALAMAN 2: IDENTITAS NARAPIDANA/KLIEN PEMASYARAKATAN + FOTO PORTRAIT DI ATAS KOLOM NAMA KLIEN -->
             <div style="page-break-after: always; break-after: page; min-height: 255mm; padding-top: 5mm;">
                 <h2 style="font-size: 11pt; font-weight: bold; text-decoration: underline;">RAHASIA</h2>
-                <div style="text-align: center; margin-bottom: 22px;">
+                <div style="text-align: center; margin-bottom: 16px;">
                     <h2 style="font-size: 12pt; font-weight: bold; margin-bottom: 5px;">IDENTITAS</h2>
                     <h3 style="font-size: 11pt; font-weight: normal; margin-top: 0;">NARAPIDANA/KLIEN PEMASYARAKATAN</h3>
                 </div>
 
-                <table style="width: 100%; margin-bottom: 18px; line-height: 1.55;">
+                <!-- FOTO PORTRAIT NARAPIDANA/KLIEN DI BAWAH JUDUL IDENTITAS & DI ATAS KOLOM NAMA KLIEN -->
+                <div id="pdf-fotoKlienWrapper" class="pdf-foto-portrait-wrapper" style="display: none;">
+                    <div class="pdf-foto-portrait-box">
+                        <img id="pdf-fotoKlien" src="" alt="Foto Klien" />
+                    </div>
+                </div>
+
+                <table style="width: 100%; margin-top: 14px; margin-bottom: 28px; line-height: 1.55;">
                     <tr><td style="width: 35%; vertical-align: top;">Nama Klien Narapidana</td><td style="width: 3%; vertical-align: top;">:</td><td id="pdf-namaKlien2" style="font-weight: bold; vertical-align: top;"></td></tr>
                     <tr><td style="vertical-align: top;">Nomor Register</td><td style="vertical-align: top;">:</td><td id="pdf-noReg2" style="vertical-align: top;"></td></tr>
                     <tr><td style="vertical-align: top;">Tanggal Lahir</td><td style="vertical-align: top;">:</td><td id="pdf-tglLahir2" style="vertical-align: top;"></td></tr>
@@ -642,14 +648,6 @@
                     <tr><td style="vertical-align: top;">Tanggal Pelaksanaan Asesmen</td><td style="vertical-align: top;">:</td><td id="pdf-tglCetak2" style="vertical-align: top;"></td></tr>
                     <tr><td style="vertical-align: top;">Nama Petugas Asesmen</td><td style="vertical-align: top;">:</td><td id="pdf-namaPetugas2" style="vertical-align: top;"></td></tr>
                 </table>
-
-                <!-- FOTO PORTRAIT NARAPIDANA/KLIEN DI BAWAH IDENTITAS -->
-                <div id="pdf-fotoKlienWrapper" class="pdf-foto-portrait-wrapper" style="display: none;">
-                    <p style="font-size: 9.5pt; font-weight: bold; margin-bottom: 6px;">FOTO NARAPIDANA / KLIEN PEMASYARAKATAN</p>
-                    <div class="pdf-foto-portrait-box">
-                        <img id="pdf-fotoKlien" src="" alt="Foto Klien" />
-                    </div>
-                </div>
 
                 <div style="border: 2px solid black; padding: 14px; text-align: center; margin-top: 18px; margin-bottom: 20px;">
                     <h3 style="font-weight: bold; margin-top: 0;">PENTING</h3>
