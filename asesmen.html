@@ -38,7 +38,7 @@
         /* CSS KHUSUS CETAK PDF RRI & KRIMINOGENIK */
         #dokumenPdf {
             font-family: Arial, sans-serif; color: black; background: white; 
-            font-size: 11pt; line-height: 1.4; width: 100%; padding: 20px;
+            font-size: 11pt; line-height: 1.45; width: 100%; padding: 0; box-sizing: border-box;
         }
         #dokumenPdfKrim {
             font-family: Arial, sans-serif; color: black; background: white; 
@@ -64,6 +64,28 @@
         .th-sedang { background-color: #4da6ff; }
         .th-tinggi { background-color: #ffbf00; }
         .th-sangat-tinggi { background-color: #ff3333; }
+
+        /* Frame Foto Portrait di Halaman 2 di atas Kolom Nama Klien */
+        .pdf-foto-portrait-wrapper {
+            margin: 16px auto 20px auto;
+            text-align: center;
+        }
+        .pdf-foto-portrait-box {
+            width: 125px;
+            height: 168px;
+            margin: 0 auto;
+            border: 1.5px solid #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+        .pdf-foto-portrait-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body class="text-slate-800 h-screen overflow-hidden relative antialiased selection:bg-blue-600 selection:text-white flex"
@@ -97,7 +119,7 @@
                     <button onclick="bukaHalaman('dashboard')" id="nav-desktop-dashboard" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left transition-all bg-blue-600 text-white font-bold shadow-[0_4px_15px_rgba(37,99,235,0.3)]">
                         <i class="fa-solid fa-chart-pie w-5 text-center"></i>
                         <span>Dashboard Utama</span>
-                    </button>
+                    </a>
                 </li>
                 <li class="pt-6 pb-2 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Menu Asesmen</li>
                 <li>
@@ -537,7 +559,8 @@
     <!-- ==================== TEMPLATE CETAK PDF RRI ==================== -->
     <div style="display: none;">
         <div id="dokumenPdf">
-            <div style="page-break-after: always; break-after: page; min-height: 250mm; padding-top: 10mm;">
+            <!-- HALAMAN 1: INFORMED CONSENT -->
+            <div style="page-break-after: always; break-after: page; min-height: 255mm; padding-top: 5mm;">
                 <div style="text-align: center; margin-bottom: 30px;">
                     <h2 style="font-size: 12pt; font-weight: bold; margin-bottom: 5px; text-decoration: underline;">LEMBAR PERSETUJUAN</h2>
                     <h3 style="font-size: 11pt; font-weight: normal; margin-top: 0;">(INFORMED CONSENT)</h3>
@@ -545,7 +568,7 @@
                 
                 <p>Saya yang bertanda tangan dibawah ini:</p>
                 <table style="width: 100%; margin-bottom: 20px; line-height: 1.5;">
-                    <tr><td style="width: 35%; vertical-align: top;">Nama Klien</td><td style="width: 5%; vertical-align: top;">:</td><td id="pdf-namaKlien1" style="font-weight: bold; vertical-align: top;"></td></tr>
+                    <tr><td style="width: 35%; vertical-align: top;">Nama Klien</td><td style="width: 3%; vertical-align: top;">:</td><td id="pdf-namaKlien1" style="font-weight: bold; vertical-align: top;"></td></tr>
                     <tr><td style="vertical-align: top;">Tanggal Lahir</td><td style="vertical-align: top;">:</td><td id="pdf-tglLahir1" style="vertical-align: top;"></td></tr>
                     <tr><td style="vertical-align: top;">Jenis Kelamin</td><td style="vertical-align: top;">:</td><td id="pdf-jk1" style="vertical-align: top;"></td></tr>
                     <tr><td style="vertical-align: top;">Nomor Register Lapas/Rutan</td><td style="vertical-align: top;">:</td><td id="pdf-noReg1" style="vertical-align: top;"></td></tr>
@@ -584,32 +607,41 @@
                 </table>
             </div>
 
-            <div style="page-break-after: always; break-after: page; min-height: 250mm; padding-top: 10mm;">
+            <!-- HALAMAN 2: IDENTITAS NARAPIDANA/KLIEN PEMASYARAKATAN + FOTO PORTRAIT DI ATAS KOLOM NAMA KLIEN -->
+            <div style="page-break-after: always; break-after: page; min-height: 255mm; padding-top: 5mm;">
                 <h2 style="font-size: 11pt; font-weight: bold; text-decoration: underline;">RAHASIA</h2>
-                <div style="text-align: center; margin-bottom: 30px;">
+                <div style="text-align: center; margin-bottom: 16px;">
                     <h2 style="font-size: 12pt; font-weight: bold; margin-bottom: 5px;">IDENTITAS</h2>
                     <h3 style="font-size: 11pt; font-weight: normal; margin-top: 0;">NARAPIDANA/KLIEN PEMASYARAKATAN</h3>
                 </div>
 
-                <table style="width: 100%; margin-bottom: 40px; line-height: 1.5;">
-                    <tr><td style="width: 35%; vertical-align: top;">Nama Klien Narapidana</td><td style="width: 5%; vertical-align: top;">:</td><td id="pdf-namaKlien2" style="font-weight: bold; vertical-align: top;"></td></tr>
+                <!-- FOTO PORTRAIT NARAPIDANA/KLIEN DI BAWAH JUDUL IDENTITAS & DI ATAS KOLOM NAMA KLIEN -->
+                <div id="pdf-fotoKlienWrapper" class="pdf-foto-portrait-wrapper" style="display: none;">
+                    <div class="pdf-foto-portrait-box">
+                        <img id="pdf-fotoKlien" src="" alt="Foto Klien" />
+                    </div>
+                </div>
+
+                <table style="width: 100%; margin-top: 14px; margin-bottom: 28px; line-height: 1.55;">
+                    <tr><td style="width: 35%; vertical-align: top;">Nama Klien Narapidana</td><td style="width: 3%; vertical-align: top;">:</td><td id="pdf-namaKlien2" style="font-weight: bold; vertical-align: top;"></td></tr>
                     <tr><td style="vertical-align: top;">Nomor Register</td><td style="vertical-align: top;">:</td><td id="pdf-noReg2" style="vertical-align: top;"></td></tr>
                     <tr><td style="vertical-align: top;">Tanggal Lahir</td><td style="vertical-align: top;">:</td><td id="pdf-tglLahir2" style="vertical-align: top;"></td></tr>
                     <tr><td style="vertical-align: top;">Jenis Kelamin</td><td style="vertical-align: top;">:</td><td id="pdf-jk2" style="vertical-align: top;"></td></tr>
                     <tr><td style="vertical-align: top;">Tindak Pidana</td><td style="vertical-align: top;">:</td><td id="pdf-tp2" style="vertical-align: top;"></td></tr>
-                    <tr><td style="vertical-align: top;">Lokasi</td><td style="vertical-align: top;">:</td><td id="pdf-lokasi2" style="vertical-align: top;"></td></tr>
+                    <tr><td style="vertical-align: top;">Lokasi</td><td style="vertical-align: top;">:</td><td id="pdf-lokasi2" style="font-weight: bold; vertical-align: top;"></td></tr>
                     <tr><td style="vertical-align: top;">Tujuan Asesmen</td><td style="vertical-align: top;">:</td><td id="pdf-tujuan2" style="vertical-align: top;"></td></tr>
                     <tr><td style="vertical-align: top;">Tanggal Pelaksanaan Asesmen</td><td style="vertical-align: top;">:</td><td id="pdf-tglCetak2" style="vertical-align: top;"></td></tr>
                     <tr><td style="vertical-align: top;">Nama Petugas Asesmen</td><td style="vertical-align: top;">:</td><td id="pdf-namaPetugas2" style="vertical-align: top;"></td></tr>
                 </table>
 
-                <div style="border: 2px solid black; padding: 15px; text-align: center; margin-bottom: 40px;">
+                <div style="border: 2px solid black; padding: 14px; text-align: center; margin-top: 18px; margin-bottom: 20px;">
                     <h3 style="font-weight: bold; margin-top: 0;">PENTING</h3>
                     <p style="font-size: 11pt; margin-bottom: 0;">Pelaksanaan asesmen risiko residivisme dan kebutuhan kriminogenik terhadap narapidana/klien pemasyarakatan WAJIB dilakukan berdasarkan Pedoman Penggunaan dan Penilaian Instrumen Asesmen Risiko Residivisme Indonesia versi 02 Tahun 2021.</p>
                 </div>
             </div>
 
-            <div style="page-break-after: always; break-after: page; min-height: 250mm; padding-top: 10mm;">
+            <!-- HALAMAN 3: INSTRUMEN BAGIAN A (1-8) -->
+            <div style="page-break-after: always; break-after: page; min-height: 255mm; padding-top: 5mm;">
                 <div style="text-align: center; margin-bottom: 20px;">
                     <h2 style="font-size: 12pt; font-weight: bold; margin-bottom: 5px;">INSTRUMEN ASESMEN RISIKO RESIDIVISME INDONESIA</h2>
                     <h3 style="font-size: 11pt; font-weight: bold; text-decoration: underline;">RISIKO RESIDIVISME INDONESIA - BAGIAN A</h3>
@@ -638,7 +670,7 @@
                             <td class="col-no">1</td>
                             <td class="td-pertanyaan">
                                 <div class="tanya-text">Apakah pada saat narapidana/klien pemasyarakatan pertama kali ditahan masih berusia 16 tahun atau dibawah 16 tahun?</div>
-                                <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                <div class="bukti-text" id="pdf-buktiA1">Bukti/Informasi Pendukung</div>
                             </td>
                             <td class="col-jawaban" id="pdf-jawabanA1"></td>
                             <td class="col-nilai" id="pdf-nilaiA1"></td>
@@ -647,7 +679,7 @@
                             <td class="col-no">2</td>
                             <td class="td-pertanyaan">
                                 <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah dihukum oleh pengadilan dan divonis hukuman penjara?</div>
-                                <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                <div class="bukti-text" id="pdf-buktiA2">Bukti/Informasi Pendukung</div>
                             </td>
                             <td class="col-jawaban" id="pdf-jawabanA2"></td>
                             <td class="col-nilai" id="pdf-nilaiA2"></td>
@@ -656,7 +688,7 @@
                             <td class="col-no">3</td>
                             <td class="td-pertanyaan">
                                 <div class="tanya-text">Berapa jumlah pasal yang dipidanakan kepada narapidana/klien pemasyarakatan untuk kejahatan saat ini?</div>
-                                <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                <div class="bukti-text" id="pdf-buktiA3">Bukti/Informasi Pendukung</div>
                             </td>
                             <td class="col-jawaban" id="pdf-jawabanA3"></td>
                             <td class="col-nilai" id="pdf-nilaiA3"></td>
@@ -665,7 +697,7 @@
                             <td class="col-no">4</td>
                             <td class="td-pertanyaan">
                                 <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah melakukan pelanggaran ketika sedang menjalani program reintegrasi?<br><span style="font-size: 9pt;">(Contoh : pelanggaran ketentuan reintegrasi dan/atau pelanggaran hukum/hukum adat/norma masyarakat)</span></div>
-                                <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                <div class="bukti-text" id="pdf-buktiA4">Bukti/Informasi Pendukung</div>
                             </td>
                             <td class="col-jawaban" id="pdf-jawabanA4"></td>
                             <td class="col-nilai" id="pdf-nilaiA4"></td>
@@ -674,7 +706,7 @@
                             <td class="col-no">5</td>
                             <td class="td-pertanyaan">
                                 <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah mendapatkan vonis sebelumnya? (Tidak termasuk vonis untuk kejahatan yang sekarang dan tidak mempertimbangkan jumlah pasal yang dipidanakan)</div>
-                                <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                <div class="bukti-text" id="pdf-buktiA5">Bukti/Informasi Pendukung</div>
                             </td>
                             <td class="col-jawaban" id="pdf-jawabanA5"></td>
                             <td class="col-nilai" id="pdf-nilaiA5"></td>
@@ -683,7 +715,7 @@
                             <td class="col-no">6</td>
                             <td class="td-pertanyaan">
                                 <div class="tanya-text">Apakah ada catatan perilaku buruk/menyimpang yang dilakukan oleh narapidana/klien pemasyarakatan berada di dalam Rutan/Lapas/Bapas?</div>
-                                <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                <div class="bukti-text" id="pdf-buktiA6">Bukti/Informasi Pendukung</div>
                             </td>
                             <td class="col-jawaban" id="pdf-jawabanA6"></td>
                             <td class="col-nilai" id="pdf-nilaiA6"></td>
@@ -692,7 +724,7 @@
                             <td class="col-no">7</td>
                             <td class="td-pertanyaan">
                                 <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah diskors atau dikeluarkan dari sekolah?</div>
-                                <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                <div class="bukti-text" id="pdf-buktiA7">Bukti/Informasi Pendukung</div>
                             </td>
                             <td class="col-jawaban" id="pdf-jawabanA7"></td>
                             <td class="col-nilai" id="pdf-nilaiA7"></td>
@@ -701,7 +733,7 @@
                             <td class="col-no" style="border-bottom: 1px solid black;">8</td>
                             <td class="td-pertanyaan" style="border-bottom: 1px solid black;">
                                 <div class="tanya-text">Apakah ada anggota keluarga dan/atau pasangan narapidana/klien pemasyarakatan yang pernah diproses secara hukum/mendapatkan vonis dari hakim? (apapun bentuk vonisnya)</div>
-                                <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                <div class="bukti-text" id="pdf-buktiA8">Bukti/Informasi Pendukung</div>
                             </td>
                             <td class="col-jawaban" style="border-bottom: 1px solid black;" id="pdf-jawabanA8"></td>
                             <td class="col-nilai" style="border-bottom: 1px solid black;" id="pdf-nilaiA8"></td>
@@ -710,7 +742,8 @@
                 </table>
             </div>
 
-            <div style="page-break-after: always; break-after: page; min-height: 250mm; padding-top: 10mm;">
+            <!-- HALAMAN 4: INSTRUMEN BAGIAN A (9-10) & TABEL ACUAN -->
+            <div style="page-break-after: always; break-after: page; min-height: 255mm; padding-top: 5mm;">
                 <table class="pdf-table" style="border-top: 1px solid black;">
                     <colgroup>
                         <col style="width: 5%;">
@@ -723,7 +756,7 @@
                             <td class="col-no">9</td>
                             <td class="td-pertanyaan">
                                 <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah menggunakan narkotika/obat-obatan terlarang dan/atau mengonsumsi minuman beralkohol secara berlebihan?</div>
-                                <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                <div class="bukti-text" id="pdf-buktiA9">Bukti/Informasi Pendukung</div>
                             </td>
                             <td class="col-jawaban" id="pdf-jawabanA9"></td>
                             <td class="col-nilai" id="pdf-nilaiA9"></td>
@@ -732,7 +765,7 @@
                             <td class="col-no">10</td>
                             <td class="td-pertanyaan">
                                 <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah menganggur secara terus-menerus/berturut-turut selama 12 bulan atau lebih?</div>
-                                <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                <div class="bukti-text" id="pdf-buktiA10">Bukti/Informasi Pendukung</div>
                             </td>
                             <td class="col-jawaban" id="pdf-jawabanA10"></td>
                             <td class="col-nilai" id="pdf-nilaiA10"></td>
@@ -769,7 +802,8 @@
                 </table>
             </div>
 
-            <div style="min-height: 250mm; padding-top: 10mm;">
+            <!-- HALAMAN 5: BAGIAN B, C, D & REKOMENDASI -->
+            <div style="min-height: 255mm; padding-top: 5mm;">
                 <div style="text-align: center; margin-bottom: 20px;">
                     <h3 style="font-size: 11pt; font-weight: bold; text-decoration: underline;">RISIKO RESIDIVISME INDONESIA - BAGIAN B</h3>
                     <h4 style="font-size: 11pt; font-weight: bold;">FAKTOR RISIKO TAMBAHAN</h4>
@@ -795,7 +829,7 @@
                             <td class="col-no">1</td>
                             <td class="td-pertanyaan">
                                 <div class="tanya-text">Apakah tindak pidana yang dilakukan narapidana/klien pemasyarakatan pada saat ini merupakan peningkatan dari tindak pidana yang pernah dilakukan sebelumnya?</div>
-                                <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                <div class="bukti-text" id="pdf-buktiB1">Bukti/Informasi Pendukung</div>
                             </td>
                             <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekB1"></td>
                         </tr>
@@ -803,7 +837,7 @@
                             <td class="col-no">2</td>
                             <td class="td-pertanyaan">
                                 <div class="tanya-text">Apakah ada sejarah tindak kekerasan yang dilakukan oleh narapidana/klien pemasyarakatan sebelum berusia 15 tahun?</div>
-                                <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                <div class="bukti-text" id="pdf-buktiB2">Bukti/Informasi Pendukung</div>
                             </td>
                             <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekB2"></td>
                         </tr>
@@ -811,7 +845,7 @@
                             <td class="col-no">3</td>
                             <td class="td-pertanyaan">
                                 <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah menjadi pelaku atau korban kekerasan dalam rumah tangga?</div>
-                                <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                <div class="bukti-text" id="pdf-buktiB3">Bukti/Informasi Pendukung</div>
                             </td>
                             <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekB3"></td>
                         </tr>
@@ -819,7 +853,7 @@
                             <td class="col-no">4</td>
                             <td class="td-pertanyaan">
                                 <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah melakukan tindak pidana kekerasan/kejahatan seksual atau tindak pidana terorisme/separatisme?</div>
-                                <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                <div class="bukti-text" id="pdf-buktiB4">Bukti/Informasi Pendukung</div>
                             </td>
                             <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekB4"></td>
                         </tr>
@@ -849,7 +883,7 @@
                                 <td class="col-no">1</td>
                                 <td class="td-pertanyaan">
                                     <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah melahirkan sebelum berusia 20 (dua puluh) tahun?</div>
-                                    <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                    <div class="bukti-text" id="pdf-buktiC1">Bukti/Informasi Pendukung</div>
                                 </td>
                                 <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekC1"></td>
                             </tr>
@@ -857,7 +891,7 @@
                                 <td class="col-no">2</td>
                                 <td class="td-pertanyaan">
                                     <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah mengalami masalah dalam merawat/membesarkan anak?</div>
-                                    <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                    <div class="bukti-text" id="pdf-buktiC2">Bukti/Informasi Pendukung</div>
                                 </td>
                                 <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekC2"></td>
                             </tr>
@@ -865,7 +899,7 @@
                                 <td class="col-no">3</td>
                                 <td class="td-pertanyaan">
                                     <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah terlibat dalam praktik dan/atau jaringan prostitusi?</div>
-                                    <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                    <div class="bukti-text" id="pdf-buktiC3">Bukti/Informasi Pendukung</div>
                                 </td>
                                 <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekC3"></td>
                             </tr>
@@ -896,7 +930,7 @@
                                 <td class="col-no">1</td>
                                 <td class="td-pertanyaan">
                                     <div class="tanya-text">Apakah narapidana/klien pemasyarakatan pernah terlibat dalam jaringan pengedar narkotika?</div>
-                                    <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                    <div class="bukti-text" id="pdf-buktiD1">Bukti/Informasi Pendukung</div>
                                 </td>
                                 <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekD1"></td>
                             </tr>
@@ -904,7 +938,7 @@
                                 <td class="col-no">2</td>
                                 <td class="td-pertanyaan">
                                     <div class="tanya-text">Apakah narapidana/klien pemasyarakatan menilai penggunaan narkotika oleh dirinya adalah sesuatu yang wajar?</div>
-                                    <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                    <div class="bukti-text" id="pdf-buktiD2">Bukti/Informasi Pendukung</div>
                                 </td>
                                 <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekD2"></td>
                             </tr>
@@ -912,7 +946,7 @@
                                 <td class="col-no">3</td>
                                 <td class="td-pertanyaan">
                                     <div class="tanya-text">Apakah narapidana/klien pemasyarakatan memiliki sejarah penggunaan narkotika rutin/berulang?</div>
-                                    <div class="bukti-text">Bukti/Informasi Pendukung</div>
+                                    <div class="bukti-text" id="pdf-buktiD3">Bukti/Informasi Pendukung</div>
                                 </td>
                                 <td style="text-align: center; vertical-align: middle; font-size: 14pt; font-weight: bold;" id="pdf-cekD3"></td>
                             </tr>
@@ -1462,7 +1496,7 @@
             }
         }
 
-        // === CETAK PDF ASESMEN RRI ===
+        // === CETAK PDF ASESMEN RRI (DENGAN FOTO PORTRAIT DI ATAS KOLOM NAMA KLIEN) ===
         function cetakAsesmenRRI(index) {
             const row = dataRRITampil[index];
             if (!row) return;
@@ -1479,6 +1513,7 @@
             if (row.detail_jawaban) {
                 detail = typeof row.detail_jawaban === 'string' ? JSON.parse(row.detail_jawaban) : row.detail_jawaban;
             }
+            const buktiPendukung = detail.bukti_pendukung || {};
 
             const namaKlien = row.nama_klien || "-";
             const noRegister = row.no_register || "-";
@@ -1491,6 +1526,17 @@
             const lokasi = row.lokasi_pidana || detail.lokasi_pidana || "-";
             const namaPetugas = row.nama_petugas || detail.nama_petugas || currentNamaPetugas || "Petugas Asesmen";
 
+            // Set Foto Portrait di Halaman 2 di atas Kolom Nama Klien
+            const pdfFotoWrapper = document.getElementById('pdf-fotoKlienWrapper');
+            const pdfFotoImg = document.getElementById('pdf-fotoKlien');
+            if (detail.foto_klien) {
+                pdfFotoImg.src = detail.foto_klien;
+                pdfFotoWrapper.style.display = 'block';
+            } else {
+                pdfFotoImg.src = '';
+                pdfFotoWrapper.style.display = 'none';
+            }
+
             const pdfBagianCContainer = document.getElementById('pdf-bagianC-container');
             const pdfBagianDContainer = document.getElementById('pdf-bagianD-container');
             pdfBagianCContainer.style.display = (jk === 'Perempuan') ? 'block' : 'none';
@@ -1501,6 +1547,12 @@
                 const labelText = detail[`label_a${i}`] || konversiLabelJawabanA(i, nilai);
                 document.getElementById(`pdf-jawabanA${i}`).innerText = labelText;
                 document.getElementById(`pdf-nilaiA${i}`).innerText = nilai;
+
+                const elBuktiA = document.getElementById(`pdf-buktiA${i}`);
+                if (elBuktiA) {
+                    const teksBukti = buktiPendukung[`a${i}`] || "";
+                    elBuktiA.innerText = teksBukti ? `Bukti/Informasi Pendukung: ${teksBukti}` : "Bukti/Informasi Pendukung";
+                }
             }
 
             let adaTambahanCeklis = false;
@@ -1513,6 +1565,11 @@
                     } else {
                         elPdf.innerText = "";
                     }
+                }
+                const elBukti = document.getElementById(`pdf-bukti${kode.toUpperCase()}`);
+                if (elBukti) {
+                    const teksBukti = buktiPendukung[kode] || "";
+                    elBukti.innerText = teksBukti ? `Bukti/Informasi Pendukung: ${teksBukti}` : "Bukti/Informasi Pendukung";
                 }
             });
 
@@ -1568,7 +1625,7 @@
 
             const element = document.getElementById('dokumenPdf');
             const opt = {
-                margin:       15,
+                margin:       [10, 10, 10, 10],
                 filename:     `Asesmen_RRI_${namaKlien.replace(/\s+/g, '_')}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
@@ -2031,8 +2088,10 @@
             const warningTgl = isExpired ? `<br><span class="text-red-600 font-bold text-[11px] bg-red-50 border border-red-200 px-2 py-1 rounded inline-block mt-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i>! Harus Asesmen Ulang</span>` : ``;
 
             let adaTambahanCeklis = false;
+            let fotoKlienUrl = "";
             if(row.detail_jawaban) {
                 const detail = typeof row.detail_jawaban === 'string' ? JSON.parse(row.detail_jawaban) : row.detail_jawaban;
+                fotoKlienUrl = detail.foto_klien || "";
                 for (let key in detail) {
                     if ((key.startsWith('b') || key.startsWith('c') || key.startsWith('d')) && detail[key] == 1) {
                         adaTambahanCeklis = true; break;
@@ -2064,12 +2123,19 @@
                 </div>
             `;
 
+            const fotoModalHtml = fotoKlienUrl ? `
+                <div class="flex justify-center mb-2">
+                    <img src="${fotoKlienUrl}" alt="Foto Klien" class="w-24 h-32 object-cover rounded-xl border border-slate-300 shadow-sm">
+                </div>
+            ` : '';
+
             Swal.fire({
                 ...swalLightTheme, 
                 title: 'Data Asesmen Klien',
                 showCloseButton: true,
                 html: `
                     <div class="text-left space-y-3 mt-4 text-sm w-full">
+                        ${fotoModalHtml}
                         <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl">
                             <p class="text-slate-500 text-[10px] uppercase tracking-wider mb-1">Nama Klien</p>
                             <p class="font-bold text-slate-800 text-lg">${row.nama_klien}</p>
